@@ -5,13 +5,13 @@
 #### Autores:
 [Alejandro Cabana Suárez](https://github.com/anabac)
 
-Luis Cárabe Fernández-Pedraza
+[Luis Cárabe Fernández-Pedraza](https://github.com/luiscarabe)
 
 [Emilio Cuesta Fernández](https://github.com/emiliocuestaf)
 
-Blanca Martín Selgas
+[Blanca Martín Selgas](https://github.com/blancams)
 
-Pablo Alejo Polanía Bernárdez
+[Pablo Alejo Polanía Bernárdez](https://github.com/linksaxon)
 
 
 #### Proyecto:
