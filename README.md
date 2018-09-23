@@ -3,11 +3,11 @@
 ### Cuarto curso del Doble Grado Ing.Informática + Matemáticas.
 
 #### Autores:
-Alejandro Cabana Suárez
+[Alejandro Cabana Suárez](https://github.com/anabac)
 
 Luis Cárabe Fernández-Pedraza
 
-Emilio Cuesta Fernández
+[Emilio Cuesta Fernández](https://github.com/emiliocuestaf)
 
 Blanca Martín Selgas
 
