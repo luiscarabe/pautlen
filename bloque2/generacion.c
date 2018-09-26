@@ -1,23 +1,11 @@
 /*
 Asignatura: PAUTLEN
 Bloque: Procedural
-Modulo: generacion.h
+Modulo: generacion.c
 */
 
-#ifndef GENERACION_H
-#define GENERACION_H
+#include <generacion.h>
 
-#include <stdio.h>
-
-
-/* Declaraciones de tipos de datos del compilador */
-#define ENTERO	0
-#define BOOLEANO 	1
-
-
-/* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:
-   Todas ellas escriben el código NASM a un FILE* proporcionado como primer argumento.
-*/
 
 void escribir_cabecera_bss(FILE* fpasm);
 /*
@@ -120,5 +108,5 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
 void leer(FILE* fpasm, char* nombre, int tipo);
 void escribir(FILE* fpasm, int es_variable, int tipo);
 
-#endif
+
 
