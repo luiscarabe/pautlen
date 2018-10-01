@@ -84,9 +84,9 @@ es_variable indica si este operando es una variable (como por ejemplo b1) con un
 */
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable){
    if (es_variable)
-      fprintf(fpasm, "_%s\n", nombre);
+      fprintf(fpasm, "\tpush dword[_%s]\n", nombre);
    else
-      fprintf(fpasm, "%s\n", nombre);
+      fprintf(fpasm, "\tpush dword %s\n", nombre);
    return;
 }
 
@@ -97,8 +97,8 @@ El último argumento es el que indica si lo que hay en la cima de la pila es una
 */
 void asignar(FILE* fpasm, char* nombre, int es_variable){
    if(es_variable){
-      fprintf(fpasm, "\tpop eax\n");      
-      fprintf(fpasm, "\tmov dword eax, [eax]\n", nombre);
+      fprintf(fpasm, "\tpop dword eax\n");      
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
       fprintf(fpasm, "\tmov dword [_%s], eax\n", nombre);
    }
    else
@@ -117,33 +117,248 @@ Se guarda el resultado en la pila
 */
 
 void sumar(FILE* fpasm, int es_variable_1, int es_variable_2){
-   if(es_variable_1){
-      fprintf(fpasm, "\tpop eax\n");      
-      fprintf(fpasm, "\tmov dword eax, [eax]\n", nombre);
-      fprintf(fpasm, "\tmov dword [_%s], eax\n", nombre);
-   }
-   else
-      fprintf(fpasm, "\npop dword [_%s]", nombre);      
-   return;
 
+   /*VARIABLE 1 ES LA QUE SE SACA ANTES O LA QUE SE METE ANTES???????? TODO*/
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_2){
+      fprintf(fpasm, "\tpop dword ebx\n");
+      fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword ebx\n");
+   }
+
+   fprintf(fpasm,"\tadd eax, ebx\n");
+   fprintf(fpasm, "\tpush dword eax\n");
+
+   return;
 }
-void restar(FILE* fpasm, int es_variable_1, int es_variable_2);
-void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2);
-void dividir(FILE* fpasm, int es_variable_1, int es_variable_2);
-void o(FILE* fpasm, int es_variable_1, int es_variable_2);
-void y(FILE* fpasm, int es_variable_1, int es_variable_2);
+
+void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
+
+   /*VARIABLE 1 ES LA QUE SE SACA ANTES O LA QUE SE METE ANTES???????? TODO*/
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_2){
+      fprintf(fpasm, "\tpop dword ebx\n");
+      fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword ebx\n");
+   }
+
+   fprintf(fpasm,"\tsub eax, ebx\n");
+   fprintf(fpasm, "\tpush dword eax\n");
+
+   return;
+}
+
+void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2){
+
+   /*VARIABLE 1 ES LA QUE SE SACA ANTES O LA QUE SE METE ANTES???????? TODO*/
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_2){
+      fprintf(fpasm, "\tpop dword ecx\n");
+      fprintf(fpasm, "\tmov dword ecx, [ecx]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword ecx\n");
+   }
+
+   fprintf(fpasm,"\timul ecx\n");
+   fprintf(fpasm, "\tpush dword eax\n");
+
+   return;
+}
+
+/*   Deben tenerse en cuenta las peculiaridades de cada operación. En este sentido sí hay que mencionar explícitamente que,
+ en el caso de la división, se debe controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de error 
+ controlado (restaurando el puntero de pila en ese caso y comprobando en el retorno que no se produce “Segmentation Fault”)
+*/
+void dividir(FILE* fpasm, int es_variable_1, int es_variable_2){
+
+   /*VARIABLE 1 ES LA QUE SE SACA ANTES O LA QUE SE METE ANTES???????? TODO*/
+
+   /*idiv o div? TODO (supongo idiv de momento)*/
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_2){
+      fprintf(fpasm, "\tpop dword ecx\n");
+      fprintf(fpasm, "\tmov dword ecx, [ecx]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword ecx\n");
+   }
+
+   /*Comprobar si divisor es 0 y rutina error TODO*/
+
+   fprintf(fpasm, "\tcdq\n") /*extension de eax a edx:eax*/
+
+   /*Guardamos resto y resultado?? resultado en eax, resto en edx TODO*/
+
+   fprintf(fpasm,"\tidiv ecx\n");
+   fprintf(fpasm, "\tpush dword eax\n");
+
+   return;
+}
+
+void o(FILE* fpasm, int es_variable_1, int es_variable_2){
+
+   /*VARIABLE 1 ES LA QUE SE SACA ANTES O LA QUE SE METE ANTES???????? TODO*/
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_2){
+      fprintf(fpasm, "\tpop dword ebx\n");
+      fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword ebx\n");
+   }
+
+   fprintf(fpasm,"\tor eax, ebx\n");
+   fprintf(fpasm, "\tpush dword eax\n");
+
+   return;
+}
+
+void y(FILE* fpasm, int es_variable_1, int es_variable_2){
+
+   /*VARIABLE 1 ES LA QUE SE SACA ANTES O LA QUE SE METE ANTES???????? TODO*/
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_2){
+      fprintf(fpasm, "\tpop dword ebx\n");
+      fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword ebx\n");
+   }
+
+   fprintf(fpasm,"\tand eax, ebx\n");
+   fprintf(fpasm, "\tpush dword eax\n");
+
+   return;
+}
 
 /*
    Función aritmética de cambio de signo. 
    Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya que sólo usa un operando.
 */
-void cambiar_signo(FILE* fpasm, int es_variable);
+void cambiar_signo(FILE* fpasm, int es_variable){
+
+   if(es_variable){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   fprintf(fpasm,"\tneg eax\n");
+   fprintf(fpasm, "\tpush dword eax\n");
+
+   return;
+}
 
 /*
-   Función monádica lógica de negación. No hay un código de operación de la ALU que realice esta operación por lo que se debe codificar un algoritmo que, si encuentra en la cima de la pila un 0 deja en la cima un 1 y al contrario.
-   El último argumento es el valor de etiqueta que corresponde (sin lugar a dudas, la implementación del algoritmo requerirá etiquetas). Véase en los ejemplos de programa principal como puede gestionarse el número de etiquetas cuantos_no.
+   Función monádica lógica de negación. No hay un código de operación de la ALU que realice esta operación por lo que se debe codificar un algoritmo que,
+    si encuentra en la cima de la pila un 0 deja en la cima un 1 y al contrario.
+   El último argumento es el valor de etiqueta que corresponde (sin lugar a dudas, la implementación del algoritmo requerirá etiquetas). 
+   Véase en los ejemplos de programa principal como puede gestionarse el número de etiquetas cuantos_no.
 */
-void no(FILE* fpasm, int es_variable, int cuantos_no);
+void no(FILE* fpasm, int es_variable, int cuantos_no){
+
+   /*En los ejemplos se usa solo con booleanos, voy a suponer que esto es estrictamente para eso, pero quien sabe TODO*/
+
+   /*No se como hacer bien lo de las etiquetas TODO*/
+
+   if(es_variable){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   fprintf(fpasm,"\tmov dword edx, 0\n");
+   fprintf(fpasm,"\tcmp eax, edx\n");
+
+   fprintf(fpasm,"\tje zero_to_one%d\n",cuantos_no);
+
+   /*Pasamos de uno a cero*/
+   fprintf(fpasm, "\tmov dword eax, 0\n");
+   fprintf(fpasm, "\tpush dword eax\n");
+
+   fprintf(fpasm, "\tjmp after_not_logic%d", cuantos_no); /*LEgal?? TODO*/
+
+   /*Etiqueta zero_to_one*/
+   fprintf(fpasm, "zero_to_one%d:\n", cuantos_no);
+   fprintf(fpasm, "\tmov dword eax, 1\n");
+   fprintf(fpasm, "\tpush dword eax\n");
+
+   fprintf(fpasm,"after_not_logic%d:", cuantos_no);
+
+   return;
+
+}
 
 /* FUNCIONES COMPARATIVAS */
 /* 
