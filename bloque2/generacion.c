@@ -84,7 +84,8 @@ es_variable indica si este operando es una variable (como por ejemplo b1) con un
 */
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable){
    if (es_variable)
-      fprintf(fpasm, "\tpush dword[_%s]\n", nombre);
+      /*TODO dudas, pero asi es  mas coherente con asignar()*/
+      fprintf(fpasm, "\tpush dword _%s\n", nombre);
    else
       fprintf(fpasm, "\tpush dword %s\n", nombre);
    return;
@@ -109,11 +110,13 @@ void asignar(FILE* fpasm, char* nombre, int es_variable){
 /* FUNCIONES ARITMÉTICO-LÓGICAS BINARIAS */
 /*
    En todas ellas se realiza la operación como se ha resumido anteriormente:
-Se extrae de la pila los operandos
-Se realiza la operación
-Se guarda el resultado en la pila
+   Se extrae de la pila los operandos
+   Se realiza la operación
+   Se guarda el resultado en la pila
    Los dos últimos argumentos indican respectivamente si lo que hay en la pila es una referencia a un valor o un valor explícito.
-   Deben tenerse en cuenta las peculiaridades de cada operación. En este sentido sí hay que mencionar explícitamente que, en el caso de la división, se debe controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de error controlado (restaurando el puntero de pila en ese caso y comprobando en el retorno que no se produce “Segmentation Fault”)
+   Deben tenerse en cuenta las peculiaridades de cada operación. En este sentido sí hay que mencionar explícitamente que, en el caso de la división, 
+   se debe controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de error controlado (restaurando el puntero de pila en ese caso y 
+   comprobando en el retorno que no se produce “Segmentation Fault”)
 */
 
 void sumar(FILE* fpasm, int es_variable_1, int es_variable_2){
@@ -124,7 +127,6 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2){
       fprintf(fpasm, "\tpop dword eax\n");
       fprintf(fpasm, "\tmov dword eax, [eax]\n");
    }
-
    else{
       fprintf(fpasm,"\tpop dword eax\n");
    }
@@ -236,7 +238,6 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2){
 
    fprintf(fpasm,"\tidiv ecx\n");
    fprintf(fpasm, "\tpush dword eax\n");
-
    return;
 }
 
