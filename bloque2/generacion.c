@@ -4,7 +4,8 @@ Bloque: Procedural
 Modulo: generacion.c
 */
 
-#include <generacion.h>
+#include "generacion.h"
+#include <stdlib.h>
 
 /*
    Código para el principio de la sección .bss.
@@ -22,8 +23,8 @@ void escribir_cabecera_bss(FILE* fpasm){
 */
 void escribir_subseccion_data(FILE* fpasm){
    fprintf(fpasm, "segment .data\n");
-   fprintf(fpasm, "\tmsg_error_indice_vector\tdb \"Indice de vector fuera de rango\", 0\n")
-   fprintf(fpasm, "\tmsg_error_div_zero\tdb \"Division por 0\", 0\n")
+   fprintf(fpasm, "\tmsg_error_indice_vector\tdb \"Indice de vector fuera de rango\", 0\n");
+   fprintf(fpasm, "\tmsg_error_div_zero\tdb \"Division por 0\", 0\n");
    return;
 }
 
@@ -37,7 +38,7 @@ void escribir_subseccion_data(FILE* fpasm){
 
 /* TODO: Por que pasamos el tipo aqui??*/
 void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano){
-   fprint(pasm, "\t_%s resd %d\n", nombre, tamano);
+   fprintf(fpasm, "\t_%s resd %d\n", nombre, tamano);
    return;
 }
 
@@ -102,7 +103,7 @@ void asignar(FILE* fpasm, char* nombre, int es_variable){
       fprintf(fpasm, "\tmov dword [_%s], eax\n", nombre);
    }
    else
-      fprintf(fpasm, "\npop dword [_%s]", nombre);      
+      fprintf(fpasm, "\npop dword [_%s]\n", nombre);      
    return;
 }
 
@@ -243,7 +244,7 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2){
 
    /*Comprobar si divisor es 0 y rutina error TODO*/
 
-   fprintf(fpasm, "\tcdq\n") /*extension de eax a edx:eax*/
+   fprintf(fpasm, "\tcdq\n"); /*extension de eax a edx:eax*/
 
    /*Guardamos resto y resultado?? resultado en eax, resto en edx TODO*/
 
@@ -401,7 +402,7 @@ void igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 
    /* El resultado de la comparacion es falso*/
    fprintf(fpasm, "\tmov dword eax, 0\n");
-   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+   fprintf(fpasm, "\tjmp branchend_%d\n", etiqueta); 
 
    /* El resultado de la comparacion es true*/
    fprintf(fpasm,"branch_%d:\n",etiqueta);
@@ -438,7 +439,7 @@ void distinto(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 
    /* El resultado de la comparacion es falso*/
    fprintf(fpasm, "\tmov dword eax, 0\n");
-   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+   fprintf(fpasm, "\tjmp branchend_%d\n", etiqueta); 
 
    /* El resultado de la comparacion es true*/
    fprintf(fpasm,"branch_%d:\n",etiqueta);
@@ -474,7 +475,7 @@ void menor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta
 
    /* El resultado de la comparacion es falso*/
    fprintf(fpasm, "\tmov dword eax, 0\n");
-   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+   fprintf(fpasm, "\tjmp branchend_%d\n", etiqueta); 
 
    /* El resultado de la comparacion es true*/
    fprintf(fpasm,"branch_%d:\n",etiqueta);
@@ -510,7 +511,7 @@ void mayor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta
 
    /* El resultado de la comparacion es falso*/
    fprintf(fpasm, "\tmov dword eax, 0\n");
-   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+   fprintf(fpasm, "\tjmp branchend_%d\n", etiqueta); 
 
    /* El resultado de la comparacion es true*/
    fprintf(fpasm,"branch_%d:\n",etiqueta);
@@ -522,7 +523,7 @@ void mayor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta
    return;
 }
 
-void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+void menor(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
       if(es_variable_2){
       fprintf(fpasm, "\tpop dword eax\n");
       fprintf(fpasm, "\tmov dword eax, [eax]\n");
@@ -547,7 +548,7 @@ void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 
    /* El resultado de la comparacion es falso*/
    fprintf(fpasm, "\tmov dword eax, 0\n");
-   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+   fprintf(fpasm, "\tjmp branchend_%d\n", etiqueta); 
 
    /* El resultado de la comparacion es true*/
    fprintf(fpasm,"branch_%d:\n",etiqueta);
@@ -558,7 +559,7 @@ void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
    fprintf(fpasm, "\tpush dword eax\n");
    return;
 }
-void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+void mayor(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
       if(es_variable_2){
       fprintf(fpasm, "\tpop dword eax\n");
       fprintf(fpasm, "\tmov dword eax, [eax]\n");
@@ -583,7 +584,7 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 
    /* El resultado de la comparacion es falso*/
    fprintf(fpasm, "\tmov dword eax, 0\n");
-   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+   fprintf(fpasm, "\tjmp branchend_%d\n", etiqueta); 
 
    /* El resultado de la comparacion es true*/
    fprintf(fpasm,"branch_%d:\n",etiqueta);
@@ -601,8 +602,7 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
    Se deben insertar en la pila los argumentos necesarios, realizar la llamada (call) a la función de librería correspondiente y limpiar la pila.
 */
 void leer(FILE* fpasm, char* nombre, int tipo){
-
-   fprintf(fpasm, "\tpush _%s\n", nombre);
+   //fprintf(fpasm, "\tpush _%s\n", nombre);
    if( tipo == BOOLEANO ){
       fprintf(fpasm, "\tcall scan_boolean\n");
    } else if( tipo == ENTERO){
@@ -614,7 +614,6 @@ void leer(FILE* fpasm, char* nombre, int tipo){
 }
 
 void escribir(FILE* fpasm, int es_variable, int tipo){
-   fprintf(fpasm, "\tpush [_%s]\n", nombre);
    if( tipo == BOOLEANO ){
       fprintf(fpasm, "\tcall print_boolean\n");
    } else if( tipo == ENTERO){
