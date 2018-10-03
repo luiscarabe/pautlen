@@ -123,7 +123,7 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2){
 
    /*VARIABLE 1 ES LA QUE SE SACA ANTES O LA QUE SE METE ANTES???????? TODO*/
 
-   if(es_variable_1){
+   if(es_variable_2){
       fprintf(fpasm, "\tpop dword eax\n");
       fprintf(fpasm, "\tmov dword eax, [eax]\n");
    }
@@ -131,7 +131,7 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2){
       fprintf(fpasm,"\tpop dword eax\n");
    }
 
-   if(es_variable_2){
+   if(es_variable_1){
       fprintf(fpasm, "\tpop dword ebx\n");
       fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
    }
@@ -150,7 +150,7 @@ void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
 
    /*VARIABLE 1 ES LA QUE SE SACA ANTES O LA QUE SE METE ANTES???????? TODO*/
 
-   if(es_variable_1){
+   if(es_variable_2){
       fprintf(fpasm, "\tpop dword eax\n");
       fprintf(fpasm, "\tmov dword eax, [eax]\n");
    }
@@ -159,7 +159,7 @@ void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
       fprintf(fpasm,"\tpop dword eax\n");
    }
 
-   if(es_variable_2){
+   if(es_variable_1){
       fprintf(fpasm, "\tpop dword ebx\n");
       fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
    }
@@ -178,7 +178,7 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2){
 
    /*VARIABLE 1 ES LA QUE SE SACA ANTES O LA QUE SE METE ANTES???????? TODO*/
 
-   if(es_variable_1){
+   if(es_variable_2){
       fprintf(fpasm, "\tpop dword eax\n");
       fprintf(fpasm, "\tmov dword eax, [eax]\n");
    }
@@ -187,7 +187,7 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2){
       fprintf(fpasm,"\tpop dword eax\n");
    }
 
-   if(es_variable_2){
+   if(es_variable_1){
       fprintf(fpasm, "\tpop dword ecx\n");
       fprintf(fpasm, "\tmov dword ecx, [ecx]\n");
    }
@@ -212,7 +212,7 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2){
 
    /*idiv o div? TODO (supongo idiv de momento)*/
 
-   if(es_variable_1){
+   if(es_variable_2){
       fprintf(fpasm, "\tpop dword eax\n");
       fprintf(fpasm, "\tmov dword eax, [eax]\n");
    }
@@ -221,7 +221,7 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2){
       fprintf(fpasm,"\tpop dword eax\n");
    }
 
-   if(es_variable_2){
+   if(es_variable_1){
       fprintf(fpasm, "\tpop dword ecx\n");
       fprintf(fpasm, "\tmov dword ecx, [ecx]\n");
    }
@@ -245,7 +245,7 @@ void o(FILE* fpasm, int es_variable_1, int es_variable_2){
 
    /*VARIABLE 1 ES LA QUE SE SACA ANTES O LA QUE SE METE ANTES???????? TODO*/
 
-   if(es_variable_1){
+   if(es_variable_2){
       fprintf(fpasm, "\tpop dword eax\n");
       fprintf(fpasm, "\tmov dword eax, [eax]\n");
    }
@@ -254,7 +254,7 @@ void o(FILE* fpasm, int es_variable_1, int es_variable_2){
       fprintf(fpasm,"\tpop dword eax\n");
    }
 
-   if(es_variable_2){
+   if(es_variable_1){
       fprintf(fpasm, "\tpop dword ebx\n");
       fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
    }
@@ -273,7 +273,7 @@ void y(FILE* fpasm, int es_variable_1, int es_variable_2){
 
    /*VARIABLE 1 ES LA QUE SE SACA ANTES O LA QUE SE METE ANTES???????? TODO*/
 
-   if(es_variable_1){
+   if(es_variable_2){
       fprintf(fpasm, "\tpop dword eax\n");
       fprintf(fpasm, "\tmov dword eax, [eax]\n");
    }
@@ -282,7 +282,7 @@ void y(FILE* fpasm, int es_variable_1, int es_variable_2){
       fprintf(fpasm,"\tpop dword eax\n");
    }
 
-   if(es_variable_2){
+   if(es_variable_1){
       fprintf(fpasm, "\tpop dword ebx\n");
       fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
    }
@@ -334,7 +334,6 @@ void no(FILE* fpasm, int es_variable, int cuantos_no){
       fprintf(fpasm, "\tpop dword eax\n");
       fprintf(fpasm, "\tmov dword eax, [eax]\n");
    }
-
    else{
       fprintf(fpasm,"\tpop dword eax\n");
    }
@@ -346,16 +345,14 @@ void no(FILE* fpasm, int es_variable, int cuantos_no){
 
    /*Pasamos de uno a cero*/
    fprintf(fpasm, "\tmov dword eax, 0\n");
-   fprintf(fpasm, "\tpush dword eax\n");
-
-   fprintf(fpasm, "\tjmp after_not_logic%d", cuantos_no); /*LEgal?? TODO*/
+   fprintf(fpasm, "\tjmp after_not_logic%d\n", cuantos_no); /*LEgal?? TODO*/
 
    /*Etiqueta zero_to_one*/
    fprintf(fpasm, "zero_to_one%d:\n", cuantos_no);
    fprintf(fpasm, "\tmov dword eax, 1\n");
-   fprintf(fpasm, "\tpush dword eax\n");
 
-   fprintf(fpasm,"after_not_logic%d:", cuantos_no);
+   fprintf(fpasm,"after_not_logic%d\n:", cuantos_no);
+   fprintf(fpasm, "\tpush dword eax\n");
 
    return;
 
@@ -363,22 +360,259 @@ void no(FILE* fpasm, int es_variable, int cuantos_no){
 
 /* FUNCIONES COMPARATIVAS */
 /* 
-   Todas estas funciones reciben como argumento si los elementos a comparar son o no variables. El resultado de las operaciones, que siempre será un booleano (“1” si se cumple la comparación y “0” si no se cumple), se deja en la pila como en el resto de operaciones. Se deben usar etiquetas para poder gestionar los saltos necesarios para implementar las comparaciones.
+   Todas estas funciones reciben como argumento si los elementos a comparar son o no variables. 
+   El resultado de las operaciones, que siempre será un booleano (“1” si se cumple la comparación
+   y “0” si no se cumple), se deja en la pila como en el resto de operaciones. Se deben usar 
+   etiquetas para poder gestionar los saltos necesarios para implementar las comparaciones.
 */
-void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
+void igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
+   if(es_variable_2){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword ebx\n");
+      fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword ebx\n");
+   }
+
+   /* Realizamos la comparacion*/
+   fprintf(fpasm, "\tcmp eax, ebx\n");
+
+   /* Salto en caso de comparacion efectiva*/
+   fprintf(fpasm,"\tje branch_%d\n", etiqueta);
+
+   /* El resultado de la comparacion es falso*/
+   fprintf(fpasm, "\tmov dword eax, 0\n");
+   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+
+   /* El resultado de la comparacion es true*/
+   fprintf(fpasm,"branch_%d:\n",etiqueta);
+   fprintf(fpasm, "\tmov dword eax, 1\n");
+   
+   /* Escribimos el resultado en la pila*/
+   fprintf(fpasm, "branchend_%d:\n", etiqueta);
+   fprintf(fpasm, "\tpush dword eax\n");
+   return;
+}
+
+void distinto(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
+   if(es_variable_2){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword ebx\n");
+      fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword ebx\n");
+   }
+
+   /* Realizamos la comparacion*/
+   fprintf(fpasm, "\tcmp eax, ebx\n");
+
+   /* Salto en caso de comparacion efectiva*/
+   fprintf(fpasm,"\tjne branch_%d\n", etiqueta);
+
+   /* El resultado de la comparacion es falso*/
+   fprintf(fpasm, "\tmov dword eax, 0\n");
+   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+
+   /* El resultado de la comparacion es true*/
+   fprintf(fpasm,"branch_%d:\n",etiqueta);
+   fprintf(fpasm, "\tmov dword eax, 1\n");
+   
+   /* Escribimos el resultado en la pila*/
+   fprintf(fpasm, "branchend_%d:\n", etiqueta);
+   fprintf(fpasm, "\tpush dword eax\n");
+   return;
+}
+void menor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
+   if(es_variable_2){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword ebx\n");
+      fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword ebx\n");
+   }
+
+   /* Realizamos la comparacion*/
+   fprintf(fpasm, "\tcmp eax, ebx\n");
+
+   /* Salto en caso de comparacion efectiva*/
+   fprintf(fpasm,"\tjle branch_%d\n", etiqueta);
+
+   /* El resultado de la comparacion es falso*/
+   fprintf(fpasm, "\tmov dword eax, 0\n");
+   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+
+   /* El resultado de la comparacion es true*/
+   fprintf(fpasm,"branch_%d:\n",etiqueta);
+   fprintf(fpasm, "\tmov dword eax, 1\n");
+   
+   /* Escribimos el resultado en la pila*/
+   fprintf(fpasm, "branchend_%d:\n", etiqueta);
+   fprintf(fpasm, "\tpush dword eax\n");
+   return;
+}
+void mayor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
+   if(es_variable_2){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword ebx\n");
+      fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword ebx\n");
+   }
+
+   /* Realizamos la comparacion*/
+   fprintf(fpasm, "\tcmp eax, ebx\n");
+
+   /* Salto en caso de comparacion efectiva*/
+   fprintf(fpasm,"\tjge branch_%d\n", etiqueta);
+
+   /* El resultado de la comparacion es falso*/
+   fprintf(fpasm, "\tmov dword eax, 0\n");
+   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+
+   /* El resultado de la comparacion es true*/
+   fprintf(fpasm,"branch_%d:\n",etiqueta);
+   fprintf(fpasm, "\tmov dword eax, 1\n");
+   
+   /* Escribimos el resultado en la pila*/
+   fprintf(fpasm, "branchend_%d:\n", etiqueta);
+   fprintf(fpasm, "\tpush dword eax\n");
+   return;
+}
+void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+      if(es_variable_2){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword ebx\n");
+      fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword ebx\n");
+   }
+
+   /* Realizamos la comparacion*/
+   fprintf(fpasm, "\tcmp eax, ebx\n");
+
+   /* Salto en caso de comparacion efectiva*/
+   fprintf(fpasm,"\tjl branch_%d\n", etiqueta);
+
+   /* El resultado de la comparacion es falso*/
+   fprintf(fpasm, "\tmov dword eax, 0\n");
+   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+
+   /* El resultado de la comparacion es true*/
+   fprintf(fpasm,"branch_%d:\n",etiqueta);
+   fprintf(fpasm, "\tmov dword eax, 1\n");
+   
+   /* Escribimos el resultado en la pila*/
+   fprintf(fpasm, "branchend_%d:\n", etiqueta);
+   fprintf(fpasm, "\tpush dword eax\n");
+   return;
+}
+void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+      if(es_variable_2){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+
+   if(es_variable_1){
+      fprintf(fpasm, "\tpop dword ebx\n");
+      fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword ebx\n");
+   }
+
+   /* Realizamos la comparacion*/
+   fprintf(fpasm, "\tcmp eax, ebx\n");
+
+   /* Salto en caso de comparacion efectiva*/
+   fprintf(fpasm,"\tjg branch_%d\n", etiqueta);
+
+   /* El resultado de la comparacion es falso*/
+   fprintf(fpasm, "\tmov dword eax, 0\n");
+   fprintf(fpasm, "\tjmp branchend_%d\n", cuantos_no); 
+
+   /* El resultado de la comparacion es true*/
+   fprintf(fpasm,"branch_%d:\n",etiqueta);
+   fprintf(fpasm, "\tmov dword eax, 1\n");
+   
+   /* Escribimos el resultado en la pila*/
+   fprintf(fpasm, "branchend_%d:\n", etiqueta);
+   fprintf(fpasm, "\tpush dword eax\n");
+   return;
+}
 
 /* FUNCIONES DE ESCRITURA Y LECTURA */
 /*
    Se necesita saber el tipo de datos que se va a procesar (ENTERO o BOOLEANO) ya que hay diferentes funciones de librería para la lectura (idem. escritura) de cada tipo.
    Se deben insertar en la pila los argumentos necesarios, realizar la llamada (call) a la función de librería correspondiente y limpiar la pila.
 */
-void leer(FILE* fpasm, char* nombre, int tipo);
-void escribir(FILE* fpasm, int es_variable, int tipo);
+void leer(FILE* fpasm, char* nombre, int tipo){
+
+   fprintf(fpasm, "\tpush _%s\n", nombre);
+   if( tipo == BOOLEANO ){
+      fprintf(fpasm, "\tcall scan_boolean\n");
+   } else if( tipo == ENTERO){
+      fprintf(fpasm, "\tcall scan_int\n");
+   }
+
+   fprintf(fpasm, "\tadd esp, 4\n");
+   return;
+}
+
+void escribir(FILE* fpasm, int es_variable, int tipo){
+   fprintf(fpasm, "\tpush [_%s]\n", nombre);
+   if( tipo == BOOLEANO ){
+      fprintf(fpasm, "\tcall print_boolean\n");
+   } else if( tipo == ENTERO){
+      fprintf(fpasm, "\tcall print_int\n");
+   }
+
+   fprintf(fpasm, "\tcall print_endofline\n");
+   fprintf(fpasm, "\tadd esp, 4\n");
+   return;
+}
 
 
 
