@@ -84,7 +84,6 @@ es_variable indica si este operando es una variable (como por ejemplo b1) con un
 */
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable){
    if (es_variable)
-      /*TODO dudas, pero asi es  mas coherente con asignar()*/
       fprintf(fpasm, "\tpush dword _%s\n", nombre);
    else
       fprintf(fpasm, "\tpush dword %s\n", nombre);
@@ -118,6 +117,18 @@ void asignar(FILE* fpasm, char* nombre, int es_variable){
    se debe controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de error controlado (restaurando el puntero de pila en ese caso y 
    comprobando en el retorno que no se produce “Segmentation Fault”)
 */
+
+
+void cargarVariable(FILE* fpasm, int es_variable, char* registro){
+   if(es_variable){
+      fprintf(fpasm, "\tpop dword eax\n");
+      fprintf(fpasm, "\tmov dword eax, [eax]\n");
+   }
+   else{
+      fprintf(fpasm,"\tpop dword eax\n");
+   }
+   return;  
+}
 
 void sumar(FILE* fpasm, int es_variable_1, int es_variable_2){
 
@@ -510,6 +521,7 @@ void mayor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta
    fprintf(fpasm, "\tpush dword eax\n");
    return;
 }
+
 void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
       if(es_variable_2){
       fprintf(fpasm, "\tpop dword eax\n");
