@@ -9,6 +9,6 @@ ejemplos: $(ejemplos_gen)
 	$(CC) $(CCFLAGS) $^ -o $@_asm
 	./$@_asm $@.asm
 	nasm -g -o $@.o -f elf32 $@.asm
-	gcc $(CCFLAGS) -m32 olib $@.o -o $@
+	gcc $(CCFLAGS) -m32 olib.o $@.o -o $@
 	rm -f $@.o $@.asm $@_asm
 
