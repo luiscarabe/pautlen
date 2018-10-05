@@ -8,6 +8,7 @@
 
 typedef struct _Node {
 	char *name;
+	// void * para tabla de ambitos
 } Node;
 
 Node *newNode(char *name){

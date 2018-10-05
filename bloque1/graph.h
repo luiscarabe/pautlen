@@ -4,7 +4,7 @@
 
 typedef struct _Graph Graph;
 
-Graph *newGraph(int n, Node **nodes);
+Graph *newGraph();
 void addEdge(Graph *graph, int src_node, int dst_node);
 void addSymmetricalEdge(Graph *graph, int node_a, int node_b);
 void removeEdge(Graph *graph, int src_node, int dst_node);

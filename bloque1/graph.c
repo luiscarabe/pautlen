@@ -5,28 +5,31 @@
 
 #include "graph.h"
 
+#define NREALLOC 64
+
 typedef struct _Graph {
 	int n; // number of nodes
+	int allocated;
 	Node **nodes; // nodes of the graph
 	char **amatrix; // adjacency matrix
 } Graph;
 
 
-int buildMatrix(int n, Graph *graph){
+int buildMatrix(ph *graph){
 	int i, j;
 
-	graph->amatrix = (char **) malloc(n*sizeof(char*));
+	graph->amatrix = (char **) malloc(NREALLOC*sizeof(char*));
 	if (!graph->amatrix) return -1;
 
-	for (i = 0; i < n; i++){
-		graph->amatrix[i] = (char *) malloc(n*sizeof(char));
+	for (i = 0; i < NREALLOC; i++){
+		graph->amatrix[i] = (char *) malloc(NREALLOC*sizeof(char));
 		if (!graph->amatrix[i]){
 			for (i--; i >= 0; i--) free(graph->amatrix[j]);
 			free(graph->amatrix);
 			return -1;
 		}
 
-		for (j = 0; j < n; j++){
+		for (j = 0; j < NREALLOC; j++){
 			graph->amatrix[i][j] = 0;
 		}
 	}
@@ -41,41 +44,53 @@ void deleteMatrix(Graph *graph){
 	free(graph->amatrix);
 }
 
-Graph *newGraph(int n, Node **nodes){
+int reallocate(Graph *graph) {
+	int i;
+
+	if (!graph) return -1;
+
+	graph-> allocated += NREALLOC;
+	graph->amatrix = realloc(graph->amatrix, graph->allocated);
+	for (i = 0; i < graph->allocated +)
+}
+
+
+Graph *newGraph(){
 	int i;
 	Graph *newGraph;
-
-	if (n < 0 | !nodes) return NULL;
 
 	newGraph = (Graph *) malloc(sizeof(Graph));
 	if (!newGraph) return NULL;
 
-	newGraph->n = n;
+	newGraph->n = 0;
+	newGraph->allocated = NREALLOC;
 
-	if (buildMatrix(n, newGraph) == -1){
+	if (buildMatrix(newGraph) == -1){
 		free(newGraph);
 		return NULL;
 	}
 
-	newGraph->nodes = (Node **) malloc(n*sizeof(Node*));
+	newGraph->nodes = (Node **) malloc(NREALLOC*sizeof(Node*));
 	if (!newGraph->nodes){
 		deleteMatrix(newGraph);
 		free(newGraph);
 		return NULL;
 	}
 
-	for (i = 0; i < n; i++){
-		newGraph->nodes[i] = cloneNode(nodes[i]);
-		if (!newGraph->nodes[i]){
-			for (i--; i >= 0; i--) deleteNode(newGraph->nodes[i]);
-			free(newGraph->nodes);
-			deleteMatrix(newGraph);
-			free(newGraph);
-			return NULL;
-		}
-	}
-
 	return newGraph;
+}
+
+int addNode(Graph *graph, Node *node){
+	Node *n;
+
+	if (graph->n >= graph->allocated)
+		if (reallocate(graph) == -1)
+			return -1;
+
+	n = cloneNode(node);
+	if (!n) return -1;
+
+	graph->nodes[graph->n] = n;
 }
 
 void addEdge(Graph *graph, int src_node, int dst_node){
