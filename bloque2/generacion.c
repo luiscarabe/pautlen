@@ -2,10 +2,12 @@
 Asignatura: PAUTLEN
 Bloque: Procedural
 Modulo: generacion.c
+
+Grupo 5: Alejandro Cabana, Pablo Alejo Polanía, Luis Cárabe, Emilio Cuesta, Blanca Martín
+
 */
 
 #include "generacion.h"
-#include <stdlib.h>
 
 /*
    Código para el principio de la sección .bss.
@@ -13,7 +15,7 @@ Modulo: generacion.c
 */
 void escribir_cabecera_bss(FILE* fpasm){
    fprintf(fpasm, "segment .bss\n");
-   fprintf(fpasm, "\t__esp resd 1\n");
+   fprintf(fpasm, "\t__esp resd 1\n"); /*Variable para guardar la pila*/
    return;
 }
 
@@ -24,7 +26,7 @@ void escribir_cabecera_bss(FILE* fpasm){
 void escribir_subseccion_data(FILE* fpasm){
    fprintf(fpasm, "segment .data\n");
    fprintf(fpasm, "\tmsg_error_indice_vector\tdb \"Indice de vector fuera de rango\", 0\n");
-   fprintf(fpasm, "\tmsg_error_div_zero\tdb \"ERROR: Division por 0\", 0\n");
+   fprintf(fpasm, "\tmsg_error_div_zero\tdb \"ERROR: Division por 0\", 0\n"); /*Mensaje de error (división por 0)*/
    return;
 }
 
@@ -36,7 +38,6 @@ void escribir_subseccion_data(FILE* fpasm){
    Esta misma función se invocará cuando en el compilador se declaren vectores, por eso se adjunta un argumento final (tamano) que para esta primera práctica siempre recibirá el valor 1.
 */
 
-/* TODO: Por que pasamos el tipo aqui??*/
 void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano){
    fprintf(fpasm, "\t_%s resd %d\n", nombre, tamano);
    return;
@@ -49,6 +50,7 @@ void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano){
 void escribir_segmento_codigo(FILE* fpasm){
    fprintf(fpasm, "segment .txt\n");
    fprintf(fpasm, "\tglobal main\n");
+   /*Funciones declaradas en olib.o*/
    fprintf(fpasm, "\textern scan_int, print_int, scan_boolean, print_boolean\n");
    fprintf(fpasm, "\textern print_endofline, print_blank, print_string\n");
    return;
@@ -71,9 +73,18 @@ En el final del programa se debe:
          ·Salir del programa (ret).
 */
 void escribir_fin(FILE* fpasm){
-   /* TODO: */
+
+   fprintf(fpasm, "\tjmp fin\n"); /*Saltamos el error de divisor 0*/
+
+   fprintf(fpasm, "\tdivisor_zero:\n");
+   /*Imprimimos el mensaje de error por división por cero*/
+   fprintf(fpasm, "\tpush dword msg_error_div_zero\n"); 
+   fprintf(fpasm, "\tcall print_string\n");
+   fprintf(fpasm, "\tadd esp, 4\n"); /*Equilibramos la pila*/
+   fprintf(fpasm, "\tcall print_endofline\n");/*Imprimimos salto de línea*/
+
    fprintf(fpasm, "fin:\n");
-   fprintf(fpasm, "\tmov dword esp, [__esp]\n");
+   fprintf(fpasm, "\tmov dword esp, [__esp]\n"); /*Restauramos puntero de la pila*/
    fprintf(fpasm, "\tret\n");
    return; 
 }
@@ -84,9 +95,9 @@ nombre es la cadena de caracteres del operando tal y como debería aparecer en e
 es_variable indica si este operando es una variable (como por ejemplo b1) con un 1 u otra cosa (como por ejemplo 34) con un 0. Recuerda que en el primer caso internamente se representará como _b1 y, sin embargo, en el segundo se representará tal y como esté en el argumento (34).
 */
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable){
-   if (es_variable)
+   if (es_variable) /* En caso de ser variable, sabemos que esta almacenada con "_" antes del nombre*/
       fprintf(fpasm, "\tpush dword _%s\n", nombre);
-   else
+   else /* En caso de no ser variable, insertamos directamente*/
       fprintf(fpasm, "\tpush dword %s\n", nombre);
    return;
 }
@@ -97,13 +108,13 @@ Se toma el valor de la cima de la pila.
 El último argumento es el que indica si lo que hay en la cima de la pila es una referencia (1) o ya un valor explícito (0).
 */
 void asignar(FILE* fpasm, char* nombre, int es_variable){
-   if(es_variable){
-      fprintf(fpasm, "\tpop dword ecx\n");      
-      fprintf(fpasm, "\tmov dword eax, [ecx]\n");
-      fprintf(fpasm, "\tmov dword [_%s], eax\n", nombre);
+   if(es_variable){ /* En caso de ser una referencia...*/
+      fprintf(fpasm, "\tpop dword ecx\n"); /*... extraemos la direccion en ecx*/ 
+      fprintf(fpasm, "\tmov dword eax, [ecx]\n"); /* Guardamos lo que contiene esa posición de memoria en eax*/
+      fprintf(fpasm, "\tmov dword [_%s], eax\n", nombre); /* Por último, guardamos el dato en su correspondiente posición de memoria*/
    }
    else
-      fprintf(fpasm, "\tpop dword [_%s]\n", nombre);      
+      fprintf(fpasm, "\tpop dword [_%s]\n", nombre); /*En caso de ser valor explícito, al extraer de pila, lo podemos hacer directamente en su correspondiente posición de memoria*/ 
    return;
 }
 
@@ -129,11 +140,11 @@ void asignar(FILE* fpasm, char* nombre, int es_variable){
 void cargarDePila(FILE* fpasm, int es_variable, char* registro){
    
    if(es_variable){
-      fprintf(fpasm, "\tpop dword edx\n");
-      fprintf(fpasm, "\tmov dword %s, [edx]\n", registro);
+      fprintf(fpasm, "\tpop dword edx\n"); /*Extraemos la dirección de la pila*/
+      fprintf(fpasm, "\tmov dword %s, [edx]\n", registro); /*Guardamos el contenido de esa dirección de memoria en el registro correspondiente*/
    }
    else{
-      fprintf(fpasm,"\tpop dword %s\n", registro);
+      fprintf(fpasm,"\tpop dword %s\n", registro); /*Si es un valor explícito, guardamos directamente en el registro*/
    }
 
    return;  
@@ -149,11 +160,13 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2){
    es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
                   el primer operando (x) */
 
+   /*Cargamos los operandos en los registros eax y ebx*/
+
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
    
-   fprintf(fpasm,"\tadd eax, ebx\n");
-   fprintf(fpasm, "\tpush dword eax\n");
+   fprintf(fpasm,"\tadd eax, ebx\n"); /*Operamos*/
+   fprintf(fpasm, "\tpush dword eax\n");/*Guardamos el resultado*/
 
    return;
 }
@@ -168,11 +181,13 @@ es_variable_2: Se corresponde con el elemento que esta mas alto en la pila,
 es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
                el primer operando (x) */
 
+   /*Cargamos los operandos en los registros eax y ebx*/
+
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
    
-   fprintf(fpasm,"\tsub eax, ebx\n");
-   fprintf(fpasm, "\tpush dword eax\n");
+   fprintf(fpasm,"\tsub eax, ebx\n");/*Operamos*/
+   fprintf(fpasm, "\tpush dword eax\n");/*Guardamos el resultado*/
 
    return;
 }
@@ -187,19 +202,16 @@ es_variable_2: Se corresponde con el elemento que esta mas alto en la pila,
 es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
                el primer operando (x) */
 
+   /*Cargamos los operandos en los registros eax y ecx*/
+
    cargarDePila(fpasm, es_variable_2, "ecx");
    cargarDePila(fpasm, es_variable_1, "eax");
 
-   fprintf(fpasm,"\timul ecx\n");
-   fprintf(fpasm, "\tpush dword eax\n");
+   fprintf(fpasm,"\timul ecx\n");/*Operamos (imul toma como segundo operando eax)*/
+   fprintf(fpasm, "\tpush dword eax\n");/*Guardamos el resultado*/
 
    return;
 }
-
-/*   Deben tenerse en cuenta las peculiaridades de cada operación. En este sentido sí hay que mencionar explícitamente que,
- en el caso de la división, se debe controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de error 
- controlado (restaurando el puntero de pila en ese caso y comprobando en el retorno que no se produce “Segmentation Fault”)
-*/
 
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2){
 /* A la hora de llamar a cualquiera de estas funciones los argumentos se 
@@ -211,30 +223,21 @@ es_variable_2: Se corresponde con el elemento que esta mas alto en la pila,
 es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
                el primer operando (x) */
 
+   /*Cargamos los operandos en los registros eax y ecx*/
+
    cargarDePila(fpasm, es_variable_2, "ecx");
    cargarDePila(fpasm, es_variable_1, "eax");
-   
-   /*idiv o div? TODO (supongo idiv de momento)*/
 
    /*Comprobamos que el divisor sea distinto de 0*/
    fprintf(fpasm, "\tcmp ecx, 0\n");
-   fprintf(fpasm, "\tjne near divisor_no_zero\n");
+   fprintf(fpasm, "\tje near divisor_zero\n"); /*Saltamos a la parte del codigo que se encarga de avisar de divisor 0 y terminar el programa (estará al final)*/
 
-   fprintf(fpasm, "\tpush dword msg_error_div_zero\n");
-   fprintf(fpasm, "\tcall print_string\n");
-   fprintf(fpasm, "\tadd esp, 4\n");
-   fprintf(fpasm, "\tcall print_endofline\n");
+   /*El código de divisor_zero se encuentra al final del programa para evitar colisiones*/
 
-   fprintf(fpasm, "\tjmp near fin\n");
-
-
-   fprintf(fpasm, "\tdivisor_no_zero:\n");
    fprintf(fpasm, "\tcdq\n"); /*Extension de eax a edx:eax*/
 
-   /*Guardamos resto y resultado?? resultado en eax, resto en edx TODO*/
-
-   fprintf(fpasm,"\tidiv ecx\n");
-   fprintf(fpasm, "\tpush dword eax\n");
+   fprintf(fpasm,"\tidiv ecx\n"); /*idiv toma como dividendo eax, como argumento le pasamos el divisor*/
+   fprintf(fpasm, "\tpush dword eax\n");/*Guardamos el resultado*/
    return;
 }
 
@@ -248,11 +251,13 @@ es_variable_2: Se corresponde con el elemento que esta mas alto en la pila,
 es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
                el primer operando (x) */
 
+   /*Cargamos los operandos en los registros eax y ebx*/
+
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
 
-   fprintf(fpasm,"\tor eax, ebx\n");
-   fprintf(fpasm, "\tpush dword eax\n");
+   fprintf(fpasm,"\tor eax, ebx\n"); /*Operamos*/
+   fprintf(fpasm, "\tpush dword eax\n");/*Guardamos el resultado*/
 
    return;
 }
@@ -267,11 +272,13 @@ es_variable_2: Se corresponde con el elemento que esta mas alto en la pila,
 es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
                el primer operando (x) */
 
+   /*Cargamos los operandos en los registros eax y ebx*/
+
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
 
-   fprintf(fpasm,"\tand eax, ebx\n");
-   fprintf(fpasm, "\tpush dword eax\n");
+   fprintf(fpasm,"\tand eax, ebx\n"); /*Operamos*/
+   fprintf(fpasm, "\tpush dword eax\n");/*Guardamos el resultado*/
 
    return;
 }
@@ -282,10 +289,12 @@ es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
 */
 void cambiar_signo(FILE* fpasm, int es_variable){
 
+   /*Cargamos el operando en el registro eax*/
+
    cargarDePila(fpasm, es_variable, "eax");
 
-   fprintf(fpasm,"\tneg eax\n");
-   fprintf(fpasm, "\tpush dword eax\n");
+   fprintf(fpasm,"\tneg eax\n"); /*Operamos*/
+   fprintf(fpasm, "\tpush dword eax\n");/*Guardamos el resultado*/
 
    return;
 }
@@ -298,27 +307,26 @@ void cambiar_signo(FILE* fpasm, int es_variable){
 */
 void no(FILE* fpasm, int es_variable, int cuantos_no){
 
-   /*En los ejemplos se usa solo con booleanos, voy a suponer que esto es estrictamente para eso, pero quien sabe TODO*/
-
-   /*No se como hacer bien lo de las etiquetas TODO*/
+   /*Cargamos el operando en el registro eax*/
 
    cargarDePila(fpasm, es_variable, "eax");
 
+   /*Comprobamos si hay un 0, en ese caso saltamos a la etiqueta zero_to_oneN, siendo N el identificador de la etiqueta correspondiente*/
+
    fprintf(fpasm,"\tmov dword edx, 0\n");
    fprintf(fpasm, "\tcmp ebx, eax\n");
-
    fprintf(fpasm,"\tje near zero_to_one%d\n",cuantos_no);
 
    /*Pasamos de uno a cero*/
    fprintf(fpasm, "\tmov dword eax, 0\n");
-   fprintf(fpasm, "\tjmp near after_not%d\n", cuantos_no); /*LEgal?? TODO*/
+   fprintf(fpasm, "\tjmp near after_not%d\n", cuantos_no); /*Saltamos la operación de pasar de 0 a 1*/
 
-   /*Etiqueta zero_to_one*/
+   /*Pasamos de cero a uno*/
    fprintf(fpasm, "zero_to_one%d:\n", cuantos_no);
    fprintf(fpasm, "\tmov dword eax, 1\n");
 
    fprintf(fpasm,"after_not%d:\n", cuantos_no);
-   fprintf(fpasm, "\tpush dword eax\n");
+   fprintf(fpasm, "\tpush dword eax\n");/*Guardamos el resultado*/
 
    return;
 
@@ -331,6 +339,8 @@ void no(FILE* fpasm, int es_variable, int cuantos_no){
    y “0” si no se cumple), se deja en la pila como en el resto de operaciones. Se deben usar 
    etiquetas para poder gestionar los saltos necesarios para implementar las comparaciones.
 */
+
+/*Función que generaliza el comportamiento que deben tener todos los tipos de salto*/
 
 void logicadeSalto(FILE* fpasm, char* tipo_salto, int etiqueta){
    /* Salto en caso de comparacion efectiva*/
@@ -353,7 +363,9 @@ void logicadeSalto(FILE* fpasm, char* tipo_salto, int etiqueta){
 
 
 void igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
-   
+
+   /*Cargamos los registros a comparar en eax y ebx*/
+      
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
 
@@ -366,6 +378,8 @@ void igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 }
 
 void distinto(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
+
+   /*Cargamos los registros a comparar en eax y ebx*/
    
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
@@ -378,6 +392,8 @@ void distinto(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
    return;
 }
 void menor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
+
+   /*Cargamos los registros a comparar en eax y ebx*/
    
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
@@ -390,6 +406,8 @@ void menor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta
    return;
 }
 void mayor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
+
+   /*Cargamos los registros a comparar en eax y ebx*/
    
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
@@ -403,6 +421,8 @@ void mayor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta
 }
 
 void menor(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
+
+   /*Cargamos los registros a comparar en eax y ebx*/
       
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
@@ -415,6 +435,8 @@ void menor(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
    return;
 }
 void mayor(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
+
+   /*Cargamos los registros a comparar en eax y ebx*/
    
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
@@ -433,31 +455,31 @@ void mayor(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
    Se deben insertar en la pila los argumentos necesarios, realizar la llamada (call) a la función de librería correspondiente y limpiar la pila.
 */
 void leer(FILE* fpasm, char* nombre, int tipo){
-   fprintf(fpasm, "\tpush dword _%s\n", nombre);
-   if( tipo == BOOLEANO ){
+   fprintf(fpasm, "\tpush dword _%s\n", nombre); /*Guardamos la dirección de memoria donde queremos guardar lo que leamos en la pila*/
+   if( tipo == BOOLEANO ){ /*Leemos un booleano*/
       fprintf(fpasm, "\tcall scan_boolean\n");
-   } else if( tipo == ENTERO){
-      fprintf(fpasm, "\tcall scan_int\n");
+   } else if( tipo == ENTERO){ /*Leemos un entero*/
+      fprintf(fpasm, "\tcall scan_int\n"); 
    }
 
-   fprintf(fpasm, "\tadd esp, 4\n");
+   fprintf(fpasm, "\tadd esp, 4\n"); /* Equilibramos el puntero de la pila*/
    return;
 }
 
 void escribir(FILE* fpasm, int es_variable, int tipo){
    if(es_variable){
-      fprintf(fpasm, "\tpop dword ecx\n");
-      fprintf(fpasm, "\tpush dword [ecx]\n");
-   }
+      fprintf(fpasm, "\tpop dword ecx\n"); /*Sacamos la dirección que hemos metido previamente en la pila*/
+      fprintf(fpasm, "\tpush dword [ecx]\n"); /*Guardamos el contenido de la dirección en la pila*/
+   } /*Si no es variable, ya tenemos guardada en la pila lo que queremos imprimir*/
 
-   if( tipo == BOOLEANO ){
+   if( tipo == BOOLEANO ){ /*Imprimimos booleano*/
       fprintf(fpasm, "\tcall print_boolean\n");
-   } else if( tipo == ENTERO){
+   } else if( tipo == ENTERO){ /*Imprimimos entero*/
       fprintf(fpasm, "\tcall print_int\n");
    }
    
-   fprintf(fpasm, "\tadd esp, 4\n");
-   fprintf(fpasm, "\tcall print_endofline\n");
+   fprintf(fpasm, "\tadd esp, 4\n"); /* Equilibramos el puntero de la pila*/
+   fprintf(fpasm, "\tcall print_endofline\n"); /*Imprimimos un salto de línea*/
    return;
 }
 
