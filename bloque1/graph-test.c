@@ -8,9 +8,18 @@ int main(int argc, char const *argv[]){
 
 	g = newGraph();
 
-	addNode(g, "Node 0", (void *)0);
-	addNode(g, "Node 1", (void *)1);
-	addNode(g, "Node 2", (void *)2);
+	if (addNode(g, "Node 0", (void *)0) == -1){
+		printf("Something went wrong\n");
+		return -1;
+	}
+	if (addNode(g, "Node 1", (void *)1) == -1){
+		printf("Something went wrong\n");
+		return -1;
+	}
+	if (addNode(g, "Node 2", (void *)2) == -1){
+		printf("Something went wrong\n");
+		return -1;
+	}
 
 	printf("Graph:\n");
 	printGraph(g);

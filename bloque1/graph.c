@@ -48,11 +48,11 @@ int reallocate(Graph *graph) {
 	graph->amatrix = (char **) realloc(graph->amatrix, (graph->allocated + NREALLOC) * sizeof(char *));
 	for (i = 0; i < graph->allocated; i++){
 		graph->amatrix[i] = (char *) realloc(graph->amatrix[i], (graph->allocated + NREALLOC) * sizeof(char));
-		for (j = 0; j < NREALLOC; j++){
+		for (j = graph->allocated; j < graph->allocated + NREALLOC; j++){
 			graph->amatrix[i][j] = 0;
 		}
 	}
-	for (; i < NREALLOC; i++){
+	for (; i < graph->allocated + NREALLOC; i++){
 		graph->amatrix[i] = (char *) malloc((graph->allocated + NREALLOC) * sizeof(char));
 		if (!graph->amatrix[i]){
 			for (i--; i >= graph->allocated; i--) free(graph->amatrix[i]);
@@ -128,7 +128,7 @@ int addNode(Graph *graph, char *node_name, void *content){
 
 void addEdge(Graph *graph, int src_node, int dst_node){
 	if (!graph) return;
-	if (src_node < 0 | dst_node < 0 | src_node >= graph->n | dst_node >= graph->n) return;
+	if (src_node < 0 || dst_node < 0 || src_node >= graph->n || dst_node >= graph->n) return;
 	graph->amatrix[src_node][dst_node] = 1;
 }
 
@@ -139,7 +139,7 @@ void addSymmetricalEdge(Graph *graph, int node_a, int node_b){
 
 void removeEdge(Graph *graph, int src_node, int dst_node){
 	if (!graph) return;
-	if (src_node < 0 | dst_node < 0 | src_node >= graph->n | dst_node >= graph->n) return;
+	if (src_node < 0 || dst_node < 0 || src_node >= graph->n || dst_node >= graph->n) return;
 	graph->amatrix[src_node][dst_node] = 0;
 }
 
@@ -176,8 +176,7 @@ void printGraph(Graph *graph){
 	int i, j;
 
 	for (i = 0; i < graph->n; i++){
-		printf("N%d: ", i);
-		printf("\n\t");
+		printf("N%d:\t", i);
 		printNode(graph->nodes[i]);
 		printf("\n");
 	}
