@@ -4,18 +4,19 @@
 #include <stdlib.h>
 
 #include "graph.h"
+#include "node.h"
 
 #define NREALLOC 64
 
 typedef struct _Graph {
 	int n; // number of nodes
-	int allocated;
+	int allocated; // number of potential nodes with memory already allocated
 	Node **nodes; // nodes of the graph
 	char **amatrix; // adjacency matrix
 } Graph;
 
 
-int buildMatrix(ph *graph){
+int buildMatrix(Graph *graph){
 	int i, j;
 
 	graph->amatrix = (char **) malloc(NREALLOC*sizeof(char*));
@@ -37,26 +38,53 @@ int buildMatrix(ph *graph){
 	return 0;
 }
 
-void deleteMatrix(Graph *graph){
-	int i;
-
-	for (i = 0; i < graph->n; i++) free(graph->amatrix[i]);
-	free(graph->amatrix);
-}
-
 int reallocate(Graph *graph) {
-	int i;
+	int i, j;
 
 	if (!graph) return -1;
 
-	graph-> allocated += NREALLOC;
-	graph->amatrix = realloc(graph->amatrix, graph->allocated);
-	for (i = 0; i < graph->allocated +)
+	graph->nodes = (Node **) realloc(graph->nodes, (graph->allocated + NREALLOC) * sizeof(Node *));
+
+	graph->amatrix = (char **) realloc(graph->amatrix, (graph->allocated + NREALLOC) * sizeof(char *));
+	for (i = 0; i < graph->allocated; i++){
+		graph->amatrix[i] = (char *) realloc(graph->amatrix[i], (graph->allocated + NREALLOC) * sizeof(char));
+		for (j = 0; j < NREALLOC; j++){
+			graph->amatrix[i][j] = 0;
+		}
+	}
+	for (; i < NREALLOC; i++){
+		graph->amatrix[i] = (char *) malloc((graph->allocated + NREALLOC) * sizeof(char));
+		if (!graph->amatrix[i]){
+			for (i--; i >= graph->allocated; i--) free(graph->amatrix[i]);
+			for (i--; i >= 0; i--) graph->amatrix[i] = (char *) realloc(graph->amatrix[i], graph->allocated * sizeof(char));
+			graph->amatrix = (char **) realloc(graph->amatrix, graph->allocated * sizeof(char));
+			graph->nodes = (Node **) realloc(graph->nodes, graph->allocated * sizeof(Node *));
+			return -1;
+		}
+		for (j = 0; j < graph->allocated + NREALLOC; j++){
+			graph->amatrix[i][j] = 0;
+		}
+	}
+
+	graph->allocated += NREALLOC;
+
+	return 0;
+}
+
+int indexOf(Graph *graph, char *name){
+	int i;
+
+	if (!graph | !name) return -1;
+
+	for (i = 0; i < graph->n; i++){
+		if (nameCompare(graph->nodes[i], name) == 0)
+			return i;
+	}
+	return -1;
 }
 
 
 Graph *newGraph(){
-	int i;
 	Graph *newGraph;
 
 	newGraph = (Graph *) malloc(sizeof(Graph));
@@ -72,7 +100,6 @@ Graph *newGraph(){
 
 	newGraph->nodes = (Node **) malloc(NREALLOC*sizeof(Node*));
 	if (!newGraph->nodes){
-		deleteMatrix(newGraph);
 		free(newGraph);
 		return NULL;
 	}
@@ -80,17 +107,23 @@ Graph *newGraph(){
 	return newGraph;
 }
 
-int addNode(Graph *graph, Node *node){
+int addNode(Graph *graph, char *node_name, void *content){
 	Node *n;
 
-	if (graph->n >= graph->allocated)
-		if (reallocate(graph) == -1)
-			return -1;
-
-	n = cloneNode(node);
+	n = newNode(node_name, content);
 	if (!n) return -1;
 
+	if (graph->n >= graph->allocated){
+		if (reallocate(graph) == -1){
+			deleteNode(n);
+			return -1;
+		}
+	}
+
 	graph->nodes[graph->n] = n;
+	graph->n++;
+
+	return 0;
 }
 
 void addEdge(Graph *graph, int src_node, int dst_node){
@@ -115,6 +148,17 @@ void removeSymmetricalEdge(Graph *graph, int node_a, int node_b){
 	removeEdge(graph, node_b, node_a);
 }
 
+void *getContentOfNode(Graph *graph, char *node_name){
+	int i;
+
+	if (!graph | !node_name) return NULL;
+
+	i = indexOf(graph, node_name);
+	if (i == -1) return NULL;
+
+	return getContent(graph->nodes[i]);
+}
+
 void deleteGraph(Graph *graph){
 	int i;
 
@@ -122,8 +166,8 @@ void deleteGraph(Graph *graph){
 
 	for (i = 0; i < graph->n; i++) deleteNode(graph->nodes[i]);
 	free(graph->nodes);
-	//deleteMatrix(graph);
-	for (i = 0; i < graph->n; i++) free(graph->amatrix[i]);
+
+	for (i = 0; i < graph->allocated; i++) free(graph->amatrix[i]);
 	free(graph->amatrix);
 	free(graph);
 }
@@ -133,6 +177,7 @@ void printGraph(Graph *graph){
 
 	for (i = 0; i < graph->n; i++){
 		printf("N%d: ", i);
+		printf("\n\t");
 		printNode(graph->nodes[i]);
 		printf("\n");
 	}

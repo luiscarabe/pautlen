@@ -2,26 +2,16 @@
 #include <stdio.h>
 
 #include "graph.h"
-#include "node.h"
 
 int main(int argc, char const *argv[]){
-	int i;
-	Node *n[3];
 	Graph *g;
 
-	n[0] = newNode("Node 0");
-	n[1] = newNode("Node 1");
-	n[2] = newNode("Node 2");
+	g = newGraph();
 
-	printf("Nodes:\n");
-	for (i = 0; i < 3; ++i){
-		printf("N%d: ", i);
-		printNode(n[i]);
-		printf("\n");
-	}
-	printf("\n");
+	addNode(g, "Node 0", (void *)0);
+	addNode(g, "Node 1", (void *)1);
+	addNode(g, "Node 2", (void *)2);
 
-	g = newGraph(3, n);
 	printf("Graph:\n");
 	printGraph(g);
 
@@ -44,10 +34,12 @@ int main(int argc, char const *argv[]){
 	printf("Graph:\n");
 	printGraph(g);
 
-
-	for (i = 0; i < 3; ++i){
-		deleteNode(n[i]);
-	}
+	printf("Content of node 0: ");
+	printf("%p\n", getContentOfNode(g, "Node 0"));
+	printf("Content of node 1: ");
+	printf("%p\n", getContentOfNode(g, "Node 1"));
+	printf("Content of node 2: ");
+	printf("%p\n", getContentOfNode(g, "Node 2"));
 
 	deleteGraph(g);
 
