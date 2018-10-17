@@ -9,23 +9,36 @@ PAULEN
 
 #include <stdio.h>
 
-// Elemento de la tabla hash
-typedef struct _ht_item {
-  char* key;
-  void* value;
-  _ht_item* next;
-} ht_item;
-
-typedef struct {
-	char* name;// crear funcion que devuelva el nombre de la tabla
-	int size;
-	int count;
-	ht_item ** items;
-}ht_hash_table;
+// Posicionar estos defines
+/* Categoría del dato */
+#define VARIABLE 1
+#define PARAMETRO 2
+#define FUNCION 3
+/* Tipo básico de dato */
+#define ESCALAR 1
+#define VECTOR 2
+/* Clase del dato */
+#define ESCALAR 1
+#define VECTOR 2
 
 
-void ht_insert(ht_hash_table* ht, const char* key, const char* value);
-char* ht_search(ht_hash_table* ht, const char* key);
-void ht_delete(ht_hash_table* h, const char* key);
+
+typedef struct _HT_item HT_item;
+typedef struct _HT_hash_table HT_hash_table;
+typedef struct _Element Element;
+
+
+
+int is_prime(int num);
+int next_prime(int num);
+
+
+HT_hash_table * ht_new();
+void ht_del_hash_table(HT_hash_table* ht);
+HT_item * ht_insert_item(HT_hash_table* ht, const char* key,int category, int basic_type, int basic_class, int num_rows, int num_params, int param_position, int num_local_variables, int local_variable_position);
+HT_item * ht_search_item(HT_hash_table* ht, const char* key);
+HT_item * ht_modify_item(HT_hash_table* ht, const char* key,int category, int basic_type, int basic_class, int num_rows, int num_params, int param_position, int num_local_variables, int local_variable_position);
+Element * ht_item_get_value(HT_item * item);
+void ht_del_hash_table(HT_hash_table* h);
 
 #endif /* HASH_TABLE_H */
