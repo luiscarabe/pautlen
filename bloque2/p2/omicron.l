@@ -4,18 +4,17 @@
 	#include "tokens.h"
 
 
-	int yylex()
+	int yylex();
 	FILE* yyin;
 	FILE* fout;
 	int yyleng;
+	char* yytext;
 
 	int row = 1;
 	int col = 1;
 %}
 
 %option noyywrap
-
-%%
 
 DIGITO [0-9]
 ENTERO {DIGITO}+
@@ -24,7 +23,9 @@ BLANCO [ \t]
 SALTO \n
 COMENTARIO "//".*\n
 ERROR .
-IDENTIFICADOR ([a-z]|[A-Z])([a-z][A-Z][0-9])*
+IDENTIFICADOR ([a-z]|[A-Z])([a-z]|[A-Z]|[0-9])*
+
+%%
 
 none 		{	col += yyleng;
 				return TOK_NONE;}
@@ -70,80 +71,71 @@ scanf 		{	col += yyleng;
 				return TOK_SCANF;}
 printf 		{	col += yyleng;
 				return TOK_PRINTF;}
-
-/*OPERADORES Y SIMBOLOS DE UN SOLO SIMBOLO*/
-
-; 			{	col += yyleng;
-				return yytext[0]}
-# 			{	col += yyleng;
-				return yytext[0]}
-, 			{	col += yyleng;
-				return yytext[0]}
-= 			{	col += yyleng;
-				return yytext[0]}
-( 			{	col += yyleng;
-				return yytext[0]}
-) 			{	col += yyleng;
-				return yytext[0]}
-[ 			{	col += yyleng;
-				return yytext[0]}
-] 			{	col += yyleng;
-				return yytext[0]}
-{ 			{	col += yyleng;
-				return yytext[0]}
-} 			{	col += yyleng;
-				return yytext[0]}
-: 			{	col += yyleng;
-				return yytext[0]}
-+ 			{	col += yyleng;
-				return yytext[0]}
-- 			{	col += yyleng;
-				return yytext[0]}
-/ 			{	col += yyleng;
-				return yytext[0]}
-* 			{	col += yyleng;
-				return yytext[0]}
-< 			{	col += yyleng;
-				return yytext[0]}
-> 			{	col += yyleng;
-				return yytext[0]}
-& 			{	col += yyleng;
-				return yytext[0]}
-! 			{	col += yyleng;
-				return yytext[0]}
-. 			{	col += yyleng;
-				return yytext[0]}
-
-/* OPERADORES */
-== 			{	col += yyleng;
+";" 			{	col += yyleng;
+				return yytext[0];}
+"#" 			{	col += yyleng;
+				return yytext[0];}
+"," 			{	col += yyleng;
+				return yytext[0];}
+"=" 			{	col += yyleng;
+				return yytext[0];}
+"(" 			{	col += yyleng;
+				return yytext[0];}
+")" 			{	col += yyleng;
+				return yytext[0];}
+"[" 			{	col += yyleng;
+				return yytext[0];}
+"]" 			{	col += yyleng;
+				return yytext[0];}
+"{" 			{	col += yyleng;
+				return yytext[0];}
+"}" 			{	col += yyleng;
+				return yytext[0];}
+":" 			{	col += yyleng;
+				return yytext[0];}
+"+" 			{	col += yyleng;
+				return yytext[0];}
+"-" 			{	col += yyleng;
+				return yytext[0];}
+"/" 			{	col += yyleng;
+				return yytext[0];}
+"*" 			{	col += yyleng;
+				return yytext[0];}
+"<" 			{	col += yyleng;
+				return yytext[0];}
+">" 			{	col += yyleng;
+				return yytext[0];}
+"&" 			{	col += yyleng;
+				return yytext[0];}
+"!" 			{	col += yyleng;
+				return yytext[0];}
+"." 			{	col += yyleng;
+				return yytext[0];}
+"==" 			{	col += yyleng;
 				return TOK_IGUAL;}
-!= 			{	col += yyleng;
+"!=" 			{	col += yyleng;
 				return TOK_DISTINTO;}
-<= 			{	col += yyleng;
+"<="			{	col += yyleng;
 				return TOK_MENORIGUAL;}
->= 			{	col += yyleng;
+">=" 			{	col += yyleng;
 				return TOK_MAYORIGUAL;}
-|| 			{	col += yyleng;
+"||"			{	col += yyleng;
 				return TOK_OR;}
-&& 			{	col += yyleng;
+"&&" 			{	col += yyleng;
 				return TOK_AND;}
--> 			{	col += yyleng;
+"->" 			{	col += yyleng;
 				return TOK_FLECHA;}
-
-/* CONSTANTES */
 false 		{	col += yyleng;
 				return TOK_FALSE;}
 true 		{	col += yyleng;
 				return TOK_TRUE;}
 
-
-/* IDENTIFICADOR */
 {IDENTIFICADOR} {	if(yyleng <= 50){
 						col += yyleng;
 						return TOK_IDENTIFICADOR;
 					}
 					fprintf(stderr, "ERROR IDENTIFICADOR DEMASIADO LARGO: Linea %d y columna %d\n", row, col);
-					return TOK_ERROR
+					return TOK_ERROR;
 				}
 
 {ENTERO}		{	col += yyleng;
@@ -157,8 +149,7 @@ true 		{	col += yyleng;
 {SALTO}			{	row++;
 					col = 0;}
 
-/* ERRORES */
-{ERROR} 	{	fprintf(stderr, "ERROR: Linea %d y columna %d\n", row, col);
+{ERROR} 	{	fprintf(stderr, "ERROR: Linea %d y columna %d. Provocado por: %s\n", row, col, yytext);
 				return TOK_ERROR;}
 
 %%
