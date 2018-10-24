@@ -5,7 +5,7 @@
 
 int main(int argc, char const *argv[]){
 	Graph *g;
-
+	
 	g = newGraph();
 
 	if (addNode(g, "Node 0", (void *)0) == -1){
@@ -25,15 +25,15 @@ int main(int argc, char const *argv[]){
 	printGraph(g);
 
 	addEdge(g, 0, 1);
-	addEdge(g, 0, 2);
-	addEdge(g, 1, 0);
-	addEdge(g, 2, 1);
-
-	printf("Graph:\n");
 	printGraph(g);
 
-	removeEdge(g, 2, 1);
-	removeEdge(g, 1, 0);
+	addEdge(g, 0, 2);
+	printGraph(g);
+
+	addEdge(g, 1, 0);
+	printGraph(g);
+
+	addEdge(g, 2, 1);	
 
 	printf("Graph:\n");
 	printGraph(g);
@@ -45,10 +45,12 @@ int main(int argc, char const *argv[]){
 
 	printf("Content of node 0: ");
 	printf("%p\n", getContentOfNode(g, "Node 0"));
-	printf("Content of node 1: ");
-	printf("%p\n", getContentOfNode(g, "Node 1"));
-	printf("Content of node 2: ");
-	printf("%p\n", getContentOfNode(g, "Node 2"));
+
+	printf("\n\nContent of node 1: ");
+	printf("\n%p\n", getContentOfNode(g, "Node 1"));
+	
+	printf("\n\nContent of node 2: ");
+	printf("\n%p\n", getContentOfNode(g, "Node 2"));
 
 	deleteGraph(g);
 

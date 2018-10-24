@@ -7,6 +7,7 @@
 #include "node.h"
 
 #define NREALLOC 64
+#define min(x, y) ((((x) < (y)) || (y) == 0) ? (x) : (y))
 
 typedef struct _Graph {
 	int n; // number of nodes
@@ -38,23 +39,29 @@ int buildMatrix(Graph *graph){
 	return 0;
 }
 
+// Reallocates memory for nodes and amatrix when allocated is reached.
 int reallocate(Graph *graph) {
 	int i, j;
 
 	if (!graph) return -1;
 
+	// Adding new nodes
 	graph->nodes = (Node **) realloc(graph->nodes, (graph->allocated + NREALLOC) * sizeof(Node *));
 
+	// Adding rows to the matrix
 	graph->amatrix = (char **) realloc(graph->amatrix, (graph->allocated + NREALLOC) * sizeof(char *));
-	for (i = 0; i < graph->allocated; i++){
+	for (i = 0; i < graph->allocated; i++){ 
+		// ...and columns to the existing rows
 		graph->amatrix[i] = (char *) realloc(graph->amatrix[i], (graph->allocated + NREALLOC) * sizeof(char));
 		for (j = graph->allocated; j < graph->allocated + NREALLOC; j++){
 			graph->amatrix[i][j] = 0;
 		}
 	}
+	// For the rows we just added
 	for (; i < graph->allocated + NREALLOC; i++){
 		graph->amatrix[i] = (char *) malloc((graph->allocated + NREALLOC) * sizeof(char));
 		if (!graph->amatrix[i]){
+			// Scary lines: restore changes
 			for (i--; i >= graph->allocated; i--) free(graph->amatrix[i]);
 			for (i--; i >= 0; i--) graph->amatrix[i] = (char *) realloc(graph->amatrix[i], graph->allocated * sizeof(char));
 			graph->amatrix = (char **) realloc(graph->amatrix, graph->allocated * sizeof(char));
@@ -71,6 +78,7 @@ int reallocate(Graph *graph) {
 	return 0;
 }
 
+// Returns the index of a node given its name
 int indexOf(Graph *graph, char *name){
 	int i;
 
@@ -83,7 +91,7 @@ int indexOf(Graph *graph, char *name){
 	return -1;
 }
 
-
+// Self-explanatory
 Graph *newGraph(){
 	Graph *newGraph;
 
@@ -107,6 +115,7 @@ Graph *newGraph(){
 	return newGraph;
 }
 
+// Creates a node and inserts it into the graph
 int addNode(Graph *graph, char *node_name, void *content){
 	Node *n;
 
@@ -126,10 +135,26 @@ int addNode(Graph *graph, char *node_name, void *content){
 	return 0;
 }
 
+// Adds an edge between two nodes given their indexes
 void addEdge(Graph *graph, int src_node, int dst_node){
+	int i;
+
 	if (!graph) return;
 	if (src_node < 0 || dst_node < 0 || src_node >= graph->n || dst_node >= graph->n) return;
-	graph->amatrix[src_node][dst_node] = 1;
+	
+	// Child-Parent relation
+	graph->amatrix[dst_node][src_node] = 1;
+
+	// Update the ancestors of dst_node 
+	for (i = 0; i < graph->allocated; i++)
+		if (graph->amatrix[src_node][i] && dst_node != i)
+			graph->amatrix[dst_node][i] = min((graph->amatrix[src_node][i] + 1), graph->amatrix[dst_node][i]);
+	
+	// Update the sucessors of src_node 
+	for (i = 0; i < graph->allocated; i++)
+		if (graph->amatrix[i][dst_node] && i != src_node)
+			graph->amatrix[i][src_node] = min((graph->amatrix[i][dst_node] + 1), graph->amatrix[i][src_node]);
+
 }
 
 void addSymmetricalEdge(Graph *graph, int node_a, int node_b){
@@ -137,17 +162,7 @@ void addSymmetricalEdge(Graph *graph, int node_a, int node_b){
 	addEdge(graph, node_b, node_a);
 }
 
-void removeEdge(Graph *graph, int src_node, int dst_node){
-	if (!graph) return;
-	if (src_node < 0 || dst_node < 0 || src_node >= graph->n || dst_node >= graph->n) return;
-	graph->amatrix[src_node][dst_node] = 0;
-}
-
-void removeSymmetricalEdge(Graph *graph, int node_a, int node_b){
-	removeEdge(graph, node_a, node_b);
-	removeEdge(graph, node_b, node_a);
-}
-
+// Self-explanatory
 void *getContentOfNode(Graph *graph, char *node_name){
 	int i;
 
@@ -159,6 +174,34 @@ void *getContentOfNode(Graph *graph, char *node_name){
 	return getContent(graph->nodes[i]);
 }
 
+// Self-explanatory
+void **getAncestorsOfNode(Graph *graph, char *node_name){
+	int i, j, allocated, inserted;
+	void **ancestors;
+
+	if (!graph | !node_name) return NULL;
+
+	i = indexOf(graph, node_name);
+	if (i == -1) return NULL;
+
+	ancestors = (void **) malloc(sizeof(void *));
+	allocated = 1;
+	inserted = 0;
+	for (j = 0; j < graph->allocated; j++){
+		if (graph->amatrix[i][j] >= 1){
+			if (allocated <= inserted) {
+				ancestors = (void **) realloc(ancestors, sizeof(void *) * (allocated + 1));
+				allocated ++;
+			}
+			ancestors[inserted] = getContent(graph->nodes[j]);
+			inserted ++;
+		}
+	}
+
+	return ancestors;
+}
+
+// Self-explanatory
 void deleteGraph(Graph *graph){
 	int i;
 
@@ -172,6 +215,7 @@ void deleteGraph(Graph *graph){
 	free(graph);
 }
 
+// Self-explanatory
 void printGraph(Graph *graph){
 	int i, j;
 
@@ -193,4 +237,5 @@ void printGraph(Graph *graph){
 		printf("\n");
 	}
 	printf("\n");
+
 }
