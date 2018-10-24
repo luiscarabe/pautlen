@@ -24,6 +24,7 @@ SALTO \n
 COMENTARIO "//".*\n
 ERROR .
 IDENTIFICADOR ([a-z]|[A-Z])([a-z]|[A-Z]|[0-9])*
+ERRORIDENTIFICADOR [0-9]+{IDENTIFICADOR}
 
 %%
 
@@ -134,7 +135,16 @@ true 		{	col += yyleng;
 						col += yyleng;
 						return TOK_IDENTIFICADOR;
 					}
+					
 					fprintf(stderr, "ERROR IDENTIFICADOR DEMASIADO LARGO: Linea %d y columna %d\n", row, col);
+					col += yyleng;
+					return TOK_ERROR;
+				}
+
+{ERRORIDENTIFICADOR} {
+					
+					fprintf(stderr, "ERROR IDENTIFICADOR MAL FORMADO: %s. Linea %d y columna %d\n", yytext, row, col);
+					col += yyleng;
 					return TOK_ERROR;
 				}
 
@@ -149,7 +159,9 @@ true 		{	col += yyleng;
 {SALTO}			{	row++;
 					col = 1;}
 
-{ERROR} 	{	fprintf(stderr, "ERROR: Linea %d y columna %d. Provocado por: %s\n", row, col, yytext);
+{ERROR} 	{	
+				fprintf(stderr, "ERROR: Linea %d y columna %d. Provocado por: %s\n", row, col, yytext);
+				col += yyleng;
 				return TOK_ERROR;}
 
 %%

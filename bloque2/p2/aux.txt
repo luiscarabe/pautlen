@@ -52,5 +52,4 @@ TOK_CONSTANTE_ENTERA	229	222222222222222222222222222222222222
 TOK_ERROR	-1	@
 TOK_ERROR	-1	?
 TOK_ERROR	-1	ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
-TOK_IDENTIFICADOR	222	hiddens
-TOK_ERROR	-1	@
+TOK_ERROR	-1	0hola
