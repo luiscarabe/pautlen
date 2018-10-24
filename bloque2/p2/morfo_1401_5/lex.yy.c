@@ -1138,7 +1138,7 @@ YY_RULE_SETUP
 case 51:
 YY_RULE_SETUP
 #line 133 "omicron.l"
-{	if(yyleng <= 50){
+{	if(yyleng <= MAX_LONG_ID){
 						col += yyleng;
 						return TOK_IDENTIFICADOR;
 					}
@@ -1157,7 +1157,7 @@ case 53:
 YY_RULE_SETUP
 #line 144 "omicron.l"
 {	row ++; 
-					col = 0;}
+					col = 1;}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
@@ -1169,7 +1169,7 @@ case 55:
 YY_RULE_SETUP
 #line 149 "omicron.l"
 {	row++;
-					col = 0;}
+					col = 1;}
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
