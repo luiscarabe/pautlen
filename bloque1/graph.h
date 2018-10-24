@@ -10,3 +10,4 @@ void *getContentOfNode(Graph *graph, char *node_name);
 void deleteGraph(Graph *graph);
 void printGraph(Graph *graph);
 // void **getAncestorsOfNode(Graph *graph, char *node_name);
+tablaSimbolosClases * tablaSimbolosClasesToDot(tablaSimbolosClases * grafo);
