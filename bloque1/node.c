@@ -61,3 +61,8 @@ void *getContent(Node *node){
 	if (!node) return NULL;
 	return node->content;
 }
+
+char *getName(Node *node){
+	if (!node) return NULL;
+	return node->name;
+}

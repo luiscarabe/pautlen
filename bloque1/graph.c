@@ -10,6 +10,7 @@
 #define min(x, y) ((((x) < (y)) || (y) == 0) ? (x) : (y))
 
 typedef struct _Graph {
+	// char *nombre; // aniadir
 	int n; // number of nodes
 	int allocated; // number of potential nodes with memory already allocated
 	Node **nodes; // nodes of the graph
@@ -136,30 +137,25 @@ int addNode(Graph *graph, char *node_name, void *content){
 }
 
 // Adds an edge between two nodes given their indexes
-void addEdge(Graph *graph, int src_node, int dst_node){
+void addParent(Graph *graph, int child, int parent){
 	int i;
 
 	if (!graph) return;
-	if (src_node < 0 || dst_node < 0 || src_node >= graph->n || dst_node >= graph->n) return;
+	if (child < 0 || parent < 0 || child >= graph->n || parent >= graph->n) return;
 	
 	// Child-Parent relation
-	graph->amatrix[dst_node][src_node] = 1;
+	graph->amatrix[parent][child] = 1;
 
-	// Update the ancestors of dst_node 
+	// Update the ancestors of parent 
 	for (i = 0; i < graph->allocated; i++)
-		if (graph->amatrix[src_node][i] && dst_node != i)
-			graph->amatrix[dst_node][i] = min((graph->amatrix[src_node][i] + 1), graph->amatrix[dst_node][i]);
+		if (graph->amatrix[child][i] && parent != i)
+			graph->amatrix[parent][i] = min((graph->amatrix[child][i] + 1), graph->amatrix[parent][i]);
 	
-	// Update the sucessors of src_node 
+	// Update the sucessors of child 
 	for (i = 0; i < graph->allocated; i++)
-		if (graph->amatrix[i][dst_node] && i != src_node)
-			graph->amatrix[i][src_node] = min((graph->amatrix[i][dst_node] + 1), graph->amatrix[i][src_node]);
+		if (graph->amatrix[i][parent] && i != child)
+			graph->amatrix[i][child] = min((graph->amatrix[i][parent] + 1), graph->amatrix[i][child]);
 
-}
-
-void addSymmetricalEdge(Graph *graph, int node_a, int node_b){
-	addEdge(graph, node_a, node_b);
-	addEdge(graph, node_b, node_a);
 }
 
 // Self-explanatory
@@ -237,5 +233,57 @@ void printGraph(Graph *graph){
 		printf("\n");
 	}
 	printf("\n");
+
+}
+
+Graph * tablaSimbolosClasesToDot(Graph * grafo){
+	char *file_name;
+	FILE *f;
+	int i;
+
+	if (!grafo || !grafo->nombre) return NULL;
+
+	file_name = (char *) malloc(sizeof(char *) * (strlen(grafo->nombre) + 5));
+	if (!file_name) return NULL;
+
+	f = fopen(file_name, "w+");
+	if (!f) {
+		free(file_name);
+		return NULL;
+	}
+
+	fprintf(f, "digraph %s { rankdir=BT;\n", grafo->nombre);
+	fprintf(f, "\t edge [arrowhead = empty]\n");
+
+	for (i = 0; i < grafo->allocated; i++)
+		fprintf(f, "%s [label=\"{%s|%s\\l\\l}\"][shape=record];" , getName(grafo->nodes[i]), getName(grafo->nodes[i]), getName(grafo->nodes[i]));
+
+	for (i = 0; i < grafo->allocated; i++)
+
+
+	digraph grafo_clases  { rankdir=BT;
+     edge [arrowhead = empty]
+    Persona [label="{Persona|Persona\lesmujer\ledad\l}"][shape=record];
+    Infante [label="{Infante|Infante\lpercentil\l}"][shape=record];
+    Adulto [label="{Adulto|Adulto\lpercentil\l}"][shape=record];
+    Anciano [label="{Anciano|Anciano\lsumar()\l}"][shape=record];
+    Depotista [label="{Depotista|Depotista\l}"][shape=record];
+     Infante -> Persona ;
+     Adulto -> Persona ;
+     Anciano -> Persona ;
+     Depotista -> Infante ;
+     Depotista -> Adulto ;
+     Depotista -> Anciano ;
+     edge [arrowhead = normal]
+    PersonaN0 [label="Persona"][shape=oval];
+    InfanteN1 [label="Infante"][shape=oval];
+    AdultoN2 [label="Adulto"][shape=oval];
+    AncianoN3 [label="Anciano"][shape=oval];
+    DepotistaN4 [label="Depotista"][shape=oval];
+     PersonaN0 -> InfanteN1 ;
+     InfanteN1 -> AdultoN2 ;
+     AdultoN2 -> AncianoN3 ;
+     AncianoN3 -> DepotistaN4 ;
+}
 
 }
