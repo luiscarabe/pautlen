@@ -53,7 +53,7 @@ void printNode(Node *node){
 }
 
 int nameCompare(Node *node, char *name){
-	if (!node | !name) return 0;
+	if (!node || !name) return -1;
 	return strcmp(node->name, name);
 }
 

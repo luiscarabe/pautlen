@@ -84,7 +84,7 @@ int reallocate(Graph *graph) {
 int indexOf(Graph *graph, char *name){
 	int i;
 
-	if (!graph | !name) return -1;
+	if (!graph || !name) return -1;
 
 	for (i = 0; i < graph->n; i++){
 		if (nameCompare(graph->nodes[i], name) == 0)
@@ -303,19 +303,20 @@ int abrirClase(Graph* t, char* id_clase){
 
 int abrirClaseHereda(Graph* t, char* id_clase, ...){
 	va_list valist;
-	int i, p, n;
+	int p, n;
+	char *arg;
 
 	if (!t || !id_clase) return -1;
 
-	if ((n = addNode(t, id_clase)) == -1) return -1;
+	if ((n = addNode(t, id_clase, NULL)) == -1) return -1;
 
 	va_start(valist, id_clase);
-	for (i = 0; id_clase[i]; i++){
-		if ((p = indexOf(t, id_clase[i])) >= 0){
+	while ((arg = va_arg(valist, char*))){
+		if ((p = indexOf(t, arg)) >= 0){
 			addParent(t, n, p);
 		}
 	}
-	va_end(valist)
+	va_end(valist);
 
 	return 0;
 }
