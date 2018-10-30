@@ -21,27 +21,33 @@ int main(int argc, char const *argv[]){
 		return -1;
 	}
 
-	printf("Graph:\n");
-	printGraph(g);
-
-	addEdge(g, 0, 1);
-	printGraph(g);
-
-	addEdge(g, 0, 2);
-	printGraph(g);
-
-	addEdge(g, 1, 0);
-	printGraph(g);
-
-	addEdge(g, 2, 1);	
+	if (addNode(g, "Node 3", (void *)3) == -1){
+		printf("Something went wrong\n");
+		return -1;
+	}
 
 	printf("Graph:\n");
 	printGraph(g);
 
-	addSymmetricalEdge(g, 1, 2);
+	addParent(g, 0, 1);
+	printGraph(g);
+
+	addParent(g, 0, 2);
+	printGraph(g);
+
+	addParent(g, 1, 0);
+	printGraph(g);
+
+	addParent(g, 2, 1);	
 
 	printf("Graph:\n");
 	printGraph(g);
+
+	addParent(g, 2, 3);	
+
+	printf("Graph:\n");
+	printGraph(g);
+
 
 	printf("Content of node 0: ");
 	printf("%p\n", getContentOfNode(g, "Node 0"));

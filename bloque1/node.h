@@ -7,3 +7,4 @@ int nameCompare(Node *node, char *name);
 void *getContent(Node *node);
 void deleteNode(Node *node);
 void printNode(Node *node);
+char *getName(Node *node);
