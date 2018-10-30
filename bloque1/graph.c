@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "graph.h"
 #include "node.h"
@@ -131,9 +132,7 @@ int addNode(Graph *graph, char *node_name, void *content){
 	}
 
 	graph->nodes[graph->n] = n;
-	graph->n++;
-
-	return 0;
+	return graph->n++;
 }
 
 // Adds an edge between two nodes given their indexes
@@ -287,3 +286,51 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 }
 
 }
+
+int iniciarTablaSimbolosClases(Graph** t, char * nombre){
+	if (!t || !nombre) return -1;
+
+	*t = newGraph();
+	if (!t) return -1;
+	return 0;
+}
+
+int abrirClase(Graph* t, char* id_clase){
+	if (!t || !id_clase) return 0;
+
+	return addNode(t, id_clase, NULL);
+}
+
+int abrirClaseHereda(Graph* t, char* id_clase, ...){
+	va_list valist;
+	int i, p, n;
+
+	if (!t || !id_clase) return -1;
+
+	if ((n = addNode(t, id_clase)) == -1) return -1;
+
+	va_start(valist, id_clase);
+	for (i = 0; id_clase[i]; i++){
+		if ((p = indexOf(t, id_clase[i])) >= 0){
+			addParent(t, n, p);
+		}
+	}
+	va_end(valist)
+
+	return 0;
+}
+
+int cerrarClase(Graph* t,
+                char* id_clase, 
+                int num_atributos_clase, 
+                int num_atributos_instancia, 
+                int num_metodos_sobreescribibles, 
+                int num_metodos_no_sobreescribibles){
+	if (!id_clase || num_atributos_clase < 0 || num_atributos_instancia < 0 || num_metodos_sobreescribibles < 0 || num_metodos_no_sobreescribibles < 0)
+		return -1;
+
+
+	// ??
+	return 0;
+}
+
