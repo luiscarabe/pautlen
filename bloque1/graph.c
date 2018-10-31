@@ -171,33 +171,6 @@ void addParent(Graph *graph, int child, int parent){
 }
 
 // Self-explanatory
-// void **getAncestorsOfNode(Graph *graph, char *node_name){
-// 	int i, j, allocated, inserted;
-// 	void **ancestors;
-
-// 	if (!graph | !node_name) return NULL;
-
-// 	i = indexOf(graph, node_name);
-// 	if (i == -1) return NULL;
-
-// 	ancestors = (void **) malloc(sizeof(void *));
-// 	allocated = 1;
-// 	inserted = 0;
-// 	for (j = 0; j < graph->allocated; j++){
-// 		if (graph->amatrix[i][j] >= 1){
-// 			if (allocated <= inserted) {
-// 				ancestors = (void **) realloc(ancestors, sizeof(void *) * (allocated + 1));
-// 				allocated ++;
-// 			}
-// 			ancestors[inserted] = graph->nodes[j];
-// 			inserted ++;
-// 		}
-// 	}
-
-// 	return ancestors;
-// }
-
-// Self-explanatory
 void deleteGraph(Graph *graph){
 	int i;
 
@@ -357,11 +330,11 @@ int abrirClaseHereda(Graph* t, char* id_clase, ...){
 // }
 
 int cerrarClase(Graph* t,
-                char* id_clase, 
-                int num_atributos_clase, 
-                int num_atributos_instancia, 
-                int num_metodos_sobreescribibles, 
-                int num_metodos_no_sobreescribibles){
+								char* id_clase, 
+								int num_atributos_clase, 
+								int num_atributos_instancia, 
+								int num_metodos_sobreescribibles, 
+								int num_metodos_no_sobreescribibles){
 	if (!id_clase || num_atributos_clase < 0 || num_atributos_instancia < 0 || num_metodos_sobreescribibles < 0 || num_metodos_no_sobreescribibles < 0)
 		return -1;
 
@@ -372,4 +345,106 @@ int cerrarClase(Graph* t,
 
 	return 0;
 }
+
+int abrirAmbitoClase(Node** t, char* id_clase, int tamanio){
+
+	if (!id_clase || tamanio <= 0 || !t) return -1;
+
+	*t = newNodeTam(id_clase, tamanio);
+	if (!*t) return -1;
+
+	return 0;
+}
+
+int insertarTablaSimbolosClases(Graph * grafo, 
+		char * id_clase,                 int categoria,
+		char* id,                        int clase,
+		int tipo,												 int direcciones,                    
+		int numero_parametros,           int numero_variables_locales,        
+		int posicion_variable_local,     int posicion_parametro,
+		int tamanio,                     int numero_atributos_clase,            
+		int numero_atributos_instancia,  int numero_metodos_sobreescribibles,    
+		int numero_metodos_no_sobreescribibles,
+		int tipo_acceso,                 int tipo_miembro, 
+		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
+		int num_acumulado_atributos_instancia,   
+		int num_acumulado_metodos_sobreescritura,
+		int * tipo_args){
+
+
+	int index_clase;
+
+	if (!grafo || !id_clase || !id) return -1;
+
+	index_clase = indexOf(grafo, id_clase);
+	if (index_clase == -1) return -1;
+
+	return insertarTablaSimbolos(grafo->nodes[index_clase], 
+															 id,
+															 categoria,
+															 tipo,
+															 clase,
+															 direcciones,
+															 numero_parametros,
+															 posicion_parametro,
+															 numero_variables_locales,
+															 posicion_variable_local,
+															 tamanio,
+															 numero_atributos_clase,
+															 numero_atributos_instancia,
+															 numero_metodos_sobreescribibles,
+															 numero_metodos_no_sobreescribibles,
+															 tipo_acceso,
+															 tipo_miembro,
+															 posicion_atributo_instancia,
+															 posicion_metodo_sobreescribible,
+															 num_acumulado_atributos_instancia,
+															 num_acumulado_metodos_sobreescritura,
+															 tipo_args);
+}
+
+
+int tablaSimbolosClasesAbrirAmbitoEnClase(Graph * grafo, 
+																char * id_clase,
+																char* id_ambito, 
+																int categoria_ambito, 
+																int acceso_metodo, 
+																int tipo_metodo, 
+																int posicion_metodo_sobre, 
+																int tamanio){
+
+	int clase;
+
+	if (!grafo || !id_clase || !id_ambito) return -1;
+
+	clase = indexOf(grafo, id_clase);
+	if (clase == -1) return -1;
+
+	return abrirAmbitoFunc(grafo->nodes[clase], id_clase,
+												 id_ambito, 
+												 categoria_ambito, 
+												 acceso_metodo, 
+												 tipo_metodo, 
+												 posicion_metodo_sobre, 
+												 tamanio);
+
+}
+
+int tablaSimbolosClasesCerrarAmbitoEnClase(Graph* grafo, 
+                            char * id_clase){
+
+	int clase;
+
+	if (!grafo || !id_clase) return -1;
+
+	clase = indexOf(grafo, id_clase);
+	if (clase == -1) return -1;
+
+	return cerrarAmbitoFunc(grafo->nodes[clase]);
+
+}
+
+
+
+
 

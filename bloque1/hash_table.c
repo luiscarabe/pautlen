@@ -689,6 +689,19 @@ HT_item * ht_search_item(TablaSimbolos* ht, const char* key) {
 	return item;
 }
 
+HT_item *ht_modify_value_item(TablaSimbolos *ht, const char *key, Element *e){
+
+	HT_item *item;
+
+	if (!ht || !key || !e) return NULL;
+
+	item = ht_search_item(ht, key);
+	if (!item) return NULL;
+
+	item->value = e;
+	return item;
+}
+
 HT_item * ht_modify_item(TablaSimbolos* ht, const char* key,
 																						int categoria,
 																						int tipo,
