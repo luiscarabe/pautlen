@@ -5,11 +5,13 @@
 #include <string.h>
 
 #include "node.h"
+#include "hash_table.h"
 
 typedef struct _Node {
 	char *name;
 	void *content;
-	// void * para tabla de ambitos
+	HT_hash_table *primary_scope;
+	HT_hash_table *func_scope;
 } Node;
 
 Node *newNode(char *name, void *content){
@@ -19,9 +21,17 @@ Node *newNode(char *name, void *content){
 	newNode = (Node *) malloc(sizeof(Node));
 	if (!newNode) return NULL;
 
+	newNode->primary_scope = ht_new();
+	if (!newNode->primary_scope){
+		free(newNode);
+	}
+
+	newNode->func_scope = NULL;
+
 	len = strlen(name);
 	newNode->name = (char *) malloc((len+1)*sizeof(char));
 	if (!newNode->name){
+		ht_del_hash_table(newNode->primary_scope);
 		free(newNode);
 		return NULL;
 	}
@@ -33,6 +43,7 @@ Node *newNode(char *name, void *content){
 
 void deleteNode(Node *node){
 	if (!node) return;
+	ht_del_hash_table(node->primary_scope);
 	free(node->name);
 	free(node);
 }
@@ -42,7 +53,7 @@ void printNode(Node *node){
 }
 
 int nameCompare(Node *node, char *name){
-	if (!node | !name) return 0;
+	if (!node || !name) return -1;
 	return strcmp(node->name, name);
 }
 

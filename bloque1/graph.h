@@ -12,16 +12,16 @@ void printGraph(Graph *graph);
 // Graph * tablaSimbolosClasesToDot(Graph * grafo);
 
 
-// int iniciarTablaSimbolosClases(tablaSimbolosClases** t, char * nombre);
-// int abrirClase(tablaSimbolosClases* t, char* id_clase);
-// int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...);
-// int cerrarClase(tablaSimbolosClases* t,
-//                 char* id_clase, 
-//                 int num_atributos_clase, 
-//                 int num_atributos_instancia, 
-//                 int num_metodos_sobreescribibles, 
-//                 int num_metodos_no_sobreescribibles);
+int iniciarTablaSimbolosClases(Graph** t, char * nombre);
+int abrirClase(Graph* t, char* id_clase);
+int abrirClaseHereda(Graph* t, char* id_clase, ...);
+int cerrarClase(Graph* t,
+                char* id_clase, 
+                int num_atributos_clase, 
+                int num_atributos_instancia, 
+                int num_metodos_sobreescribibles, 
+                int num_metodos_no_sobreescribibles);
 
-// void graph_enrouteParentsLastNode(tablaSimbolosClases * g);
+// void graph_enrouteParentsLastNode(Graph * g);
 
 

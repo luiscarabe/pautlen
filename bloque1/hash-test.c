@@ -4,64 +4,199 @@
 #include "hash_table.h"
 
 int main(int argc, char const *argv[]){
-	int i;
-	HT_hash_table * new_ht = NULL;
+	int i, j;
+	TablaSimbolos * new_ht = NULL;
 	HT_item * hti1 = NULL;
 	HT_item * hti2 = NULL;
+	char ** names = NULL;
 	int aux;
-	int category1 = 1, category2 = 2;
-	int basic_type1 = 1, basic_type2 = 2;
-	int basic_class1 = 1, basic_class2 = 2;
-	int num_rows1 = 1, num_rows2 = 2;
-	int num_params1 = 1, num_params2 = 2;
-	int param_position1 = 1, param_position2 = 2;
-	int num_local_variables1 = 1, num_local_variables2 = 2;
-	int local_variable_position1 = 1, local_variable_position2 = 2;
+	int categoria1 = 1, categoria2 = 2;
+	int tipo1 = 1, tipo2 = 2;
+	int clase1 = 1, clase2 = 2;
+	int direcciones1 = 1, direcciones2 = 2;
+	int numero_parametros1 = 1, numero_parametros2 = 2;
+	int posicion_parametro1 = 1, posicion_parametro2 = 2;
+	int numero_variables_locales1 = 1, numero_variables_locales2 = 2;
+	int posicion_variable_local1 = 1, posicion_variable_local2 = 2;
+	int tamanio1 = 1, tamanio2 = 2;
+	int numero_atributos_clase1 = 1, numero_atributos_clase2 = 2;
+	int numero_atributos_instancia1 = 1, numero_atributos_instancia2 = 2;
+	int numero_metodos_sobreescribibles1 = 1, numero_metodos_sobreescribibles2 = 2;
+	int numero_metodos_no_sobreescribibles1 = 1, numero_metodos_no_sobreescribibles2 = 2;
+	int tipo_acceso1 = 1, tipo_acceso2 = 2;
+	int tipo_miembro1 = 1, tipo_miembro2 = 2;
+	int posicion_atributo_instancia1 = 1, posicion_atributo_instancia2 = 2;
+	int posicion_metodo_sobreescribible1 = 1, posicion_metodo_sobreescribible2 = 2;
+	int num_acumulado_atributos_instancia1 = 1, num_acumulado_atributos_instancia2 = 2;
+	int num_acumulado_metodos_sobreescritura1 = 1;
+	int tipo_args[1];
+
+	tipo_args[0] = 1;
 
 	printf("Creando tabla hash....");
-	new_ht = ht_new();
+	new_ht = ht_new("tabla1");
 	if(new_ht == NULL){
 		printf("ERROR\n");
 	}
 	printf("OK\n");
 
 	printf("Insertando elemento 1 en tabla hash....");
-	hti1 = ht_insert_item(new_ht, (const char*)"item1", category1, basic_type1, basic_class1, num_rows1, num_params1, param_position1, num_local_variables1, local_variable_position1);
+	hti1 = ht_insert_item(new_ht, (const char*)"item1",
+																categoria1,
+																tipo1,
+																clase1,
+																direcciones1,
+																numero_parametros1,
+																posicion_parametro1,
+																numero_variables_locales1,
+																posicion_variable_local1,
+																tamanio1,
+																numero_atributos_clase1,
+																numero_atributos_instancia1,
+																numero_metodos_sobreescribibles1,
+																numero_metodos_no_sobreescribibles1,
+																tipo_acceso1,
+																tipo_miembro1,
+																posicion_atributo_instancia1,
+																posicion_metodo_sobreescribible1,
+																num_acumulado_atributos_instancia1,
+																num_acumulado_metodos_sobreescritura1,
+																tipo_args);
 	if(hti1 == NULL){
 		printf("ERROR\n");
 	}
 	printf("OK\n");
 
 	printf("Insertando elemento 1 en tabla hash....");
-	hti2 = ht_insert_item(new_ht, (const char*)"item1", category2, basic_type1, basic_class1, num_rows1, num_params1, param_position1, num_local_variables1, local_variable_position1);
+	hti2 = ht_insert_item(new_ht, (const char*)"item1",
+																categoria2,
+																tipo1,
+																clase1,
+																direcciones1,
+																numero_parametros1,
+																posicion_parametro1,
+																numero_variables_locales1,
+																posicion_variable_local1,
+																tamanio1,
+																numero_atributos_clase1,
+																numero_atributos_instancia1,
+																numero_metodos_sobreescribibles1,
+																numero_metodos_no_sobreescribibles1,
+																tipo_acceso1,
+																tipo_miembro1,
+																posicion_atributo_instancia1,
+																posicion_metodo_sobreescribible1,
+																num_acumulado_atributos_instancia1,
+																num_acumulado_metodos_sobreescritura1,
+																tipo_args);
 	if(hti2 != NULL){
 		printf("ERROR\n");
 	}
 	printf("La inserción ha fallado: OK\n");
 
 	printf("Insertando elemento 2 en tabla hash....");
-	hti2 = ht_insert_item(new_ht, (const char*)"item2", category2, basic_type1, basic_class1, num_rows1, num_params1, param_position1, num_local_variables1, local_variable_position1);
+	hti2 = ht_insert_item(new_ht, (const char*)"item2",
+																categoria2,
+																tipo2,
+																clase1,
+																direcciones1,
+																numero_parametros1,
+																posicion_parametro1,
+																numero_variables_locales1,
+																posicion_variable_local1,
+																tamanio1,
+																numero_atributos_clase1,
+																numero_atributos_instancia1,
+																numero_metodos_sobreescribibles1,
+																numero_metodos_no_sobreescribibles1,
+																tipo_acceso1,
+																tipo_miembro1,
+																posicion_atributo_instancia1,
+																posicion_metodo_sobreescribible1,
+																num_acumulado_atributos_instancia1,
+																num_acumulado_metodos_sobreescritura1,
+																tipo_args);
 	if(hti2 == NULL){
 		printf("ERROR\n");
 	}
 	printf("OK\n");
 
 	printf("Insertando elemento 3 en tabla hash....");
-	hti2 = ht_insert_item(new_ht, (const char*)"item3", category2, basic_type2, basic_class1, num_rows1, num_params1, param_position1, num_local_variables1, local_variable_position1);
+	hti2 = ht_insert_item(new_ht, (const char*)"item3",
+																categoria2,
+																tipo2,
+																clase2,
+																direcciones1,
+																numero_parametros1,
+																posicion_parametro1,
+																numero_variables_locales1,
+																posicion_variable_local1,
+																tamanio1,
+																numero_atributos_clase1,
+																numero_atributos_instancia1,
+																numero_metodos_sobreescribibles1,
+																numero_metodos_no_sobreescribibles1,
+																tipo_acceso1,
+																tipo_miembro1,
+																posicion_atributo_instancia1,
+																posicion_metodo_sobreescribible1,
+																num_acumulado_atributos_instancia1,
+																num_acumulado_metodos_sobreescritura1,
+																tipo_args);
 	if(hti2 == NULL){
 		printf("ERROR\n");
 	}
 	printf("OK\n");
 
 	printf("Insertando elemento 4 en tabla hash....");
-	hti2 = ht_insert_item(new_ht, (const char*)"item4", category2, basic_type2, basic_class2, num_rows1, num_params1, param_position1, num_local_variables1, local_variable_position1);
+	hti2 = ht_insert_item(new_ht, (const char*)"item4",
+																categoria2,
+																tipo2,
+																clase2,
+																direcciones2,
+																numero_parametros1,
+																posicion_parametro1,
+																numero_variables_locales1,
+																posicion_variable_local1,
+																tamanio1,
+																numero_atributos_clase1,
+																numero_atributos_instancia1,
+																numero_metodos_sobreescribibles1,
+																numero_metodos_no_sobreescribibles1,
+																tipo_acceso1,
+																tipo_miembro1,
+																posicion_atributo_instancia1,
+																posicion_metodo_sobreescribible1,
+																num_acumulado_atributos_instancia1,
+																num_acumulado_metodos_sobreescritura1,
+																tipo_args);
 	if(hti2 == NULL){
 		printf("ERROR\n");
 	}
 	printf("OK\n");
 
 	printf("Insertando elemento 5 en tabla hash....");
-	hti2 = ht_insert_item(new_ht, (const char*)"item5", category2, basic_type2, basic_class2, num_rows2, num_params1, param_position1, num_local_variables1, local_variable_position1);
+	hti2 = ht_insert_item(new_ht, (const char*)"item5",
+																categoria2,
+																tipo2,
+																clase2,
+																direcciones2,
+																numero_parametros2,
+																posicion_parametro1,
+																numero_variables_locales1,
+																posicion_variable_local1,
+																tamanio1,
+																numero_atributos_clase1,
+																numero_atributos_instancia1,
+																numero_metodos_sobreescribibles1,
+																numero_metodos_no_sobreescribibles1,
+																tipo_acceso1,
+																tipo_miembro1,
+																posicion_atributo_instancia1,
+																posicion_metodo_sobreescribible1,
+																num_acumulado_atributos_instancia1,
+																num_acumulado_metodos_sobreescritura1,
+																tipo_args);
 	if(hti2 == NULL){
 		printf("ERROR\n");
 	}
@@ -83,7 +218,27 @@ int main(int argc, char const *argv[]){
 	print_item(ht_search_item(new_ht, "item5"));
 
 	printf("Modificando elemento 5 en tabla hash....");
-	hti2 = ht_modify_item(new_ht, (const char*)"item5", category1, basic_type1, basic_class1, num_rows1, num_params1, param_position1, num_local_variables1, local_variable_position1);
+	hti2 = ht_modify_item(new_ht, (const char*)"item5",
+																categoria1,
+																tipo1,
+																clase1,
+																direcciones1,
+																numero_parametros1,
+																posicion_parametro1,
+																numero_variables_locales1,
+																posicion_variable_local1,
+																tamanio1,
+																numero_atributos_clase1,
+																numero_atributos_instancia1,
+																numero_metodos_sobreescribibles1,
+																numero_metodos_no_sobreescribibles1,
+																tipo_acceso1,
+																tipo_miembro1,
+																posicion_atributo_instancia1,
+																posicion_metodo_sobreescribible1,
+																num_acumulado_atributos_instancia1,
+																num_acumulado_metodos_sobreescritura1,
+																tipo_args);
 	if(hti2 == NULL){
 		printf("ERROR\n");
 	}
@@ -92,6 +247,22 @@ int main(int argc, char const *argv[]){
 	printf("Buscando e imprimiendo elemento item5\n");
 	print_item(ht_search_item(new_ht, "item5"));
 
+	printf("Imprimiendo nombres de los símbolos de la tabla...\n");
+	names = ht_get_name_symbols(new_ht);
+	if(names == NULL){
+		printf("ERROR, no se han copiado los nombres\n");
+	}
+
+	i = ht_get_count(new_ht);
+
+	for(j = 0; j < i; j++){
+		printf("%s\n", names[j]);
+	}
+
+	for(j = 0; j < i; j++){
+		free(names[j]);
+	}
+	free(names);
 	printf("Eliminando tabla hash....");
 	ht_del_hash_table(new_ht);
 	printf("OK\n");
