@@ -239,7 +239,7 @@ void printGraph(Graph *graph){
 Graph * tablaSimbolosClasesToDot(Graph * grafo){
 	char *file_name;
 	FILE *f;
-	int i;
+	int i, j;
 
 	if (!grafo || !grafo->nombre) return NULL;
 
@@ -252,38 +252,50 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 		return NULL;
 	}
 
+	// digraph grafo_clases  { rankdir=BT;
+  //     edge [arrowhead = empty]
 	fprintf(f, "digraph %s { rankdir=BT;\n", grafo->nombre);
 	fprintf(f, "\t edge [arrowhead = empty]\n");
 
+	// Persona [label="{Persona|Persona\lesmujer\ledad\l}"][shape=record];
+ //    Infante [label="{Infante|Infante\lpercentil\l}"][shape=record];
+ //    Adulto [label="{Adulto|Adulto\lpercentil\l}"][shape=record];
+ //    Anciano [label="{Anciano|Anciano\lsumar()\l}"][shape=record];
+ //    Depotista [label="{Depotista|Depotista\l}"][shape=record];
+ //     Infante -> Persona ;
+ //     Adulto -> Persona ;
+ //     Anciano -> Persona ;
+ //     Depotista -> Infante ;
+ //     Depotista -> Adulto ;
+ //     Depotista -> Anciano ;
 	for (i = 0; i < grafo->allocated; i++)
-		fprintf(f, "%s [label=\"{%s|%s\\l\\l}\"][shape=record];" , getName(grafo->nodes[i]), getName(grafo->nodes[i]), getName(grafo->nodes[i]));
+		fprintf(f, "\t%s [label=\"{%s|%s\\l\\l}\"][shape=record];" , getName(grafo->nodes[i]), getName(grafo->nodes[i]), getName(grafo->nodes[i]));
 
+	for (i = 0; i < grafo->allocated; i++){
+		for (j = 0; j < grafo->allocated; j++){
+			if (grafo->amatrix[i][j] == 1)
+				fprintf(f, "\t %s -> %s ;\n", getName(grafo->nodes[j]), getName(grafo->nodes[i]));
+		}
+	}
+
+  // edge [arrowhead = normal]
+	fprintf(f, "\t edge [arrowhead = normal]\n");
+
+	// PersonaN0 [label="Persona"][shape=oval];
+	// InfanteN1 [label="Infante"][shape=oval];
+	// AdultoN2 [label="Adulto"][shape=oval];
+	// AncianoN3 [label="Anciano"][shape=oval];
+	// DepotistaN4 [label="Depotista"][shape=oval];
 	for (i = 0; i < grafo->allocated; i++)
+		fprintf(f, "\t%s [label=\"%s\"][shape=oval];" , getName(grafo->nodes[i]), getName(grafo->nodes[i]), getName(grafo->nodes[i]));
 
+	// PersonaN0 -> InfanteN1 ;
+	// InfanteN1 -> AdultoN2 ;
+	// AdultoN2 -> AncianoN3 ;
+	// AncianoN3 -> DepotistaN4 ;
+	for (i = 0; i < grafo->allocated; i++)
+			fprintf(f, "\t %s -> %s\n", getName(grafo->nodes[i]), getName(grafo->nodes[i+1]));
 
-	digraph grafo_clases  { rankdir=BT;
-     edge [arrowhead = empty]
-    Persona [label="{Persona|Persona\lesmujer\ledad\l}"][shape=record];
-    Infante [label="{Infante|Infante\lpercentil\l}"][shape=record];
-    Adulto [label="{Adulto|Adulto\lpercentil\l}"][shape=record];
-    Anciano [label="{Anciano|Anciano\lsumar()\l}"][shape=record];
-    Depotista [label="{Depotista|Depotista\l}"][shape=record];
-     Infante -> Persona ;
-     Adulto -> Persona ;
-     Anciano -> Persona ;
-     Depotista -> Infante ;
-     Depotista -> Adulto ;
-     Depotista -> Anciano ;
-     edge [arrowhead = normal]
-    PersonaN0 [label="Persona"][shape=oval];
-    InfanteN1 [label="Infante"][shape=oval];
-    AdultoN2 [label="Adulto"][shape=oval];
-    AncianoN3 [label="Anciano"][shape=oval];
-    DepotistaN4 [label="Depotista"][shape=oval];
-     PersonaN0 -> InfanteN1 ;
-     InfanteN1 -> AdultoN2 ;
-     AdultoN2 -> AncianoN3 ;
-     AncianoN3 -> DepotistaN4 ;
-}
-
+	fprintf(f, "}\n");
+	
 }
