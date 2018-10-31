@@ -33,10 +33,9 @@ int is_prime(int num);
 int next_prime(int num);
 
 
-TablaSimbolos * ht_new(char * name);
+TablaSimbolos * ht_new();
 // nueva
-TablaSimbolos* new_tabla_simbolos(int min_size, char * name);
-char * ht_get_name(TablaSimbolos * ts);
+TablaSimbolos* new_tabla_simbolos(int min_size);
 int ht_get_size(TablaSimbolos * ts);
 int ht_get_count(TablaSimbolos * ts);
 void ht_del_hash_table(TablaSimbolos* ht);
@@ -51,5 +50,6 @@ HT_item * ht_modify_item(TablaSimbolos* ht, const char* key, int categoria,	int 
 Element * ht_item_get_value(HT_item * item);
 char * ht_item_get_name(HT_item * item);
 void ht_del_hash_table(TablaSimbolos* h);
+
 
 #endif /* HASH_TABLE_H */

@@ -34,7 +34,7 @@ int main(int argc, char const *argv[]){
 	tipo_args[0] = 1;
 
 	printf("Creando tabla hash....");
-	new_ht = ht_new("tabla1");
+	new_ht = ht_new();
 	if(new_ht == NULL){
 		printf("ERROR\n");
 	}

@@ -23,8 +23,6 @@ struct _HT_item {
 };
 /* Tabla hash */
 struct _TablaSimbolos {
-	// No necesitamos nombre
-	char* name;
 	int size;
 	int count;
 	HT_item ** items;
@@ -159,9 +157,9 @@ Element * new_element(int categoria,
 	}
 	// esto se multiplica por numero parametros?
 	/*e->tipo_args = (int*)malloc(sizeof(int));
-	if(e->tipo_args == NULL){
-		/* error *//*
-		free(e);
+	if(e->tipo_args == NULL){*/
+		/* error */
+	/*	free(e);
 		printf("ERROR. Elemento no creado\n");
 		return NULL;
 	}*/
@@ -221,9 +219,9 @@ static int modify_element(Element * e,
 
 	// esto se multiplica por numero parametros?
 	/*e->tipo_args = (int*)malloc(sizeof(int));
-	if(e->tipo_args == NULL){
-		/* error *//*
-		free(e);
+	if(e->tipo_args == NULL){*/
+		/* error */
+		/*free(e);
 		printf("ERROR. Elemento no creado\n");
 		return NULL;
 	}*/
@@ -438,7 +436,7 @@ static int ht_get_hash(const char* s, const int size){
 
 /* EN CASO DE QUE LE QUERAMOS PONER TAMAÑO A CADA TABLA HASH */
 /* Generate new hash table */
-TablaSimbolos* new_tabla_simbolos(int min_size, char * name) {
+TablaSimbolos* new_tabla_simbolos(int min_size) {
 		TablaSimbolos* ht = NULL;
 		int num;
 
@@ -452,18 +450,11 @@ TablaSimbolos* new_tabla_simbolos(int min_size, char * name) {
 			return NULL;
 		}
 
-		ht->name = strdup(name);
-		if(ht->name == NULL){
-			free(ht);
-			return NULL;
-		}
-
 		ht->size = num;
 		ht->count = 0;
 		// Make them point to NULL
 		ht->items = (HT_item **) calloc(ht->size, sizeof(HT_item *));
 		if(ht->items == NULL){
-			free(ht->name);
 			free(ht);
 			return NULL;
 		}
@@ -472,7 +463,7 @@ TablaSimbolos* new_tabla_simbolos(int min_size, char * name) {
 
 
 /* Generate new hash table */
-TablaSimbolos* ht_new(char * name) {
+TablaSimbolos* ht_new() {
 		TablaSimbolos* ht = NULL;
 
 		ht = malloc(sizeof(TablaSimbolos));
@@ -480,31 +471,15 @@ TablaSimbolos* ht_new(char * name) {
 			return NULL;
 		}
 
-		ht->name = NULL;
-		ht->name = strdup(name);
-		if(ht->name == NULL){
-			free(ht);
-			return NULL;
-		}
 		ht->size = HASHSIZE;
 		ht->count = 0;
 		// Make them point to NULL
 		ht->items = (HT_item **) calloc(HASHSIZE, sizeof(HT_item *));
 		if(ht->items == NULL){
-			free(ht->name);
 			free(ht);
 			return NULL;
 		}
 		return ht;
-}
-
-char * ht_get_name(TablaSimbolos * ts){
-	if(ts == NULL){
-		printf("ERROR, la tabla simbolos no existe\n");
-		return NULL;
-	}
-
-	return ts->name;
 }
 
 int ht_get_size(TablaSimbolos * ts){
@@ -544,9 +519,6 @@ void ht_del_hash_table(TablaSimbolos* ht) {
 			}
 	}
 	free(ht->items);
-	if(ht->name){
-		free(ht->name);
-	}
 	free(ht);
 }
 
@@ -665,7 +637,7 @@ char ** ht_get_name_symbols(TablaSimbolos * ts){
 	int i;
 	if(ts == NULL){
 		printf("ERROR, al coger los nombres de los elementos de la tabla, ésta no existe\n");
-		return -1;
+		return NULL;
 	}
 
 	count[0] = 0;
@@ -781,4 +753,10 @@ HT_item * ht_modify_item(TablaSimbolos* ht, const char* key,
 	}
 
 	return item;
+}
+
+int ht_get_num_attrib(HT_item *item){
+	if (!item) return -1;
+
+	return item->value->numero_atributos_clase;
 }

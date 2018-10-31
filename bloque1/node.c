@@ -9,12 +9,12 @@
 
 typedef struct _Node {
 	char *name;
-	void *content;
-	HT_hash_table *primary_scope;
-	HT_hash_table *func_scope;
+	// void *content;
+	TablaSimbolos *primary_scope;
+	TablaSimbolos *func_scope;
 } Node;
 
-Node *newNode(char *name, void *content){
+Node *newNode(char *name){
 	Node *newNode;
 	int len;
 
@@ -37,7 +37,7 @@ Node *newNode(char *name, void *content){
 	}
 
 	strcpy(newNode->name, name);
-	newNode->content = content;
+	// newNode->content = content;
 	return newNode;
 }
 
@@ -49,7 +49,7 @@ void deleteNode(Node *node){
 }
 
 void printNode(Node *node){
-	printf("%s: %p", node->name, node->content);
+	printf("%s", node->name);
 }
 
 int nameCompare(Node *node, char *name){
@@ -57,12 +57,36 @@ int nameCompare(Node *node, char *name){
 	return strcmp(node->name, name);
 }
 
-void *getContent(Node *node){
-	if (!node) return NULL;
-	return node->content;
-}
+// void *getContent(Node *node){
+// 	if (!node) return NULL;
+// 	return node->content;
+// }
 
 char *getName(Node *node){
 	if (!node) return NULL;
 	return node->name;
 }
+
+char **getAttributes(Node *node){
+	if (!node) return NULL;
+
+	return ht_get_name_symbols(node->primary_scope);
+}
+
+// char **getFunctions(Node *node){
+// 	if (!node) return NULL;
+
+// 	return ht_get_name_symbols(node->func_scope);
+// }
+
+int getNumAttributes(Node *node){
+	if (!node) return -1;
+
+	return ht_get_count(node->primary_scope);
+}
+
+// int getNumFunctions(Node *node){
+// 	if (!node) return -1;
+
+// 	return ht_get_count(node->func_scope);
+// }

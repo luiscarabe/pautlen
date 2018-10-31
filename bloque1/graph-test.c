@@ -58,7 +58,7 @@ int main(int argc, char const *argv[]){
 	// printf("\n\nContent of node 2: ");
 	// printf("\n%p\n", getContentOfNode(g, "Node 2"));
 
-	iniciarTablaSimbolosClases(&g, "Super grafo");
+	iniciarTablaSimbolosClases(&g, "Supergrafo");
 
 	abrirClase(g, "A");
 	printf("Graph:\n");
@@ -79,20 +79,20 @@ int main(int argc, char const *argv[]){
 	printGraph(g);
 
 
-	abrirClaseHereda(g, "(ABC)", "B", "A", "C", NULL);
+	abrirClaseHereda(g, "ABC", "B", "A", "C", NULL);
 	printf("Graph:\n");
 	printGraph(g);
 
 
-	abrirClaseHereda(g, "(ABC)D", "(ABC)", "D", NULL);
+	abrirClaseHereda(g, "ABCD", "ABC", "D", NULL);
 	printf("Graph:\n");
 	printGraph(g);
 
-	abrirClaseHereda(g, "E", "(ABC)D", "D", NULL);
+	abrirClaseHereda(g, "E", "ABCD", "D", NULL);
 	printf("Graph:\n");
 	printGraph(g);
 
-
+	tablaSimbolosClasesToDot(g);
 
 	deleteGraph(g);
 

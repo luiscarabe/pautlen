@@ -1,15 +1,16 @@
 // Definition of a graph using an adjacency matrix
+#include "node.h"
 
 typedef struct _Graph Graph;
 
-Graph *newGraph();
-int addNode(Graph *graph, char *node_name, void *content);
+Graph *newGraph(char *name);
+int addNode(Graph *graph, Node *node);
 void addParent(Graph *graph, int child, int parent);
-void *getContentOfNode(Graph *graph, char *node_name);
+// void *getContentOfNode(Graph *graph, char *node_name);
 void deleteGraph(Graph *graph);
 void printGraph(Graph *graph);
 // void **getAncestorsOfNode(Graph *graph, char *node_name);
-// Graph * tablaSimbolosClasesToDot(Graph * grafo);
+Graph * tablaSimbolosClasesToDot(Graph * grafo);
 
 
 int iniciarTablaSimbolosClases(Graph** t, char * nombre);

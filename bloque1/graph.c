@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdarg.h>
 
 #include "graph.h"
@@ -11,11 +12,12 @@
 #define min(x, y) ((((x) < (y)) || (y) == 0) ? (x) : (y))
 
 typedef struct _Graph {
-	// char *nombre; // aniadir
+	char *name; 
 	int n; // number of nodes
 	int allocated; // number of potential nodes with memory already allocated
 	Node **nodes; // nodes of the graph
 	char **amatrix; // adjacency matrix
+	// int clase_actual;
 } Graph;
 
 
@@ -94,22 +96,37 @@ int indexOf(Graph *graph, char *name){
 }
 
 // Self-explanatory
-Graph *newGraph(){
+Graph *newGraph(char *name){
 	Graph *newGraph;
+
+	if (!name) return NULL;
 
 	newGraph = (Graph *) malloc(sizeof(Graph));
 	if (!newGraph) return NULL;
+
+	newGraph->name = (char *) malloc(sizeof(char *) * (strlen(name) + 1));
+	if (!newGraph->name){
+		free(newGraph);
+		return NULL;
+	}
+	if (strcpy(newGraph->name, name) < 0){
+		free(newGraph->name);
+		free(newGraph);
+		return NULL;
+	}
 
 	newGraph->n = 0;
 	newGraph->allocated = NREALLOC;
 
 	if (buildMatrix(newGraph) == -1){
+		free(newGraph->name);
 		free(newGraph);
 		return NULL;
 	}
 
 	newGraph->nodes = (Node **) malloc(NREALLOC*sizeof(Node*));
 	if (!newGraph->nodes){
+		free(newGraph->name);
 		free(newGraph);
 		return NULL;
 	}
@@ -118,20 +135,16 @@ Graph *newGraph(){
 }
 
 // Creates a node and inserts it into the graph
-int addNode(Graph *graph, char *node_name, void *content){
-	Node *n;
+int addNode(Graph *graph, Node *node){
 
-	n = newNode(node_name, content);
-	if (!n) return -1;
+	if (!node) return -1;
 
 	if (graph->n >= graph->allocated){
-		if (reallocate(graph) == -1){
-			deleteNode(n);
+		if (reallocate(graph) == -1)
 			return -1;
-		}
 	}
 
-	graph->nodes[graph->n] = n;
+	graph->nodes[graph->n] = node;
 	return graph->n++;
 }
 
@@ -158,43 +171,31 @@ void addParent(Graph *graph, int child, int parent){
 }
 
 // Self-explanatory
-void *getContentOfNode(Graph *graph, char *node_name){
-	int i;
+// void **getAncestorsOfNode(Graph *graph, char *node_name){
+// 	int i, j, allocated, inserted;
+// 	void **ancestors;
 
-	if (!graph | !node_name) return NULL;
+// 	if (!graph | !node_name) return NULL;
 
-	i = indexOf(graph, node_name);
-	if (i == -1) return NULL;
+// 	i = indexOf(graph, node_name);
+// 	if (i == -1) return NULL;
 
-	return getContent(graph->nodes[i]);
-}
+// 	ancestors = (void **) malloc(sizeof(void *));
+// 	allocated = 1;
+// 	inserted = 0;
+// 	for (j = 0; j < graph->allocated; j++){
+// 		if (graph->amatrix[i][j] >= 1){
+// 			if (allocated <= inserted) {
+// 				ancestors = (void **) realloc(ancestors, sizeof(void *) * (allocated + 1));
+// 				allocated ++;
+// 			}
+// 			ancestors[inserted] = graph->nodes[j];
+// 			inserted ++;
+// 		}
+// 	}
 
-// Self-explanatory
-void **getAncestorsOfNode(Graph *graph, char *node_name){
-	int i, j, allocated, inserted;
-	void **ancestors;
-
-	if (!graph | !node_name) return NULL;
-
-	i = indexOf(graph, node_name);
-	if (i == -1) return NULL;
-
-	ancestors = (void **) malloc(sizeof(void *));
-	allocated = 1;
-	inserted = 0;
-	for (j = 0; j < graph->allocated; j++){
-		if (graph->amatrix[i][j] >= 1){
-			if (allocated <= inserted) {
-				ancestors = (void **) realloc(ancestors, sizeof(void *) * (allocated + 1));
-				allocated ++;
-			}
-			ancestors[inserted] = getContent(graph->nodes[j]);
-			inserted ++;
-		}
-	}
-
-	return ancestors;
-}
+// 	return ancestors;
+// }
 
 // Self-explanatory
 void deleteGraph(Graph *graph){
@@ -239,11 +240,22 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 	char *file_name;
 	FILE *f;
 	int i, j;
+	char **args;
 
-	if (!grafo || !grafo->nombre) return NULL;
+	if (!grafo || !grafo->name) return NULL;
 
-	file_name = (char *) malloc(sizeof(char *) * (strlen(grafo->nombre) + 5));
+	file_name = (char *) malloc(sizeof(char *) * (strlen(grafo->name) + 5));
 	if (!file_name) return NULL;
+
+	if (strcpy(file_name, grafo->name) < 0){
+		free(file_name);
+		return NULL;
+	}
+
+	if (!strcat(file_name, ".dot")){
+		free(file_name);
+		return NULL;
+	}
 
 	f = fopen(file_name, "w+");
 	if (!f) {
@@ -251,76 +263,72 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 		return NULL;
 	}
 
-	// digraph grafo_clases  { rankdir=BT;
-  //     edge [arrowhead = empty]
-	fprintf(f, "digraph %s { rankdir=BT;\n", grafo->nombre);
+	fprintf(f, "digraph %s { rankdir=BT;\n", grafo->name);
 	fprintf(f, "\t edge [arrowhead = empty]\n");
 
-	// Persona [label="{Persona|Persona\lesmujer\ledad\l}"][shape=record];
- //    Infante [label="{Infante|Infante\lpercentil\l}"][shape=record];
- //    Adulto [label="{Adulto|Adulto\lpercentil\l}"][shape=record];
- //    Anciano [label="{Anciano|Anciano\lsumar()\l}"][shape=record];
- //    Depotista [label="{Depotista|Depotista\l}"][shape=record];
- //     Infante -> Persona ;
- //     Adulto -> Persona ;
- //     Anciano -> Persona ;
- //     Depotista -> Infante ;
- //     Depotista -> Adulto ;
- //     Depotista -> Anciano ;
-	for (i = 0; i < grafo->allocated; i++)
-		fprintf(f, "\t%s [label=\"{%s|%s\\l\\l}\"][shape=record];" , getName(grafo->nodes[i]), getName(grafo->nodes[i]), getName(grafo->nodes[i]));
+	for (i = 0; i < grafo->n; i++){
+		fprintf(f, "\t%s [label=\"{%s|%s\\l" , getName(grafo->nodes[i]), getName(grafo->nodes[i]), getName(grafo->nodes[i]));
+		args = getAttributes(grafo->nodes[i]);
+		for (j = 0; j < getNumAttributes(grafo->nodes[i]); j++)
+			fprintf(f, "%s\\l", args[j]);
 
-	for (i = 0; i < grafo->allocated; i++){
-		for (j = 0; j < grafo->allocated; j++){
+		fprintf(f, "}\"][shape=record];\n");
+	}
+
+	for (i = 0; i < grafo->n; i++){
+		for (j = 0; j < grafo->n; j++){
 			if (grafo->amatrix[i][j] == 1)
 				fprintf(f, "\t %s -> %s ;\n", getName(grafo->nodes[j]), getName(grafo->nodes[i]));
 		}
 	}
 
-  // edge [arrowhead = normal]
 	fprintf(f, "\t edge [arrowhead = normal]\n");
 
-	// PersonaN0 [label="Persona"][shape=oval];
-	// InfanteN1 [label="Infante"][shape=oval];
-	// AdultoN2 [label="Adulto"][shape=oval];
-	// AncianoN3 [label="Anciano"][shape=oval];
-	// DepotistaN4 [label="Depotista"][shape=oval];
-	for (i = 0; i < grafo->allocated; i++)
-		fprintf(f, "\t%s [label=\"%s\"][shape=oval];" , getName(grafo->nodes[i]), getName(grafo->nodes[i]), getName(grafo->nodes[i]));
+	for (i = 0; i < grafo->n; i++)
+		fprintf(f, "\t%s [label=\"%s\"][shape=oval];\n" , getName(grafo->nodes[i]), getName(grafo->nodes[i]));
 
-	// PersonaN0 -> InfanteN1 ;
-	// InfanteN1 -> AdultoN2 ;
-	// AdultoN2 -> AncianoN3 ;
-	// AncianoN3 -> DepotistaN4 ;
-	for (i = 0; i < grafo->allocated; i++)
-			fprintf(f, "\t %s -> %s\n", getName(grafo->nodes[i]), getName(grafo->nodes[i+1]));
+	for (i = 0; i < grafo->n - 1; i++)
+			fprintf(f, "\t %sN%d -> %sN%d\n", getName(grafo->nodes[i]), i, getName(grafo->nodes[i+1]), i+1);
 
 	fprintf(f, "}\n");
 	
+	fclose(f);	
+	free(file_name);
+	
+	return grafo;	
 }
 
 int iniciarTablaSimbolosClases(Graph** t, char * nombre){
 	if (!t || !nombre) return -1;
 
-	*t = newGraph();
+	*t = newGraph(nombre);
 	if (!t) return -1;
 	return 0;
 }
 
 int abrirClase(Graph* t, char* id_clase){
+	Node *node;
+
 	if (!t || !id_clase) return 0;
 
-	return addNode(t, id_clase, NULL);
+	node = newNode(id_clase);
+	if (!node) return 0;
+
+	return addNode(t, node);
 }
 
 int abrirClaseHereda(Graph* t, char* id_clase, ...){
 	va_list valist;
 	int p, n;
 	char *arg;
+	Node *node;
 
 	if (!t || !id_clase) return -1;
 
-	if ((n = addNode(t, id_clase, NULL)) == -1) return -1;
+	node = newNode(id_clase);
+	if (!node) return -1;
+
+	if ((n = addNode(t, node)) == -1) return -1;
 
 	va_start(valist, id_clase);
 	while ((arg = va_arg(valist, char*))){
@@ -333,6 +341,21 @@ int abrirClaseHereda(Graph* t, char* id_clase, ...){
 	return 0;
 }
 
+// int aniadirAtributoClase(Graph *graph, char *atributo){
+// 	if (!graph || !atributo) return -1;
+
+// }
+
+// int abrirFuncionClase(Graph *graph, char *funcion){
+// 	if (!graph || !atributo) return -1;
+
+// }
+
+// int cerrarFuncionClase(Graph *graph, char *funcion){
+// 	if (!graph || !atributo) return -1;
+
+// }
+
 int cerrarClase(Graph* t,
                 char* id_clase, 
                 int num_atributos_clase, 
@@ -342,8 +365,11 @@ int cerrarClase(Graph* t,
 	if (!id_clase || num_atributos_clase < 0 || num_atributos_instancia < 0 || num_metodos_sobreescribibles < 0 || num_metodos_no_sobreescribibles < 0)
 		return -1;
 
+	// if (!strcmp(getName(t->nodes[clase_actual]), id_clase)){
+	// 	clase_actual = -1;
+	// 	return 1;
+	// }
 
-	// ??
 	return 0;
 }
 
