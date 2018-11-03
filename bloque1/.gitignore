@@ -1,5 +1,7 @@
 *.o
 *.d
+*.dot
 core*
 *.P
 graph-test
+hash-test

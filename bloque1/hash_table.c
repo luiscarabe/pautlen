@@ -11,7 +11,7 @@ PAULEN
 
 #include "hash_table.h"
 
-#define HASHSIZE 3 // Prime number to choose
+#define HASHSIZE 3 // Prime number to choose 1009 
 #define POW 191 // Prime for the hash
 
 
@@ -22,23 +22,45 @@ struct _HT_item {
 	struct _HT_item* next;
 };
 /* Tabla hash */
-struct _HT_hash_table {
-	char* name;// crear funcion que devuelva el nombre de la tabla
+struct _TablaSimbolos {
 	int size;
 	int count;
 	HT_item ** items;
 };
 /* Elemento de la tabla hash */
 struct _Element{
-	int category;// 3: variable, parámetro de función, función o clase
-	int basic_type;// 2: boolean e int
-	int basic_class;// 2: escalar y vector
-	int num_rows;// Sólo para identificadores de vectores
-	int num_params;// Sólo para Elementos de tipo función
-	int param_position;// Sólo para Elementos de tipo paraámetro de función
-	int num_local_variables;// Sólo para Elementos de tipo función
-	int local_variable_position;// Variable local de función
+	/* VARIABLE PARAMETRO FUNCION CLASE METODO_SOBREESCRIBIBLE METODO_NO_SOBREESCRIBIBLE ATRIBUTO_CLASE ATRIBUTO_INSTANCIA */
+	int categoria;// 3: variable, parámetro de función, función o clase
+	/* INT FLOAT (no este curso) BOOLEAN Y PARA LAS CLASES, ALGÚN MECANISMO (-índice en el vector del grafo??)  */
+	int tipo;// 2: boolean e int
+	/* ESCALAR PUNTERO VECTOR CONJUNTO (no este año) OBJETO */
+	int clase;
+
+
+	int direcciones;/* >=1  SI ES VARIABLE 1*/
+	int numero_parametros;// Sólo para Elementos de tipo función
+	int posicion_parametro;// Sólo para Elementos de tipo paraámetro de función
+	int numero_variables_locales;// Sólo para Elementos de tipo función
+	int posicion_variable_local;// Variable local de función
+	int tamanio;		/* 1-64 */
+	/* INFORMACION PARA CLASES */
+	int numero_atributos_clase;
+	int numero_atributos_instancia;
+	int numero_metodos_sobreescribibles;
+	int numero_metodos_no_sobreescribibles;
+	/*NINGUNO (exposed) ACCESO_CLASE (secret) ACCESO_HERENCIA	(hidden) ACCESO_TODOS (exposed) */
+	int tipo_acceso;  
+	/*MIEMBRO_UNICO (unique) MIEMBRO_NO_UNICO*/
+	int tipo_miembro;
+		
+	int posicion_atributo_instancia;
+	int posicion_metodo_sobreescribible;
+	int num_acumulado_atributos_instancia;
+	int num_acumulado_metodos_sobreescritura;
+	int * tipo_args;
 };
+
+
 
 
 
@@ -97,19 +119,31 @@ int next_prime(int num){
 /*																						*/
 /*																						*/
 /**********************************************/
-Element * new_element(int category,
-											int basic_type,
-											int basic_class,
-											int num_rows,
-											int num_params,
-											int param_position,
-											int num_local_variables,
-											int local_variable_position){
+Element * new_element(int categoria,
+											int tipo,
+											int clase,
+											int direcciones,
+											int numero_parametros,
+											int posicion_parametro,
+											int numero_variables_locales,
+											int posicion_variable_local,
+											int tamanio,
+											int numero_atributos_clase,
+											int numero_atributos_instancia,
+											int numero_metodos_sobreescribibles,
+											int numero_metodos_no_sobreescribibles,
+											int tipo_acceso,
+											int tipo_miembro,
+											int posicion_atributo_instancia,
+											int posicion_metodo_sobreescribible,
+											int num_acumulado_atributos_instancia,
+											int num_acumulado_metodos_sobreescritura,
+											int * tipo_args){
 
 	Element * e = NULL;
 
-	if(category < 0 || basic_type < 0 || basic_class < 0 || num_rows < 0 || num_params < 0
-		|| param_position < 0 || num_local_variables < 0 || local_variable_position < 0){
+	if(categoria < 0 || tipo < 0 || clase < 0 || direcciones < 0 || numero_parametros < 0
+		|| posicion_parametro < 0 || numero_variables_locales < 0 || posicion_variable_local < 0){
 		/* If anyone of the arguments' value is less than zero return error */
 		printf("ERROR. argumentos new element mal\n");
 		return NULL;
@@ -121,44 +155,97 @@ Element * new_element(int category,
 		printf("ERROR. Elemento no creado\n");
 		return NULL;
 	}
+	// esto se multiplica por numero parametros?
+	/*e->tipo_args = (int*)malloc(sizeof(int));
+	if(e->tipo_args == NULL){*/
+		/* error */
+	/*	free(e);
+		printf("ERROR. Elemento no creado\n");
+		return NULL;
+	}*/
+	e->tipo_args = tipo_args;
 
-	e->category = category;
-	e->basic_type = basic_type;
-	e->basic_class = basic_class;
-	e->num_rows = num_rows;
-	e->num_params = num_params;
-	e->param_position = param_position;
-	e->num_local_variables = num_local_variables;
-	e->local_variable_position = local_variable_position;
+	e->categoria = categoria;
+	e->tipo = tipo;
+	e->clase = clase;
+	e->direcciones = direcciones;
+	e->numero_parametros = numero_parametros;
+	e->posicion_parametro = posicion_parametro;
+	e->numero_variables_locales = numero_variables_locales;
+	e->posicion_variable_local = posicion_variable_local;
+	e->tamanio = tamanio;
+	e->numero_atributos_clase = numero_atributos_clase;
+	e->numero_atributos_instancia = numero_atributos_instancia;
+	e->numero_metodos_sobreescribibles = numero_metodos_sobreescribibles;
+	e->numero_metodos_no_sobreescribibles = numero_metodos_no_sobreescribibles;
+	e->tipo_acceso = tipo_acceso;
+	e->tipo_miembro = tipo_miembro;
+	e->posicion_atributo_instancia = posicion_atributo_instancia;
+	e->posicion_metodo_sobreescribible = posicion_metodo_sobreescribible;
+	e->num_acumulado_atributos_instancia = num_acumulado_atributos_instancia;
+	e->num_acumulado_metodos_sobreescritura = num_acumulado_metodos_sobreescritura;
 
 	return e;
 }
 
 static int modify_element(Element * e,
-													int category,
-													int basic_type,
-													int basic_class,
-													int num_rows,
-													int num_params,
-													int param_position,
-													int num_local_variables,
-													int local_variable_position){
+													int categoria,
+													int tipo,
+													int clase,
+													int direcciones,
+													int numero_parametros,
+													int posicion_parametro,
+													int numero_variables_locales,
+													int posicion_variable_local,
+													int tamanio,
+													int numero_atributos_clase,
+													int numero_atributos_instancia,
+													int numero_metodos_sobreescribibles,
+													int numero_metodos_no_sobreescribibles,
+													int tipo_acceso,
+													int tipo_miembro,
+													int posicion_atributo_instancia,
+													int posicion_metodo_sobreescribible,
+													int num_acumulado_atributos_instancia,
+													int num_acumulado_metodos_sobreescritura,
+													int * tipo_args){
 
-	if(e == NULL || category < 0 || basic_type < 0 || basic_class < 0 || num_rows < 0 || num_params < 0
-		|| param_position < 0 || num_local_variables < 0 || local_variable_position < 0){
+	if(e == NULL || categoria < 0 || tipo < 0 || clase < 0 || direcciones < 0 || numero_parametros < 0
+		|| posicion_parametro < 0 || numero_variables_locales < 0 || posicion_variable_local < 0){
 		/* If anyone of the arguments' value is less than zero return error */
 		printf("ERROR. argumentos new element mal\n");
 		return -1;
 	}
 
-	e->category = category;
-	e->basic_type = basic_type;
-	e->basic_class = basic_class;
-	e->num_rows = num_rows;
-	e->num_params = num_params;
-	e->param_position = param_position;
-	e->num_local_variables = num_local_variables;
-	e->local_variable_position = local_variable_position;
+	// esto se multiplica por numero parametros?
+	/*e->tipo_args = (int*)malloc(sizeof(int));
+	if(e->tipo_args == NULL){*/
+		/* error */
+		/*free(e);
+		printf("ERROR. Elemento no creado\n");
+		return NULL;
+	}*/
+	e->tipo_args = tipo_args;
+
+	e->categoria = categoria;
+	e->tipo = tipo;
+	e->clase = clase;
+	e->direcciones = direcciones;
+	e->numero_parametros = numero_parametros;
+	e->posicion_parametro = posicion_parametro;
+	e->numero_variables_locales = numero_variables_locales;
+	e->posicion_variable_local = posicion_variable_local;
+	e->tamanio = tamanio;
+	e->numero_atributos_clase = numero_atributos_clase;
+	e->numero_atributos_instancia = numero_atributos_instancia;
+	e->numero_metodos_sobreescribibles = numero_metodos_sobreescribibles;
+	e->numero_metodos_no_sobreescribibles = numero_metodos_no_sobreescribibles;
+	e->tipo_acceso = tipo_acceso;
+	e->tipo_miembro = tipo_miembro;
+	e->posicion_atributo_instancia = posicion_atributo_instancia;
+	e->posicion_metodo_sobreescribible = posicion_metodo_sobreescribible;
+	e->num_acumulado_atributos_instancia = num_acumulado_atributos_instancia;
+	e->num_acumulado_metodos_sobreescritura = num_acumulado_metodos_sobreescritura;
 
 	return 0;
 }
@@ -189,14 +276,26 @@ static void del_element(Element * e){
 
 /* Generate new hash table item */
 static HT_item* ht_new_item(const char* k,
-														int category,
-														int basic_type,
-														int basic_class,
-														int num_rows,
-														int num_params,
-														int param_position,
-														int num_local_variables,
-														int local_variable_position) {
+														int categoria,
+														int tipo,
+														int clase,
+														int direcciones,
+														int numero_parametros,
+														int posicion_parametro,
+														int numero_variables_locales,
+														int posicion_variable_local,
+														int tamanio,
+														int numero_atributos_clase,
+														int numero_atributos_instancia,
+														int numero_metodos_sobreescribibles,
+														int numero_metodos_no_sobreescribibles,
+														int tipo_acceso,
+														int tipo_miembro,
+														int posicion_atributo_instancia,
+														int posicion_metodo_sobreescribible,
+														int num_acumulado_atributos_instancia,
+														int num_acumulado_metodos_sobreescritura,
+														int * tipo_args) {
 
 		HT_item* item = malloc(sizeof(HT_item));
 		if(item == NULL){
@@ -205,14 +304,26 @@ static HT_item* ht_new_item(const char* k,
 		}
 		item->key = strdup(k);
 		
-		item->value = new_element(category,
-															basic_type,
-															basic_class,
-															num_rows,
-															num_params,
-															param_position,
-															num_local_variables,
-															local_variable_position);
+		item->value = new_element(categoria,
+															tipo,
+															clase,
+															direcciones,
+															numero_parametros,
+															posicion_parametro,
+															numero_variables_locales,
+															posicion_variable_local,
+															tamanio,
+															numero_atributos_clase,
+															numero_atributos_instancia,
+															numero_metodos_sobreescribibles,
+															numero_metodos_no_sobreescribibles,
+															tipo_acceso,
+															tipo_miembro,
+															posicion_atributo_instancia,
+															posicion_metodo_sobreescribible,
+															num_acumulado_atributos_instancia,
+															num_acumulado_metodos_sobreescritura,
+															tipo_args);
 
 		if(item-> value == NULL){
 			/* Error */
@@ -233,14 +344,22 @@ int print_item(HT_item * item){
 	}
 
 	printf("Item %s:\n", item->key);
-	printf("\t Categoria: %d\n", item->value->category);
-	printf("\t Tipo básico: %d\n", item->value->basic_type);
-	printf("\t Clase: %d\n", item->value->basic_class);
-	printf("\t Número de filas: %d\n", item->value->num_rows);
-	printf("\t Número de parámetros: %d\n", item->value->num_params);
-	printf("\t Posición parámetro: %d\n", item->value->param_position);
-	printf("\t Número de variables locales: %d\n", item->value->num_local_variables);
-	printf("\t Posición variable local: %d\n", item->value->local_variable_position);
+	printf("\t Categoria: %d\n", item->value->categoria);
+	printf("\t Tipo básico: %d\n", item->value->tipo);
+	printf("\t Clase: %d\n", item->value->clase);
+	printf("\t Direcciones: %d\n", item->value->direcciones);
+	printf("\t Número de parámetros: %d\n", item->value->numero_parametros);
+	printf("\t Posición parámetro: %d\n", item->value->posicion_parametro);
+	printf("\t Número de variables locales: %d\n", item->value->numero_variables_locales);
+	printf("\t Posición variable local: %d\n", item->value->posicion_variable_local);
+	printf("\t Tamaño: %d\n", item->value->tamanio);
+	printf("\t Número atributos clase: %d\n", item->value->numero_atributos_clase);
+	printf("\t Número atributos instancia: %d\n", item->value->numero_atributos_instancia);
+	printf("\t Número métodos sobreescribibles: %d\n", item->value->numero_metodos_sobreescribibles);
+	printf("\t Número métodos no sobreescribibles: %d\n", item->value->numero_metodos_no_sobreescribibles);
+	printf("\t Número acumulado atributos instancia: %d\n", item->value->num_acumulado_atributos_instancia);
+	printf("\t Número acumulado métodos sobrescritura: %d\n", item->value->num_acumulado_metodos_sobreescritura);
+	printf("\t Puntero %d\n", *item->value->tipo_args);
 
 	return 0;
 }
@@ -252,6 +371,16 @@ Element * ht_item_get_value(HT_item * item){
 
 	return item->value;
 }
+
+char * ht_item_get_name(HT_item * item){
+	if(item == NULL){
+		return NULL;
+	}
+
+	return item->key;
+}
+
+
 
 /* Delete hash table item */
 static void ht_del_item(HT_item* item) {
@@ -305,9 +434,10 @@ static int ht_get_hash(const char* s, const int size){
 /**********************************************/
 
 
-/* EN CASO DE QUE LE QUERAMOS PONER TAMAÑO A CADA TABLA HASH
-HT_hash_table* ht_new(int min_size) {
-		HT_hash_table* ht = NULL;
+/* EN CASO DE QUE LE QUERAMOS PONER TAMAÑO A CADA TABLA HASH */
+/* Generate new hash table */
+TablaSimbolos* new_tabla_simbolos(int min_size) {
+		TablaSimbolos* ht = NULL;
 		int num;
 
 		if(!is_prime(min_size)){
@@ -315,7 +445,7 @@ HT_hash_table* ht_new(int min_size) {
 		}else{
 			num = min_size;
 		}
-		ht = malloc(sizeof(HT_hash_table));
+		ht = malloc(sizeof(TablaSimbolos));
 		if(ht == NULL){
 			return NULL;
 		}
@@ -323,16 +453,20 @@ HT_hash_table* ht_new(int min_size) {
 		ht->size = num;
 		ht->count = 0;
 		// Make them point to NULL
-		ht->items = calloc((size_t)ht->size, sizeof(HT_item*));
+		ht->items = (HT_item **) calloc(ht->size, sizeof(HT_item *));
+		if(ht->items == NULL){
+			free(ht);
+			return NULL;
+		}
 		return ht;
 }
-*/
+
 
 /* Generate new hash table */
-HT_hash_table* ht_new() {
-		HT_hash_table* ht = NULL;
+TablaSimbolos* ht_new() {
+		TablaSimbolos* ht = NULL;
 
-		ht = malloc(sizeof(HT_hash_table));
+		ht = malloc(sizeof(TablaSimbolos));
 		if(ht == NULL){
 			return NULL;
 		}
@@ -348,6 +482,23 @@ HT_hash_table* ht_new() {
 		return ht;
 }
 
+int ht_get_size(TablaSimbolos * ts){
+	if(ts == NULL){
+		printf("ERROR, la tabla simbolos no existe\n");
+		return -1;
+	}
+
+	return ts->size;
+}
+int ht_get_count(TablaSimbolos * ts){
+	if(ts == NULL){
+		printf("ERROR, la tabla simbolos no existe\n");
+		return -1;
+	}
+
+	return ts->count;
+}
+
 /* Delete row of items */
 static void ht_del_row(HT_item* item){
 	if(item->next != NULL){
@@ -358,7 +509,7 @@ static void ht_del_row(HT_item* item){
 }
 
 /* Delete hash table */
-void ht_del_hash_table(HT_hash_table* ht) {
+void ht_del_hash_table(TablaSimbolos* ht) {
 	HT_item* item = NULL;
 
 	for (int i = 0; i < ht->size; i++) {
@@ -371,29 +522,53 @@ void ht_del_hash_table(HT_hash_table* ht) {
 	free(ht);
 }
 
-HT_item * ht_insert_item(HT_hash_table* ht, const char* key,
-																			int category,
-																			int basic_type,
-																			int basic_class,
-																			int num_rows,
-																			int num_params,
-																			int param_position,
-																			int num_local_variables,
-																			int local_variable_position) {
+HT_item * ht_insert_item(TablaSimbolos* ht, const char* key,
+																			int categoria,
+																			int tipo,
+																			int clase,
+																			int direcciones,
+																			int numero_parametros,
+																			int posicion_parametro,
+																			int numero_variables_locales,
+																			int posicion_variable_local,
+																			int tamanio,
+																			int numero_atributos_clase,
+																			int numero_atributos_instancia,
+																			int numero_metodos_sobreescribibles,
+																			int numero_metodos_no_sobreescribibles,
+																			int tipo_acceso,
+																			int tipo_miembro,
+																			int posicion_atributo_instancia,
+																			int posicion_metodo_sobreescribible,
+																			int num_acumulado_atributos_instancia,
+																			int num_acumulado_metodos_sobreescritura,
+																			int * tipo_args) {
 
 
 	int index;
 	HT_item* cur_item = NULL;
 
 	HT_item* item = ht_new_item(key,
-															category,
-															basic_type,
-															basic_class,
-															num_rows,
-															num_params,
-															param_position,
-															num_local_variables,
-															local_variable_position);
+															categoria,
+															tipo,
+															clase,
+															direcciones,
+															numero_parametros,
+															posicion_parametro,
+															numero_variables_locales,
+															posicion_variable_local,
+															tamanio,
+															numero_atributos_clase,
+															numero_atributos_instancia,
+															numero_metodos_sobreescribibles,
+															numero_metodos_no_sobreescribibles,
+															tipo_acceso,
+															tipo_miembro,
+															posicion_atributo_instancia,
+															posicion_metodo_sobreescribible,
+															num_acumulado_atributos_instancia,
+															num_acumulado_metodos_sobreescritura,
+															tipo_args);
 
 	if (item == NULL) {
 		ht_del_item(item);
@@ -430,9 +605,64 @@ HT_item * ht_insert_item(HT_hash_table* ht, const char* key,
 	return item;
 }
 
+/* Auxiliar */
+
+int get_names_row(HT_item * item,char ** names, int *count){
+	if(item == NULL || names == NULL){
+		printf("ERROR, item vacío\n");
+		return -1;
+	}
+	names[count[0]] = strdup(item->key);
+	if(names[count[0]] == NULL){
+		printf("ERROR, no se ha copiado el nombre del elemento\n");
+		return -1;
+	}
+	count[0]++;
+	if(item->next != NULL){
+		if(get_names_row(item->next, names, count) != 0){
+			printf("ERROR, en la recursión al coger nombres\n");
+			return -1;
+		}
+	}
+
+	
+	
+	return 0;
+}
+
+
+char ** ht_get_name_symbols(TablaSimbolos * ts){
+	char ** names = NULL;
+	int count[1];
+	int i;
+	if(ts == NULL){
+		printf("ERROR, al coger los nombres de los elementos de la tabla, ésta no existe\n");
+		return NULL;
+	}
+
+	count[0] = 0;
+	names = (char **)malloc(sizeof(char*) * ts->count);
+	if(names == NULL){
+		printf("ERROR: No se ha podido guardar memoria para los nombres\n");
+		return NULL;
+	}
+	for(i = 0; i < ts->size; i ++){
+		if(ts->items[i] != NULL){
+			if(get_names_row(ts->items[i], names, count) != 0){
+				printf("ERROR, al coger nombres de fila\n");
+				return NULL;
+			}
+		}
+	}
+	if(names == NULL){
+		printf("algo faaaalla\n");
+	}
+
+	return names;
+}
 
 // Returns the value of the item if exists
-HT_item * ht_search_item(HT_hash_table* ht, const char* key) {
+HT_item * ht_search_item(TablaSimbolos* ht, const char* key) {
 	int index;
 	HT_item* item = NULL;
 
@@ -459,15 +689,40 @@ HT_item * ht_search_item(HT_hash_table* ht, const char* key) {
 	return item;
 }
 
-HT_item * ht_modify_item(HT_hash_table* ht, const char* key,
-																						int category,
-																						int basic_type,
-																						int basic_class,
-																						int num_rows,
-																						int num_params,
-																						int param_position,
-																						int num_local_variables,
-																						int local_variable_position){
+HT_item *ht_modify_value_item(TablaSimbolos *ht, const char *key, Element *e){
+
+	HT_item *item;
+
+	if (!ht || !key || !e) return NULL;
+
+	item = ht_search_item(ht, key);
+	if (!item) return NULL;
+
+	item->value = e;
+	return item;
+}
+
+HT_item * ht_modify_item(TablaSimbolos* ht, const char* key,
+																						int categoria,
+																						int tipo,
+																						int clase,
+																						int direcciones,
+																						int numero_parametros,
+																						int posicion_parametro,
+																						int numero_variables_locales,
+																						int posicion_variable_local,
+																						int tamanio,
+																						int numero_atributos_clase,
+																						int numero_atributos_instancia,
+																						int numero_metodos_sobreescribibles,
+																						int numero_metodos_no_sobreescribibles,
+																						int tipo_acceso,
+																						int tipo_miembro,
+																						int posicion_atributo_instancia,
+																						int posicion_metodo_sobreescribible,
+																						int num_acumulado_atributos_instancia,
+																						int num_acumulado_metodos_sobreescritura,
+																						int * tipo_args){
 
 	HT_item * item = NULL;
 	int res = -1;
@@ -484,11 +739,37 @@ HT_item * ht_modify_item(HT_hash_table* ht, const char* key,
 	}
 
 
-	res = modify_element(item->value, category, basic_type, basic_class, num_rows, num_params, param_position, num_local_variables, local_variable_position );
+	res = modify_element(item->value,
+															categoria,
+															tipo,
+															clase,
+															direcciones,
+															numero_parametros,
+															posicion_parametro,
+															numero_variables_locales,
+															posicion_variable_local,
+															tamanio,
+															numero_atributos_clase,
+															numero_atributos_instancia,
+															numero_metodos_sobreescribibles,
+															numero_metodos_no_sobreescribibles,
+															tipo_acceso,
+															tipo_miembro,
+															posicion_atributo_instancia,
+															posicion_metodo_sobreescribible,
+															num_acumulado_atributos_instancia,
+															num_acumulado_metodos_sobreescritura,
+															tipo_args);
 	if(res != 0){
 		printf("ERROR al modificar item. Fallo en la actualización de los valores\n");
 		return NULL;
 	}
 
 	return item;
+}
+
+int ht_get_num_attrib(HT_item *item){
+	if (!item) return -1;
+
+	return item->value->numero_atributos_clase;
 }

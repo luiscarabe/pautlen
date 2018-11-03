@@ -27,7 +27,7 @@ DEPS = $(shell echo $(SOURCES) | sed -e 's:\.c[p]*:\.d:g')
 
 all:	graph-test hash-test
 
-graph-test: graph-test.o graph.o node.o
+graph-test: graph-test.o graph.o node.o hash_table.o
 
 hash-test: hash-test.o hash_table.o
 
