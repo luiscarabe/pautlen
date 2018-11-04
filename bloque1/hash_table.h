@@ -1,4 +1,4 @@
-/***************************************************************************
+/**************************************************************************
 hash_table.h
 
 PAULEN
@@ -29,6 +29,7 @@ enum tipo {
 /* Clase del dato */
 enum clase {
 	ESCALAR = 1,
+	VECTOR,
 	OBJETO
 };
 /* Tipo de acceso */
@@ -99,10 +100,22 @@ HT_item * ht_modify_item(TablaSimbolos* ht,
 		int num_acumulado_metodos_sobreescritura, 
 		int * tipo_args);
 
-HT_item *ht_modify_value_item(TablaSimbolos *ht, const char *key, Element *e);
-
 Element * ht_item_get_value(HT_item * item);
 void ht_del_hash_table(TablaSimbolos* h);
+
+// Para debuggear
+void imprimirTabla(TablaSimbolos *ht);
+
+// Funciones que he añadido fruto de la desorientación
+int get_num_atributos_instancia(TablaSimbolos *ht, const char *key);
+int get_num_metodos_sobreescritura(TablaSimbolos *ht, const char *key);
+int get_num_atributos_instancia_acum(TablaSimbolos *ht, const char *key);
+int get_num_metodos_sobreescritura_acum(TablaSimbolos *ht, const char *key);
+
+int modify_atributos_instancia(TablaSimbolos *ht, const char *key, int x,	int (*f)(int *a, int b));
+int modify_metodos_sobreescritura(TablaSimbolos *ht, const char *key, int x, int (*f)(int *a, int b));
+int modify_atributos_instancia_acum(TablaSimbolos *ht, const char *key, int x, int (*f)(int *a, int b));
+int modify_metodos_sobre_acum(TablaSimbolos *ht, const char *key, int x, int (*f)(int *a, int b));
 
 
 #endif /* HASH_TABLE_H */

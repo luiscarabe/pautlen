@@ -36,7 +36,6 @@ Node *newNode(char *name){
 	}
 
 	strcpy(newNode->name, name);
-	// newNode->content = content;
 	return newNode;
 }
 
@@ -63,7 +62,6 @@ Node *newNodeTam(char *name, int tamanio){
 	}
 
 	strcpy(newNode->name, name);
-	// newNode->content = content;
 	return newNode;
 }
 
@@ -83,11 +81,6 @@ int nameCompare(Node *node, char *name){
 	return strcmp(node->name, name);
 }
 
-// void *getContent(Node *node){
-//  if (!node) return NULL;
-//  return node->content;
-// }
-
 char *getName(Node *node){
 	if (!node) return NULL;
 	return node->name;
@@ -99,24 +92,11 @@ char **getAttributes(Node *node){
 	return ht_get_name_symbols(node->primary_scope);
 }
 
-// char **getFunctions(Node *node){
-//  if (!node) return NULL;
-
-//  return ht_get_name_symbols(node->func_scope);
-// }
-
 int getNumAttributes(Node *node){
 	if (!node) return -1;
 
 	return ht_get_count(node->primary_scope);
 }
-
-// int getNumFunctions(Node *node){
-//  if (!node) return -1;
-
-//  return ht_get_count(node->func_scope);
-// }
-
 
 int insertarTablaSimbolos(Node *node,
 		const char* key,            int categoria,  
@@ -170,10 +150,25 @@ int abrirAmbitoFunc(Node *node, char * id_clase,
                                 int tipo_metodo, 
                                 int posicion_metodo_sobre, 
                                 int tamanio){
+	char *name;
+
 	if (!node) return -1;
 
+	name = (char *) malloc(sizeof(char) * (strlen(id_clase) + strlen(id_ambito) + 2));
+	if (!name) return -1;
+
+	if (strcpy(name, id_clase) < 0){
+		free(name);
+		return -1;
+	}
+
+	if (!strcat(strcat(name, "_"), id_ambito)){
+		free(name);
+		return -1;
+	}
+
 	if (!ht_insert_item(node->primary_scope, 
-										 id_ambito,
+										 name,
 										 categoria_ambito,
 										 tipo_metodo,
 										 0,
@@ -193,8 +188,12 @@ int abrirAmbitoFunc(Node *node, char * id_clase,
 										 posicion_metodo_sobre,
 										 0,
 										 0,
-										 0))
+										 0)){
+		free(name);
 		return -1;
+	}
+
+	free(name);
 
 	node->func_scope = ht_new();
 	if (!node->func_scope) return -1;
@@ -220,8 +219,10 @@ int abrirAmbitoFunc(Node *node, char * id_clase,
 										 posicion_metodo_sobre,
 										 0,
 										 0,
-										 0))
+										 0)){
+		ht_del_hash_table(node->func_scope);
 		return -1;
+	}
 
 	return 0;
 }
@@ -231,4 +232,19 @@ int cerrarAmbitoFunc(Node *node){
 
 	ht_del_hash_table(node->func_scope);
 	return 0;
+}
+
+void imprimirTablaPpal(Node *n){
+	if (!n) return;
+	imprimirTabla(n->primary_scope);
+}
+
+void imprimirTablaFunc(Node *n){
+	if (!n) return;
+	imprimirTabla(n->func_scope);
+}
+
+TablaSimbolos *getPrimaryScope(Node *node){
+	if (!node) return NULL;
+	return node->primary_scope;
 }
