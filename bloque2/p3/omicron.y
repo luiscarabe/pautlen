@@ -5,7 +5,7 @@
 
 	extern int yylex(void);
 	int yyerror (const char *s);
-	FILE* fout;
+	extern FILE* fout;
 
 %}
 
