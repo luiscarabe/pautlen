@@ -13,7 +13,7 @@
 {
   int numero;
   /*TODO: Memoria dinamica*/
-  char* cadena;
+  char cadena[1000];
 }
 
 
@@ -56,10 +56,6 @@
 /* ERRORES */
 %token TOK_ERROR
 
-
-
-
-
 %left '+' '-'
 %left '*' '/'
 %right NEG_UNARIA '!'
@@ -75,7 +71,7 @@ programa: TOK_MAIN '{' declaraciones funciones sentencias '}' { fprintf(fout, ";
 
 
 declaraciones: declaracion {fprintf(fout, ";R:\tdeclaraciones: declaracion\n");}
-			 | declaracion declaraciones {fprintf(fout, ";R:\tdeclaraciones: declaracion declaraciones\n"");};
+			 | declaracion declaraciones {fprintf(fout, ";R:\tdeclaraciones: declaracion declaraciones\n");};
 
 
 declaracion: modificadores_acceso clase identificadores ';' {fprintf(fout, ";R:\tdeclaracion: modificadores_acceso clase identificadores ';'\n");}

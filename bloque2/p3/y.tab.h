@@ -125,9 +125,10 @@ union YYSTYPE
 #line 13 "omicron.y" /* yacc.c:1909  */
 
   int numero;
-  char cadena[50];
+  /*TODO: Memoria dinamica*/
+  char cadena[1000];
 
-#line 131 "y.tab.h" /* yacc.c:1909  */
+#line 132 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
