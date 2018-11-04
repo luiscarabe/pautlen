@@ -13,7 +13,7 @@
 {
   int numero;
   /*TODO: Memoria dinamica*/
-  char cadena[50];
+  char* cadena;
 }
 
 
@@ -59,6 +59,7 @@
 
 
 
+
 %left '+' '-'
 %left '*' '/'
 %right NEG_UNARIA '!'
@@ -69,8 +70,9 @@
 
 %% /*Seccion de reglas*/
 
-programa: TOK_MAIN '{' declaraciones funciones sentencias '}' { fprintf(fout, ";R: hola");}
-		| TOK_MAIN '{' funciones sentencias '}';
+programa: TOK_MAIN '{' funciones declaraciones funciones sentencias '}' { fprintf(fout, ";R: hola");}
+		| TOK_MAIN '{' declaraciones funciones sentencias '}' { fprintf(fout, ";R: hola");}
+		| TOK_MAIN '{' funciones sentencias '}'  ;
 
 
 declaraciones: declaracion {fprintf(fout, ";R: hola3");}
@@ -81,7 +83,7 @@ declaracion: modificadores_acceso clase identificadores ';' {fprintf(fout, ";R: 
  		   | modificadores_acceso declaracion_clase ';'  {fprintf(fout, ";R: hola8000");};
 
 
-modificadores_acceso: TOK_HIDDEN TOK_UNIQUE
+modificadores_acceso: TOK_HIDDEN TOK_UNIQUE 
 					| TOK_SECRET TOK_UNIQUE
 					| TOK_EXPOSED TOK_UNIQUE
 					| TOK_HIDDEN

@@ -19,4 +19,4 @@ pruebaSintactico: pruebaSintactico.c
 	$(CC) $(CCFLAGS) -o $@ $<
 
 clean:
-	rm -f y.tab.o lex.yy.o pruebaSintactico y.tab.c lex.yy.c
+	rm -f y.tab.o lex.yy.o pruebaSintactico y.tab.h y.tab.c lex.yy.c 
