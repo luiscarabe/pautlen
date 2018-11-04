@@ -359,7 +359,10 @@ int print_item(HT_item * item){
 	printf("\t Número métodos no sobreescribibles: %d\n", item->value->numero_metodos_no_sobreescribibles);
 	printf("\t Número acumulado atributos instancia: %d\n", item->value->num_acumulado_atributos_instancia);
 	printf("\t Número acumulado métodos sobrescritura: %d\n", item->value->num_acumulado_metodos_sobreescritura);
-	printf("\t Puntero %d\n", *item->value->tipo_args);
+	if (item->value->tipo_args)
+		printf("\t Puntero %d\n", *(item->value->tipo_args)); // (Primera posicion del array)
+	else
+		printf("\t Puntero: (null)");
 
 	return 0;
 }
@@ -689,19 +692,6 @@ HT_item * ht_search_item(TablaSimbolos* ht, const char* key) {
 	return item;
 }
 
-HT_item *ht_modify_value_item(TablaSimbolos *ht, const char *key, Element *e){
-
-	HT_item *item;
-
-	if (!ht || !key || !e) return NULL;
-
-	item = ht_search_item(ht, key);
-	if (!item) return NULL;
-
-	item->value = e;
-	return item;
-}
-
 HT_item * ht_modify_item(TablaSimbolos* ht, const char* key,
 																						int categoria,
 																						int tipo,
@@ -768,8 +758,113 @@ HT_item * ht_modify_item(TablaSimbolos* ht, const char* key,
 	return item;
 }
 
-int ht_get_num_attrib(HT_item *item){
+void imprimirTabla(TablaSimbolos *ht){
+	if (!ht) return;
+	HT_item *next = NULL;
+
+	for (int i = 0; i < ht->size; i++){
+		if (ht->items[i]){
+			print_item(ht->items[i]);
+			printf("\n");
+			
+			next = ht->items[i]->next;
+			while (next){
+				print_item(next);
+				printf("\n");
+				next = next->next;
+			}
+		}
+	}
+}
+
+int get_num_atributos_instancia(TablaSimbolos *ht, const char *key){
+	HT_item *item;
+
+	if (!ht || !key) return -1;
+
+	item = ht_search_item(ht, key);
 	if (!item) return -1;
 
-	return item->value->numero_atributos_clase;
+	return item->value->numero_atributos_instancia;
 }
+
+int get_num_metodos_sobreescritura(TablaSimbolos *ht, const char *key){
+	HT_item *item;
+
+	if (!ht || !key) return -1;
+
+	item = ht_search_item(ht, key);
+	if (!item) return -1;
+
+	return item->value->numero_metodos_sobreescribibles;
+}
+
+int get_num_atributos_instancia_acum(TablaSimbolos *ht, const char *key){
+	HT_item *item;
+
+	if (!ht || !key) return -1;
+
+	item = ht_search_item(ht, key);
+	if (!item) return -1;
+
+	return item->value->num_acumulado_atributos_instancia;
+}
+
+int get_num_metodos_sobreescritura_acum(TablaSimbolos *ht, const char *key){
+	HT_item *item;
+
+	if (!ht || !key) return -1;
+
+	item = ht_search_item(ht, key);
+	if (!item) return -1;
+
+	return item->value->num_acumulado_metodos_sobreescritura;
+}
+
+int modify_atributos_instancia(TablaSimbolos *ht, const char *key, int x, int (*f)(int *a, int b)){
+	HT_item *item;
+
+	if (!ht || !key) return -1;
+
+	item = ht_search_item(ht, key);
+	if (!item) return -1;
+
+	return f(&item->value->numero_atributos_instancia, x);
+}
+
+
+int modify_metodos_sobreescritura(TablaSimbolos *ht, const char *key, int x, int (*f)(int *a, int b)){
+	HT_item *item;
+
+	if (!ht || !key) return -1;
+
+	item = ht_search_item(ht, key);
+	if (!item) return -1;
+
+	return f(&item->value->numero_metodos_sobreescribibles, x);
+}
+
+int modify_atributos_instancia_acum(TablaSimbolos *ht, const char *key, int x, int (*f)(int *a, int b)){
+	HT_item *item;
+
+	if (!ht || !key) return -1;
+
+	item = ht_search_item(ht, key);
+	if (!item) return -1;
+
+	return f(&item->value->num_acumulado_atributos_instancia, x);
+}
+
+
+int modify_metodos_sobre_acum(TablaSimbolos *ht, const char *key, int x, int (*f)(int *a, int b)){
+	HT_item *item;
+
+	if (!ht || !key) return -1;
+
+	item = ht_search_item(ht, key);
+	if (!item) return -1;
+
+	return f(&item->value->num_acumulado_metodos_sobreescritura, x);
+}
+
+

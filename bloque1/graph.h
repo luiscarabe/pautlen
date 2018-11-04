@@ -8,7 +8,6 @@ int addNode(Graph *graph, Node *node);
 void addParent(Graph *graph, int child, int parent);
 void deleteGraph(Graph *graph);
 void printGraph(Graph *graph);
-// void **getAncestorsOfNode(Graph *graph, char *node_name);
 Graph * tablaSimbolosClasesToDot(Graph * grafo);
 
 
@@ -74,6 +73,9 @@ int tablaSimbolosClasesAbrirAmbitoEnClase(Graph * grafo,
 int tablaSimbolosClasesCerrarAmbitoEnClase(Graph* grafo, 
                             char * id_clase);
 
+
+// Para debuggear - usar con precaucion
+void imprimirTablasHash(Graph *g);
 
 // void graph_enrouteParentsLastNode(Graph * g);
 

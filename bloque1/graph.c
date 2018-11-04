@@ -7,6 +7,7 @@
 
 #include "graph.h"
 #include "node.h"
+#include "hash_table.h"
 
 #define NREALLOC 64
 #define min(x, y) ((((x) < (y)) || (y) == 0) ? (x) : (y))
@@ -18,8 +19,24 @@ typedef struct _Graph {
 	Node **nodes; // nodes of the graph
 	char **amatrix; // adjacency matrix
 	// int clase_actual;
+	Node *main;
 } Graph;
 
+int modificar_insertar(TablaSimbolos *ht, 
+											 TablaSimbolos *main, 
+											 char *id_clase, 
+											 int x,
+											 int (*f)(TablaSimbolos *ts, const char *key, int incr, int (*g)(int *a, int b)));
+
+int increment(int *a, int b){
+	(*a) += b;
+	return *a;
+}
+
+int decrement(int *a, int b){
+	(*a) -= b;
+	return *a;
+}
 
 int buildMatrix(Graph *graph){
 	int i, j;
@@ -176,11 +193,16 @@ void deleteGraph(Graph *graph){
 
 	if (!graph) return;
 
-	for (i = 0; i < graph->n; i++) deleteNode(graph->nodes[i]);
+	for (i = 0; i < graph->n; i++) 
+		deleteNode(graph->nodes[i]);
 	free(graph->nodes);
 
-	for (i = 0; i < graph->allocated; i++) free(graph->amatrix[i]);
+	for (i = 0; i < graph->allocated; i++) 
+		free(graph->amatrix[i]);
 	free(graph->amatrix);
+
+	deleteNode(graph->main);
+	free(graph->name);
 	free(graph);
 }
 
@@ -214,6 +236,7 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 	FILE *f;
 	int i, j;
 	char **args;
+	int num_attributes;
 
 	if (!grafo || !grafo->name) return NULL;
 
@@ -241,11 +264,16 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 
 	for (i = 0; i < grafo->n; i++){
 		fprintf(f, "\t%s [label=\"{%s|%s\\l" , getName(grafo->nodes[i]), getName(grafo->nodes[i]), getName(grafo->nodes[i]));
+		
 		args = getAttributes(grafo->nodes[i]);
-		for (j = 0; j < getNumAttributes(grafo->nodes[i]); j++)
+		num_attributes = getNumAttributes(grafo->nodes[i]);
+		for (j = 0; j < num_attributes; j++)
 			fprintf(f, "%s\\l", args[j]);
 
 		fprintf(f, "}\"][shape=record];\n");
+		for (j = 0; j < num_attributes; j++)
+			free(args[j]);
+		free(args);
 	}
 
 	for (i = 0; i < grafo->n; i++){
@@ -258,7 +286,7 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 	fprintf(f, "\t edge [arrowhead = normal]\n");
 
 	for (i = 0; i < grafo->n; i++)
-		fprintf(f, "\t%s [label=\"%s\"][shape=oval];\n" , getName(grafo->nodes[i]), getName(grafo->nodes[i]));
+		fprintf(f, "\t%sN%d [label=\"%s\"][shape=oval];\n" , getName(grafo->nodes[i]), i, getName(grafo->nodes[i]));
 
 	for (i = 0; i < grafo->n - 1; i++)
 			fprintf(f, "\t %sN%d -> %sN%d\n", getName(grafo->nodes[i]), i, getName(grafo->nodes[i+1]), i+1);
@@ -267,7 +295,7 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 	
 	fclose(f);	
 	free(file_name);
-	
+
 	return grafo;	
 }
 
@@ -276,17 +304,50 @@ int iniciarTablaSimbolosClases(Graph** t, char * nombre){
 
 	*t = newGraph(nombre);
 	if (!t) return -1;
+
+	(*t)->main = newNode("main");
+	if (!(*t)->main){
+		free(*t);
+		return -1;
+	}
+
 	return 0;
 }
 
 int abrirClase(Graph* t, char* id_clase){
 	Node *node;
+	char *name;
 
 	if (!t || !id_clase) return 0;
 
 	node = newNode(id_clase);
 	if (!node) return 0;
 
+	name = (char *) malloc(sizeof(char) * (strlen(id_clase) + 6));
+	if (!name){
+		deleteNode(node);
+		return 0;
+	}
+
+	if (strcpy(name, "main_") < 0){
+		deleteNode(node);
+		free(name);
+		return 0;
+	}
+
+	if (!strcat(name, id_clase)){
+		deleteNode(node);
+		free(name);
+		return 0;
+	}
+
+	insertarTablaSimbolos(t->main, name, CLASE, 0, OBJETO, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL);
+
+	insertarTablaSimbolos(node, id_clase, CLASE, 0, OBJETO, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL);
+
+	free(name);
 	return addNode(t, node);
 }
 
@@ -294,40 +355,46 @@ int abrirClaseHereda(Graph* t, char* id_clase, ...){
 	va_list valist;
 	int p, n;
 	char *arg;
-	Node *node;
+	int atributos_instancia_acum, metodos_sobre_acum;
 
 	if (!t || !id_clase) return -1;
 
-	node = newNode(id_clase);
-	if (!node) return -1;
+	if ((n = abrirClase(t, id_clase)) == -1) return -1;
 
-	if ((n = addNode(t, node)) == -1) return -1;
+	atributos_instancia_acum = 0;
+	metodos_sobre_acum = 0;
 
 	va_start(valist, id_clase);
 	while ((arg = va_arg(valist, char*))){
 		if ((p = indexOf(t, arg)) >= 0){
 			addParent(t, n, p);
+			atributos_instancia_acum += get_num_atributos_instancia(getPrimaryScope(t->nodes[p]), arg);
+			atributos_instancia_acum += get_num_atributos_instancia_acum(getPrimaryScope(t->nodes[p]), arg);
+
+			metodos_sobre_acum += get_num_metodos_sobreescritura(getPrimaryScope(t->nodes[p]), arg);
+			metodos_sobre_acum += get_num_metodos_sobreescritura_acum(getPrimaryScope(t->nodes[p]), arg);
 		}
 	}
 	va_end(valist);
 
+	if (atributos_instancia_acum > 0){
+		modificar_insertar(getPrimaryScope(t->nodes[n]),
+											 getPrimaryScope(t->main),
+											 id_clase,
+											 atributos_instancia_acum,
+											 &modify_atributos_instancia_acum);
+	}
+
+	if (metodos_sobre_acum > 0){
+		modificar_insertar(getPrimaryScope(t->nodes[n]),
+											 getPrimaryScope(t->main),
+											 id_clase,
+											 metodos_sobre_acum,
+											 &modify_metodos_sobre_acum);
+	}
+
 	return 0;
 }
-
-// int aniadirAtributoClase(Graph *graph, char *atributo){
-// 	if (!graph || !atributo) return -1;
-
-// }
-
-// int abrirFuncionClase(Graph *graph, char *funcion){
-// 	if (!graph || !atributo) return -1;
-
-// }
-
-// int cerrarFuncionClase(Graph *graph, char *funcion){
-// 	if (!graph || !atributo) return -1;
-
-// }
 
 int cerrarClase(Graph* t,
 								char* id_clase, 
@@ -337,11 +404,6 @@ int cerrarClase(Graph* t,
 								int num_metodos_no_sobreescribibles){
 	if (!id_clase || num_atributos_clase < 0 || num_atributos_instancia < 0 || num_metodos_sobreescribibles < 0 || num_metodos_no_sobreescribibles < 0)
 		return -1;
-
-	// if (!strcmp(getName(t->nodes[clase_actual]), id_clase)){
-	// 	clase_actual = -1;
-	// 	return 1;
-	// }
 
 	return 0;
 }
@@ -355,6 +417,42 @@ int abrirAmbitoClase(Node** t, char* id_clase, int tamanio){
 
 	return 0;
 }
+
+int modificar_insertar(TablaSimbolos *ht, 
+											 TablaSimbolos *main, 
+											 char *id_clase, 
+											 int x,
+											 int (*f)(TablaSimbolos *ts, const char *key, int incr, int (*g)(int *a, int b))){
+	char *name_main;
+
+	if (!ht || !main)	return -1;
+
+	name_main = (char *) malloc(sizeof(char) * (strlen(id_clase) + 6));
+	if (strcpy(name_main, "main_") < 0){
+		free(name_main);
+		return -1;
+	}
+
+	if (!strcat(name_main, id_clase)){
+		free(name_main);
+		return -1;
+	}
+
+	if(f(ht, id_clase, x, &increment) == -1){
+		free(name_main);
+		return -1;
+	}
+
+	if(f(main, name_main, x, &increment) == -1){
+		f(ht, id_clase, x, &decrement);
+		free(name_main);
+		return -1;
+	}
+
+	free(name_main);
+	return 0;
+}
+
 
 int insertarTablaSimbolosClases(Graph * grafo, 
 		char * id_clase,                 int categoria,
@@ -372,15 +470,50 @@ int insertarTablaSimbolosClases(Graph * grafo,
 		int * tipo_args){
 
 
-	int index_clase;
+	int index_clase, ret;
+	char *name;
 
 	if (!grafo || !id_clase || !id) return -1;
 
 	index_clase = indexOf(grafo, id_clase);
 	if (index_clase == -1) return -1;
 
-	return insertarTablaSimbolos(grafo->nodes[index_clase], 
-															 id,
+	name = (char *) malloc(sizeof(char) * (strlen(id_clase) + strlen(id) + 2));
+	if (!name) return -1;
+
+	if (strcpy(name, id_clase) < 0){
+		free(name);
+		return -1;
+	}
+
+	if (!strcat(strcat(name, "_"), id)){
+		free(name);
+		return -1;
+	}
+
+	if (categoria == ATRIBUTO_INSTANCIA){
+		if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
+													 getPrimaryScope(grafo->main), 
+													 id_clase, 
+													 1,
+													 &modify_atributos_instancia) == -1){
+			free(name);
+			return -1;
+		}
+	}
+	else if (categoria == METODO_SOBREESCRIBIBLE){
+		if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
+													 getPrimaryScope(grafo->main), 
+													 id_clase, 
+													 1,
+													 &modify_metodos_sobreescritura)){
+			free(name);
+			return -1;
+		}
+	}
+
+	ret = insertarTablaSimbolos(grafo->nodes[index_clase], 
+															 name,
 															 categoria,
 															 tipo,
 															 clase,
@@ -401,6 +534,9 @@ int insertarTablaSimbolosClases(Graph * grafo,
 															 num_acumulado_atributos_instancia,
 															 num_acumulado_metodos_sobreescritura,
 															 tipo_args);
+
+	free(name);
+	return ret;
 }
 
 
@@ -445,6 +581,20 @@ int tablaSimbolosClasesCerrarAmbitoEnClase(Graph* grafo,
 }
 
 
+void imprimirTablasHash(Graph *g){
+	if (!g) return;
 
+	printf("Tabla del main");
+	imprimirTablaPpal(g->main);
+	imprimirTablaFunc(g->main);
+	printf("\n\n");
+
+	for (int i = 0; i < g->n ; i++){
+		printf("Tabla del nodo %s\n", getName(g->nodes[i]));
+		imprimirTablaPpal(g->nodes[i]);
+		imprimirTablaFunc(g->nodes[i]);
+		printf("\n\n");
+	}
+}
 
 

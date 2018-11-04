@@ -1,20 +1,17 @@
 // Definition of a node
+#include "hash_table.h"
 
 typedef struct _Node Node;
 
-// Node *newNode(char *name, void *content);
 Node *newNode(char *name);
 Node *newNodeTam(char *name, int tamanio);
 
 int nameCompare(Node *node, char *name);
-// void *getContent(Node *node);
 void deleteNode(Node *node);
 void printNode(Node *node);
 char *getName(Node *node);
 char **getAttributes(Node *node);
-// char **getFunctions(Node *node);
 int getNumAttributes(Node *node);
-// int getNumFunctions(Node *node);
 int abrirAmbitoFunc(Node *node, char * id_clase,
                                 char* id_ambito, 
                                 int categoria_ambito, 
@@ -41,3 +38,10 @@ int insertarTablaSimbolos(Node *node,
 		int num_acumulado_metodos_sobreescritura, 
 		int * tipo_args);
 
+
+// Para debuggear
+void imprimirTablaPpal(Node *n);
+void imprimirTablaFunc(Node *n);
+
+
+TablaSimbolos *getPrimaryScope(Node *node);
