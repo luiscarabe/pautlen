@@ -12,7 +12,7 @@ Grupo 5: Alejandro Cabana, Luis Cárabe, Emilio Cuesta, Blanca Martín, Pablo Al
 #include "y.tab.c"
 
 extern FILE* yyin;
-extern FILE* fout;
+FILE* fout;
 
 int main(int argc, char** argv){
 
@@ -41,7 +41,7 @@ int main(int argc, char** argv){
 	if(ret != 0){
 		fprintf(stderr, "Error en yyparse");
 	}
-	
+
 
 	fclose(yyin);
 	fclose(fout);
