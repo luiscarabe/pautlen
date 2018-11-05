@@ -603,7 +603,7 @@ int esDescendiente(Graph *g, char *descendiente, char *antecesor){
 int aplicarAccesos(Graph *g, char * nombre_clase_ambito_actual, char * clase_declaro, Element * pelem){
 	enum acceso access;
 
-	if (!g || !nombre_clase_ambito_actual || !clase_declaro || !pelem) return -1;
+	if (!g || !nombre_clase_ambito_actual || !clase_declaro || !pelem) return ERR;
 
 	access = ElementGetAccess(pelem);
 
@@ -646,7 +646,7 @@ int buscarIdEnJerarquiaDesdeClase(	Graph *g, char * nombre_id,
 	for (i = index-1; i >= 0 && last_found > 1; i--){
 		if (g->amatrix[i][index] > 0 && g->amatrix[i][index] < last_found){
 			result = buscarSimbolo(g->nodes[i], nombre_id);
-			if (result){
+			if (aplicarAccesos(g, nombre_clase_desde, getName(g->nodes[i]), result) == OK){
 				len = strlen(getName(g->nodes[i]));
 				strncpy(nombre_ambito_encontrado, getName(g->nodes[i]), (len - 1)*sizeof(char));
 				nombre_ambito_encontrado[len] = '\0';
