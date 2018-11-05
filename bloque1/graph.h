@@ -1,5 +1,6 @@
 // Definition of a graph using an adjacency matrix
 #include "node.h"
+#include "symbols.h"
 
 typedef struct _Graph Graph;
 

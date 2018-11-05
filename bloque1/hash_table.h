@@ -117,5 +117,8 @@ int modify_metodos_sobreescritura(TablaSimbolos *ht, const char *key, int x, int
 int modify_atributos_instancia_acum(TablaSimbolos *ht, const char *key, int x, int (*f)(int *a, int b));
 int modify_metodos_sobre_acum(TablaSimbolos *ht, const char *key, int x, int (*f)(int *a, int b));
 
+// Getters
+enum acceso ElementGetAccess(Element *e);
+
 
 #endif /* HASH_TABLE_H */

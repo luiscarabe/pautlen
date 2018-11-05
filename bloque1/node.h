@@ -1,5 +1,9 @@
+#ifndef NODE_H
+#define NODE_H
+
 // Definition of a node
 #include "hash_table.h"
+#include "symbols.h"
 
 typedef struct _Node Node;
 
@@ -12,7 +16,7 @@ void printNode(Node *node);
 char *getName(Node *node);
 char **getAttributes(Node *node);
 int getNumAttributes(Node *node);
-int abrirAmbitoFunc(Node *node, char * id_clase,
+int abrirAmbitoFunc(Node *node,
                                 char* id_ambito, 
                                 int categoria_ambito, 
                                 int acceso_metodo, 
@@ -45,3 +49,7 @@ void imprimirTablaFunc(Node *n);
 
 
 TablaSimbolos *getPrimaryScope(Node *node);
+
+Element *buscarSimbolo(Node *node, char *nombre_id);
+
+#endif
