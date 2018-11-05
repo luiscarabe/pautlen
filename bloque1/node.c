@@ -143,7 +143,7 @@ int insertarTablaSimbolos(Node *node,
 	return 0;
 }
 
-int abrirAmbitoFunc(Node *node, char * id_clase,
+int abrirAmbitoFunc(Node *node,
                                 char* id_ambito, 
                                 int categoria_ambito, 
                                 int acceso_metodo, 
@@ -154,10 +154,10 @@ int abrirAmbitoFunc(Node *node, char * id_clase,
 
 	if (!node) return -1;
 
-	name = (char *) malloc(sizeof(char) * (strlen(id_clase) + strlen(id_ambito) + 2));
+	name = (char *) malloc(sizeof(char) * (strlen(node->name) + strlen(id_ambito) + 2));
 	if (!name) return -1;
 
-	if (strcpy(name, id_clase) < 0){
+	if (strcpy(name, node->name) < 0){
 		free(name);
 		return -1;
 	}
@@ -247,4 +247,28 @@ void imprimirTablaFunc(Node *n){
 TablaSimbolos *getPrimaryScope(Node *node){
 	if (!node) return NULL;
 	return node->primary_scope;
+}
+
+Element *buscarSimbolo(Node *node, char *nombre_id){
+	char *name;
+	Element *e;
+
+	name = (char *) malloc(sizeof(char) * (strlen(node->name) + strlen(nombre_id) + 2));
+	if (!name) return NULL;
+
+	if (strcpy(name, node->name) < 0){
+		free(name);
+		return NULL;
+	}
+
+	if (!strcat(strcat(name, "_"), nombre_id)){
+		free(name);
+		return NULL;
+	}
+
+	e = ht_item_get_value(ht_search_item(node->primary_scope, name));
+
+	free(name);
+
+	return e;
 }

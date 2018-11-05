@@ -48,7 +48,7 @@ struct _Element{
 	int numero_atributos_instancia;
 	int numero_metodos_sobreescribibles;
 	int numero_metodos_no_sobreescribibles;
-	/*NINGUNO (exposed) ACCESO_CLASE (secret) ACCESO_HERENCIA	(hidden) ACCESO_TODOS (exposed) */
+	/*NINGUNO (exposed) ACCESO_CLASE (hidden) ACCESO_HERENCIA	(secret) ACCESO_TODOS (exposed) */
 	int tipo_acceso;  
 	/*MIEMBRO_UNICO (unique) MIEMBRO_NO_UNICO*/
 	int tipo_miembro;
@@ -867,4 +867,9 @@ int modify_metodos_sobre_acum(TablaSimbolos *ht, const char *key, int x, int (*f
 	return f(&item->value->num_acumulado_metodos_sobreescritura, x);
 }
 
+
+enum acceso ElementGetAccess(Element *e){
+	if (!e) return -1;
+	return e->tipo_acceso;
+}
 

@@ -556,7 +556,7 @@ int tablaSimbolosClasesAbrirAmbitoEnClase(Graph * grafo,
 	clase = indexOf(grafo, id_clase);
 	if (clase == -1) return -1;
 
-	return abrirAmbitoFunc(grafo->nodes[clase], id_clase,
+	return abrirAmbitoFunc(grafo->nodes[clase],
 												 id_ambito, 
 												 categoria_ambito, 
 												 acceso_metodo, 
@@ -579,6 +579,90 @@ int tablaSimbolosClasesCerrarAmbitoEnClase(Graph* grafo,
 	return cerrarAmbitoFunc(grafo->nodes[clase]);
 
 }
+
+int esDescendiente(Graph *g, char *descendiente, char *antecesor){
+	int i_desc, i_ante;
+
+	if (!g || !descendiente || !antecesor) return ERR;
+
+	if (strcmp(descendiente, antecesor) == 0) return OK;
+
+	i_desc = indexOf(g, descendiente);
+	if (i_desc == -1) return ERR;
+	i_ante = indexOf(g, antecesor);
+	if (i_ante == -1) return ERR;
+
+	if (g->amatrix[i_ante][i_desc] > 0)
+		return OK;
+	else
+		return ERR;
+	
+
+}
+
+int aplicarAccesos(Graph *g, char * nombre_clase_ambito_actual, char * clase_declaro, Element * pelem){
+	enum acceso access;
+
+	if (!g || !nombre_clase_ambito_actual || !clase_declaro || !pelem) return ERR;
+
+	access = ElementGetAccess(pelem);
+
+	if (strcmp(nombre_clase_ambito_actual, "main") == 0){
+		if (access == ACCESO_CLASE)
+			return ERR;
+		else
+			return OK;
+	} else {
+		switch(access){
+			case ACCESO_CLASE:
+				if (strcmp(nombre_clase_ambito_actual, clase_declaro) != 0)
+					return ERR;
+				else
+					return OK;
+				break;
+			case ACCESO_HERENCIA:
+				return esDescendiente(g, nombre_clase_ambito_actual, clase_declaro);
+				break;
+			default:
+				return OK;
+		}
+	}
+}
+
+int buscarIdEnJerarquiaDesdeClase(	Graph *g, char * nombre_id,
+                    				char * nombre_clase_desde, 
+									Element ** e,
+									char * nombre_ambito_encontrado){
+	int i, index, last_found, len;
+	Element *result;
+
+	if (!g || !nombre_id || !nombre_clase_desde || !e || !nombre_ambito_encontrado) return ERR;
+
+	last_found = g->n;
+
+	index = indexOf(g, nombre_clase_desde);
+	if (index == -1) return ERR;
+
+	for (i = index-1; i >= 0 && last_found > 1; i--){
+		if (g->amatrix[i][index] > 0 && g->amatrix[i][index] < last_found){
+			result = buscarSimbolo(g->nodes[i], nombre_id);
+			if (aplicarAccesos(g, nombre_clase_desde, getName(g->nodes[i]), result) == OK){
+				len = strlen(getName(g->nodes[i]));
+				strncpy(nombre_ambito_encontrado, getName(g->nodes[i]), (len - 1)*sizeof(char));
+				nombre_ambito_encontrado[len] = '\0';
+				*e = result;
+				last_found = g->amatrix[i][index];
+			}
+		}
+	}
+	if (last_found < g->n)
+		return OK;
+	else
+		return ERR;
+
+}
+
+
 
 
 void imprimirTablasHash(Graph *g){
