@@ -3,9 +3,16 @@
 	#include <stdlib.h>
 	#include "lex.yy.c"
 
-	extern int yylex(void);
-	int yyerror (const char *s);
+	/* En main*/
 	extern FILE* fout;
+
+	/* En fichero especificacion Flex*/
+	extern int yylex(void);
+	extern int row;
+	extern int col;
+	extern error_flag;
+
+	int yyerror (const char *s);
 
 %}
 
@@ -56,8 +63,8 @@
 /* ERRORES */
 %token TOK_ERROR
 
-%left '+' '-'
-%left '*' '/'
+%left '+' '-' TOK_OR
+%left '*' '/' TOK_AND
 %right NEG_UNARIA '!'
 
 /*Axioma*/
@@ -92,8 +99,8 @@ clase: clase_escalar {fprintf(fout, ";R:\tclase: clase_escalar\n");}
 	 | clase_objeto {fprintf(fout, ";R:\tclase: clase_objeto\n");};
 
 
-declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}' {fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'\n");}
-				 | modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}' {fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'\n");};
+declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}' {fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'\n");}
+				 | modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones_funcion funciones '}' {fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones_funcion funciones '}'\n");};
 
 
 modificadores_clase: /*lambda*/ {fprintf(fout, ";R:\tmodificadores_clase: \n");};
@@ -112,8 +119,8 @@ clase_objeto: '{' TOK_IDENTIFICADOR '}' {fprintf(fout, ";R:\tclase_objeto: '{' T
 clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']' {fprintf(fout, ";R:\tclase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'\n");};
 
 
-identificadores: TOK_IDENTIFICADOR ',' identificadores {fprintf(fout, ";R:\tidentificadores: TOK_IDENTIFICADOR ',' identificadores\n");}
-			   | TOK_IDENTIFICADOR {fprintf(fout, ";R:\tidentificadores: TOK_IDENTIFICADOR\n");};
+identificadores: TOK_IDENTIFICADOR {fprintf(fout, ";R:\tidentificadores: TOK_IDENTIFICADOR\n");}
+			   | TOK_IDENTIFICADOR ',' identificadores {fprintf(fout, ";R:\tidentificadores: TOK_IDENTIFICADOR ',' identificadores\n");};
 
 
 funciones: funcion funciones {fprintf(fout, ";R:\tfunciones: funcion funciones\n");}
@@ -145,8 +152,8 @@ declaraciones_funcion: declaraciones {fprintf(fout, ";R:\tdeclaraciones_funcion:
 					 | /*lambda*/ {fprintf(fout, ";R:\tdeclaraciones_funcion: \n");};
 
 
-sentencias: sentencia sentencias {fprintf(fout, ";R:\tsentencias: sentencia sentencias\n");}
-		  | sentencia {fprintf(fout, ";R:\tsentencias: sentencia\n");};
+sentencias: sentencia {fprintf(fout, ";R:\tsentencias: sentencia\n");}
+		  | sentencia sentencias {fprintf(fout, ";R:\tsentencias: sentencia sentencias\n");};
 
 
 sentencia: sentencia_simple ';' {fprintf(fout, ";R:\tsentencia: sentencia_simple ';'\n");}
@@ -201,7 +208,7 @@ exp: exp '+' exp {fprintf(fout, ";R:\texp: exp '+' exp\n");}
    | exp '-' exp {fprintf(fout, ";R:\texp: exp '-' exp\n");}
    | exp '/' exp {fprintf(fout, ";R:\texp: exp '/' exp\n");}
    | exp '*' exp {fprintf(fout, ";R:\texp: exp '*' exp\n");}
-   | '-' exp {fprintf(fout, ";R:\texp: '-' exp\n");}
+   | '-'  exp %prec NEG_UNARIA {fprintf(fout, ";R:\texp: '-' exp\n");}
    | exp TOK_AND exp {fprintf(fout, ";R:\texp: exp TOK_AND exp\n");}
    | exp TOK_OR exp {fprintf(fout, ";R:\texp: exp TOK_OR exp\n");}
    | '!' exp {fprintf(fout, ";R:\texp: '!' exp\n");}
@@ -220,11 +227,11 @@ identificador_clase: TOK_IDENTIFICADOR {fprintf(fout, ";R:\tidentificador_clase:
 
 
 lista_expresiones: exp resto_lista_expresiones {fprintf(fout, ";R:\tlista_expresiones: exp resto_lista_expresiones\n");}
-				 | /*lambda*/ {fprintf(fout, ";R:\lista_expresiones: \n");};
+				 | /*lambda*/ {fprintf(fout, ";R:\tlista_expresiones: \n");};
 
 
 resto_lista_expresiones: ',' exp resto_lista_expresiones {fprintf(fout, ";R:\tresto_lista_expresiones: ',' exp resto_lista_expresiones\n");}
-					   | /*lambda*/ {fprintf(fout, ";R:\resto_lista_expresiones: \n");};
+					   | /*lambda*/ {fprintf(fout, ";R:\tresto_lista_expresiones: \n");};
 
 
 comparacion: exp TOK_IGUAL exp {fprintf(fout, ";R:\tcomparacion: exp TOK_IGUAL exp\n");}
@@ -274,6 +281,8 @@ digito: [0-9];*/
 
 int yyerror (const char *s)
 {
-    printf("parser error %s \n ",s);
+	if(error_flag == 0){
+    	fprintf(stderr, "****Error sintactico en [lin %d, col %d]\n", row, col);
+    }
     return 0;
 }
