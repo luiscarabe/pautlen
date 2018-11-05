@@ -99,8 +99,8 @@ clase: clase_escalar {fprintf(fout, ";R:\tclase: clase_escalar\n");}
 	 | clase_objeto {fprintf(fout, ";R:\tclase: clase_objeto\n");};
 
 
-declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}' {fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'\n");}
-				 | modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones_funcion funciones '}' {fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones_funcion funciones '}'\n");};
+declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}' {fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'\n");}
+				 | modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}' {fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'\n");};
 
 
 modificadores_clase: /*lambda*/ {fprintf(fout, ";R:\tmodificadores_clase: \n");};
@@ -179,8 +179,8 @@ bloque: condicional {fprintf(fout, ";R:\tbloque: condicional\n");}
 asignacion: TOK_IDENTIFICADOR '=' exp {fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '=' exp\n");}
 		  | elemento_vector '=' exp {fprintf(fout, ";R:\tasignacion: elemento_vector '=' exp\n");}
 		  | elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(fout, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
-		  | TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(fout, ";R:\tTOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
-		  | identificador_clase '.'TOK_IDENTIFICADOR '=' exp {fprintf(fout, ";R:\tidentificador_clase '.'TOK_IDENTIFICADOR '=' exp\n");};
+		  | TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
+		  | identificador_clase '.' TOK_IDENTIFICADOR '=' exp {fprintf(fout, ";R:\tasignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' exp\n");};
 
 
 elemento_vector: TOK_IDENTIFICADOR '[' exp ']' {fprintf(fout, ";R:\telemento_vector: TOK_IDENTIFICADOR '[' exp ']'\n");};

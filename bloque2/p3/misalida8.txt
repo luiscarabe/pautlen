@@ -1,0 +1,102 @@
+;D:	main
+;D:	{
+;D:	int
+;R:	modificadores_acceso: 
+;R:	tipo: TOK_INT
+;R:	clase_escalar: tipo
+;R:	clase: clase_escalar
+;D:	x
+;D:	;
+;R:	identificadores: TOK_IDENTIFICADOR
+;R:	declaracion: modificadores_acceso clase identificadores ';'
+;D:	int
+;R:	modificadores_acceso: 
+;R:	tipo: TOK_INT
+;R:	clase_escalar: tipo
+;R:	clase: clase_escalar
+;D:	y
+;D:	;
+;R:	identificadores: TOK_IDENTIFICADOR
+;R:	declaracion: modificadores_acceso clase identificadores ';'
+;D:	class
+;R:	modificadores_acceso: 
+;R:	modificadores_clase: 
+;D:	AA
+;D:	{
+;D:	exposed
+;D:	unique
+;R:	modificadores_acceso: TOK_EXPOSED TOK_UNIQUE
+;D:	int
+;R:	tipo: TOK_INT
+;R:	clase_escalar: tipo
+;R:	clase: clase_escalar
+;D:	xA1
+;D:	;
+;R:	identificadores: TOK_IDENTIFICADOR
+;R:	declaracion: modificadores_acceso clase identificadores ';'
+;D:	exposed
+;D:	unique
+;R:	modificadores_acceso: TOK_EXPOSED TOK_UNIQUE
+;D:	int
+;R:	tipo: TOK_INT
+;R:	clase_escalar: tipo
+;R:	clase: clase_escalar
+;D:	xA2
+;D:	;
+;R:	identificadores: TOK_IDENTIFICADOR
+;R:	declaracion: modificadores_acceso clase identificadores ';'
+;D:	function
+;R:	declaraciones: declaracion
+;R:	declaraciones: declaracion declaraciones
+;D:	hidden
+;D:	unique
+;R:	modificadores_acceso: TOK_HIDDEN TOK_UNIQUE
+;D:	boolean
+;R:	tipo: TOK_BOOLEAN
+;R:	tipo_retorno: tipo
+;D:	compute
+;D:	(
+;D:	)
+;R:	parametros_funcion: 
+;D:	{
+;D:	return
+;R:	declaraciones_funcion: 
+;D:	(
+;D:	itself
+;R:	identificador_clase: TOK_ITSELF
+;D:	.
+;D:	xA1
+;D:	<
+;R:	exp: identificador_clase '.' TOK_IDENTIFICADOR
+;D:	itself
+;R:	identificador_clase: TOK_ITSELF
+;D:	.
+;D:	xA2
+;D:	)
+;R:	exp: identificador_clase '.' TOK_IDENTIFICADOR
+;R:	comparacion: exp '<' exp
+;R:	exp: '(' comparacion ')'
+;D:	;
+;R:	retorno_funcion: TOK_RETURN exp
+;R:	sentencia_simple: retorno_funcion
+;R:	sentencia: sentencia_simple ';'
+;D:	}
+;R:	sentencias: sentencia
+;R:	funcion: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
+;D:	}
+;R:	funciones: 
+;R:	funciones: funcion funciones
+;R:	declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'
+;D:	;
+;R:	declaracion: modificadores_acceso declaracion_clase ';'
+;D:	class
+;R:	modificadores_acceso: 
+;R:	modificadores_clase: 
+;D:	BB
+;D:	inherits
+;D:	AA
+;D:	{
+;R:	identificadores: TOK_IDENTIFICADOR
+;D:	function
+;R:	modificadores_acceso: 
+;R:	modificadores_clase: 
