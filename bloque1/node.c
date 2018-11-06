@@ -11,6 +11,7 @@ typedef struct _Node {
 	char *name;
 	TablaSimbolos *primary_scope;
 	TablaSimbolos *func_scope;
+	char *curr_func;
 } Node;
 
 Node *newNode(char *name){
@@ -195,8 +196,15 @@ int abrirAmbitoFunc(Node *node,
 
 	free(name);
 
+	node->curr_func = (char *) malloc(sizeof(char) * (strlen(id_ambito) + 1));
+	if (!node->curr_func) return -1;
+
 	node->func_scope = ht_new();
-	if (!node->func_scope) return -1;
+	if (!node->func_scope){
+		free(node->curr_func);
+	 	return -1;
+	}
+
 
 	if (!ht_insert_item(node->func_scope, 
 										 id_ambito,
@@ -221,6 +229,7 @@ int abrirAmbitoFunc(Node *node,
 										 0,
 										 0)){
 		ht_del_hash_table(node->func_scope);
+		free(node->curr_func);
 		return -1;
 	}
 
@@ -231,6 +240,11 @@ int cerrarAmbitoFunc(Node *node){
 	if (!node) return -1;
 
 	ht_del_hash_table(node->func_scope);
+	node->func_scope = NULL;
+
+	free(node->curr_func);
+	node->curr_func = NULL;
+
 	return 0;
 }
 
@@ -249,9 +263,34 @@ TablaSimbolos *getPrimaryScope(Node *node){
 	return node->primary_scope;
 }
 
-Element *buscarSimbolo(Node *node, char *nombre_id){
+TablaSimbolos *getFuncScope(Node *node){
+	if (!node) return NULL;
+	return node->func_scope;
+}
+
+HT_item *buscarSimbolo(Node *node, char *nombre_id){
 	char *name;
-	Element *e;
+	HT_item *e;
+
+	if (node->func_scope){
+		name = (char *) malloc(sizeof(char) * (strlen(node->curr_func) + strlen(nombre_id) + 2));
+		if (!name) return NULL;
+
+		if (strcpy(name, node->curr_func) < 0){
+			free(name);
+			return NULL;
+		}
+
+		if (!strcat(strcat(name, "_"), nombre_id)){
+			free(name);
+			return NULL;
+		}
+
+		e = ht_search_item(node->func_scope, name);
+
+		free(name);
+		if (e) return e;
+	}
 
 	name = (char *) malloc(sizeof(char) * (strlen(node->name) + strlen(nombre_id) + 2));
 	if (!name) return NULL;
@@ -266,7 +305,7 @@ Element *buscarSimbolo(Node *node, char *nombre_id){
 		return NULL;
 	}
 
-	e = ht_item_get_value(ht_search_item(node->primary_scope, name));
+	e = ht_search_item(node->primary_scope, name);
 
 	free(name);
 

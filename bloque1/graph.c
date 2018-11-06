@@ -408,15 +408,15 @@ int cerrarClase(Graph* t,
 	return 0;
 }
 
-int abrirAmbitoClase(Node** t, char* id_clase, int tamanio){
+// int abrirAmbitoClase(Node** t, char* id_clase, int tamanio){
 
-	if (!id_clase || tamanio <= 0 || !t) return -1;
+// 	if (!id_clase || tamanio <= 0 || !t) return -1;
 
-	*t = newNodeTam(id_clase, tamanio);
-	if (!*t) return -1;
+// 	*t = newNodeTam(id_clase, tamanio);
+// 	if (!*t) return -1;
 
-	return 0;
-}
+// 	return 0;
+// }
 
 int modificar_insertar(TablaSimbolos *ht, 
 											 TablaSimbolos *main, 
@@ -600,12 +600,12 @@ int esDescendiente(Graph *g, char *descendiente, char *antecesor){
 
 }
 
-int aplicarAccesos(Graph *g, char * nombre_clase_ambito_actual, char * clase_declaro, Element * pelem){
+int aplicarAccesos(Graph *g, char * nombre_clase_ambito_actual, char * clase_declaro, HT_item * pelem){
 	enum acceso access;
 
 	if (!g || !nombre_clase_ambito_actual || !clase_declaro || !pelem) return ERR;
 
-	access = ElementGetAccess(pelem);
+	access = HT_itemGetAccess(pelem);
 
 	if (strcmp(nombre_clase_ambito_actual, "main") == 0){
 		if (access == ACCESO_CLASE)
@@ -629,12 +629,13 @@ int aplicarAccesos(Graph *g, char * nombre_clase_ambito_actual, char * clase_dec
 	}
 }
 
-int buscarIdEnJerarquiaDesdeClase(	Graph *g, char * nombre_id,
-                    				char * nombre_clase_desde, 
-									Element ** e,
-									char * nombre_ambito_encontrado){
+int buscarIdEnJerarquiaDesdeClase(Graph *g, 
+																	char * nombre_id,
+                    							char * nombre_clase_desde, 
+																	HT_item ** e,
+																	char * nombre_ambito_encontrado){
 	int i, index, last_found, len;
-	Element *result;
+	HT_item *result;
 
 	if (!g || !nombre_id || !nombre_clase_desde || !e || !nombre_ambito_encontrado) return ERR;
 
@@ -643,23 +644,60 @@ int buscarIdEnJerarquiaDesdeClase(	Graph *g, char * nombre_id,
 	index = indexOf(g, nombre_clase_desde);
 	if (index == -1) return ERR;
 
+	result = buscarSimbolo(g->nodes[index], nombre_id);
+	if (result){
+		len = strlen(getName(g->nodes[index]));
+		strncpy(nombre_ambito_encontrado, getName(g->nodes[index]), len*sizeof(char));
+		nombre_ambito_encontrado[len] = '\0';
+		*e = result;
+		return OK;
+	}
+
 	for (i = index-1; i >= 0 && last_found > 1; i--){
 		if (g->amatrix[i][index] > 0 && g->amatrix[i][index] < last_found){
 			result = buscarSimbolo(g->nodes[i], nombre_id);
 			if (aplicarAccesos(g, nombre_clase_desde, getName(g->nodes[i]), result) == OK){
 				len = strlen(getName(g->nodes[i]));
-				strncpy(nombre_ambito_encontrado, getName(g->nodes[i]), (len - 1)*sizeof(char));
+				strncpy(nombre_ambito_encontrado, getName(g->nodes[i]), len*sizeof(char));
 				nombre_ambito_encontrado[len] = '\0';
 				*e = result;
 				last_found = g->amatrix[i][index];
 			}
 		}
 	}
+
 	if (last_found < g->n)
 		return OK;
 	else
 		return ERR;
 
+}
+
+int buscarIdNoCualificado(Graph *t, 
+                          // tablaAmbitos *tabla_main,
+                 					char * nombre_id, 
+                 					char * nombre_clase_desde,
+                 					HT_item ** e, 
+  												char * nombre_ambito_encontrado){
+	HT_item *ret;
+
+	if (!t || !nombre_id || !nombre_clase_desde || !e)
+		return ERR;
+
+	if (buscarIdEnJerarquiaDesdeClase(t, 
+																		nombre_id,
+                    							  nombre_clase_desde, 
+																		e,
+																		nombre_ambito_encontrado) == OK)
+		return OK;
+
+	ret = buscarSimbolo(t->main, nombre_id);
+	if (!ret) return ERR;
+	
+	strncpy(nombre_ambito_encontrado, "main", 5*sizeof(char));
+	nombre_ambito_encontrado[4] = '\0';
+	*e = ret;
+	return aplicarAccesos(t, nombre_clase_desde, "main", ret);
 }
 
 
@@ -680,5 +718,4 @@ void imprimirTablasHash(Graph *g){
 		printf("\n\n");
 	}
 }
-
 

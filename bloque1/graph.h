@@ -11,7 +11,6 @@ void deleteGraph(Graph *graph);
 void printGraph(Graph *graph);
 Graph * tablaSimbolosClasesToDot(Graph * grafo);
 
-
 int iniciarTablaSimbolosClases(Graph** t, char * nombre);
 int abrirClase(Graph* t, char* id_clase);
 int abrirClaseHereda(Graph* t, char* id_clase, ...);
@@ -23,7 +22,7 @@ int cerrarClase(Graph* t,
                 int num_metodos_no_sobreescribibles);
 
 
-int abrirAmbitoClase(Node** t, char* id_clase, int tamanio);
+// int abrirAmbitoClase(Node** t, char* id_clase, int tamanio);
 
 int insertarTablaSimbolosAmbitos(Node * nodo, int categoria,
 		char* id,                        int clase,
@@ -39,13 +38,13 @@ int insertarTablaSimbolosAmbitos(Node * nodo, int categoria,
 		int num_acumulado_metodos_sobreescritura,
 		int * tipo_args);
 
-int abrirAmbitoPrefijos(Node* node, 
-                        char* id_ambito, 
-                        int categoria_ambito, 
-                        int acceso_metodo, 
-                        int tipo_metodo, 
-                        int posicion_metodo_sobre, 
-                        int tamanio);
+// int abrirAmbitoPrefijos(Node* node, 
+//                         char* id_ambito, 
+//                         int categoria_ambito, 
+//                         int acceso_metodo, 
+//                         int tipo_metodo, 
+//                         int posicion_metodo_sobre, 
+//                         int tamanio);
 
 int insertarTablaSimbolosClases(Graph * grafo, 
 		char * id_clase,                 int categoria,
@@ -71,8 +70,25 @@ int tablaSimbolosClasesAbrirAmbitoEnClase(Graph * grafo,
                                 int posicion_metodo_sobre, 
                                 int tamanio);
 
+int tablaSimbolosClasesAbrirAmbitoEnClase(Graph * grafo, 
+																char * id_clase,
+																char* id_ambito, 
+																int categoria_ambito, 
+																int acceso_metodo, 
+																int tipo_metodo, 
+																int posicion_metodo_sobre, 
+																int tamanio);
+
 int tablaSimbolosClasesCerrarAmbitoEnClase(Graph* grafo, 
                             char * id_clase);
+
+int buscarIdNoCualificado(Graph *t, 
+                          // tablaAmbitos *tabla_main,
+                 					char * nombre_id, 
+                 					char * nombre_clase_desde,
+                 					HT_item ** e, 
+  												char * nombre_ambito_encontrado);
+
 
 
 // Para debuggear - usar con precaucion

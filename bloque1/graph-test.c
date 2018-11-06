@@ -7,59 +7,9 @@
 
 int main(int argc, char const *argv[]){
 	
-	// g = newGraph();
-
-	// if (addNode(g, "Node 0", (void *)0) == -1){
-	// 	printf("Something went wrong\n");
-	// 	return -1;
-	// }
-	// if (addNode(g, "Node 1", (void *)1) == -1){
-	// 	printf("Something went wrong\n");
-	// 	return -1;
-	// }
-	// if (addNode(g, "Node 2", (void *)2) == -1){
-	// 	printf("Something went wrong\n");
-	// 	return -1;
-	// }
-
-	// if (addNode(g, "Node 3", (void *)3) == -1){
-	// 	printf("Something went wrong\n");
-	// 	return -1;
-	// }
-
-	// printf("Graph:\n");
-	// printGraph(g);
-
-	// addParent(g, 0, 1);
-	// printGraph(g);
-
-	// addParent(g, 0, 2);
-	// printGraph(g);
-
-	// addParent(g, 1, 0);
-	// printGraph(g);
-
-	// addParent(g, 2, 1);	
-
-	// printf("Graph:\n");
-	// printGraph(g);
-
-	// addParent(g, 2, 3);	
-
-	// printf("Graph:\n");
-	// printGraph(g);
-
-
-	// printf("Content of node 0: ");
-	// printf("%p\n", getContentOfNode(g, "Node 0"));
-
-	// printf("\n\nContent of node 1: ");
-	// printf("\n%p\n", getContentOfNode(g, "Node 1"));
-	
-	// printf("\n\nContent of node 2: ");
-	// printf("\n%p\n", getContentOfNode(g, "Node 2"));
-
 	Graph *g;
+	HT_item *item;
+	char *name = (char *) malloc(sizeof(char)*64);
 
 	iniciarTablaSimbolosClases(&g, "Supergrafo");
 
@@ -72,6 +22,10 @@ int main(int argc, char const *argv[]){
 															MIEMBRO_NO_UNICO, 0, 0, 0, 0, NULL);
 
 	insertarTablaSimbolosClases(g, "A", ATRIBUTO_INSTANCIA, "Ainstancia", ESCALAR, 
+															INT, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO,
+															MIEMBRO_NO_UNICO, 0, 0, 0, 0, NULL);
+	
+	insertarTablaSimbolosClases(g, "A", ATRIBUTO_CLASE, "Aclase", ESCALAR, 
 															INT, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO,
 															MIEMBRO_NO_UNICO, 0, 0, 0, 0, NULL);
 
@@ -120,6 +74,15 @@ int main(int argc, char const *argv[]){
 															INT, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO,
 															MIEMBRO_NO_UNICO, 0, 0, 0, 0, NULL);
 
+	tablaSimbolosClasesAbrirAmbitoEnClase(g, "ABCD", "funcabcd", METODO_SOBREESCRIBIBLE, 
+											NINGUNO, INT, 2, 8);
+
+	if (buscarIdNoCualificado(g, "funcabcd", "ABCD", &item, name) == -1)
+		printf("No se encuentra \n");
+	else printf("%s\n", name);
+
+	tablaSimbolosClasesCerrarAmbitoEnClase(g, "ABCD");
+
 	abrirClaseHereda(g, "E", "ABCD", "D", NULL);
 	printf("Graph:\n");
 	printGraph(g);
@@ -128,11 +91,17 @@ int main(int argc, char const *argv[]){
 															INT, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO,
 															MIEMBRO_NO_UNICO, 0, 0, 0, 0, NULL);
 
-
 	tablaSimbolosClasesToDot(g);
 
 	imprimirTablasHash(g);
+	
+	buscarIdNoCualificado(g, "e", "E", &item, name);
+	printf("%s\n", name);
 
+	buscarIdNoCualificado(g, "Aclase", "E", &item, name);
+	printf("%s\n", name);
+	
+	free(name);
 	deleteGraph(g);
 
 	return 0;

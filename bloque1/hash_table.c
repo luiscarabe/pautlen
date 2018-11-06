@@ -868,8 +868,8 @@ int modify_metodos_sobre_acum(TablaSimbolos *ht, const char *key, int x, int (*f
 }
 
 
-enum acceso ElementGetAccess(Element *e){
+enum acceso HT_itemGetAccess(HT_item *e){
 	if (!e) return -1;
-	return e->tipo_acceso;
+	return e->value->tipo_acceso;
 }
 
