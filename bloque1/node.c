@@ -87,6 +87,11 @@ char *getName(Node *node){
 	return node->name;
 }
 
+char *getNameFunc(Node *node){
+	if (!node) return NULL;
+	return node->curr_func;
+}
+
 char **getAttributes(Node *node){
 	if (!node) return NULL;
 
@@ -115,11 +120,32 @@ int insertarTablaSimbolos(Node *node,
 		int num_acumulado_atributos_instancia, 
 		int num_acumulado_metodos_sobreescritura, 
 		int * tipo_args){
+	char *name, type[2];
+	int i;
 	
 	if (!node || !key) return -1;
 
+	if (categoria == FUNCION || categoria == METODO_SOBREESCRIBIBLE || categoria == METODO_NO_SOBREESCRIBIBLE){
+		if (numero_parametros < 0 || !tipo_args) return ERR;
+		name = (char *) malloc(sizeof(char) * (strlen(key) + 1 + 2*numero_parametros));
+		if (!name) return ERR;
+		if(strcpy(name, key) < 0){
+			free(name);
+			return ERR;
+		}
+		for (i = 0; i < numero_parametros; i ++){
+			sprintf(type, "%d", tipo_args[i]);
+			if (strcat(strcat(name, "@"), type) < 0){
+				free(name);
+				return ERR;
+			}
+		}
+	} else {
+		name = key;
+	}
+
 	if (!ht_insert_item(node->primary_scope, 
-										 key,
+										 name,
 										 categoria,
 										 tipo,
 										 clase,
@@ -194,20 +220,29 @@ int abrirAmbitoFunc(Node *node,
 		return -1;
 	}
 
-	free(name);
 
 	node->curr_func = (char *) malloc(sizeof(char) * (strlen(id_ambito) + 1));
-	if (!node->curr_func) return -1;
+	if (!node->curr_func){
+		free(name);
+		return -1;
+	}
+	if (strcpy(node->curr_func, id_ambito) < 0){
+		free(name);
+		free(node->curr_func);
+		node->curr_func = NULL;
+		return -1;
+	}
 
 	node->func_scope = ht_new();
 	if (!node->func_scope){
+		free(name);
 		free(node->curr_func);
 	 	return -1;
 	}
 
 
 	if (!ht_insert_item(node->func_scope, 
-										 id_ambito,
+										 name,
 										 categoria_ambito,
 										 tipo_metodo,
 										 0,
@@ -229,9 +264,11 @@ int abrirAmbitoFunc(Node *node,
 										 0,
 										 0)){
 		ht_del_hash_table(node->func_scope);
+		free(name);
 		free(node->curr_func);
 		return -1;
 	}
+	free(name);
 
 	return 0;
 }
@@ -272,25 +309,7 @@ HT_item *buscarSimbolo(Node *node, char *nombre_id){
 	char *name;
 	HT_item *e;
 
-	if (node->func_scope){
-		name = (char *) malloc(sizeof(char) * (strlen(node->curr_func) + strlen(nombre_id) + 2));
-		if (!name) return NULL;
-
-		if (strcpy(name, node->curr_func) < 0){
-			free(name);
-			return NULL;
-		}
-
-		if (!strcat(strcat(name, "_"), nombre_id)){
-			free(name);
-			return NULL;
-		}
-
-		e = ht_search_item(node->func_scope, name);
-
-		free(name);
-		if (e) return e;
-	}
+	if (!node || !nombre_id) return NULL;
 
 	name = (char *) malloc(sizeof(char) * (strlen(node->name) + strlen(nombre_id) + 2));
 	if (!name) return NULL;
@@ -310,4 +329,33 @@ HT_item *buscarSimbolo(Node *node, char *nombre_id){
 	free(name);
 
 	return e;
+}
+
+HT_item *buscarSimboloFunc(Node *node, char *nombre_id){
+	char *name;
+	HT_item *e;
+
+	if (!node || !nombre_id) return NULL;
+
+
+	if (node->func_scope){
+		name = (char *) malloc(sizeof(char) * (strlen(node->curr_func) + strlen(nombre_id) + 2));
+		if (!name) return NULL;
+
+		if (strcpy(name, node->curr_func) < 0){
+			free(name);
+			return NULL;
+		}
+
+		if (!strcat(strcat(name, "_"), nombre_id)){
+			free(name);
+			return NULL;
+		}
+
+		e = ht_search_item(node->func_scope, name);
+
+		free(name);
+		return e;
+	}
+	return NULL;
 }

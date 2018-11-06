@@ -10,6 +10,7 @@ int main(int argc, char const *argv[]){
 	Graph *g;
 	HT_item *item;
 	char *name = (char *) malloc(sizeof(char)*64);
+	int status;
 
 	iniciarTablaSimbolosClases(&g, "Supergrafo");
 
@@ -95,11 +96,11 @@ int main(int argc, char const *argv[]){
 
 	imprimirTablasHash(g);
 	
-	buscarIdNoCualificado(g, "e", "E", &item, name);
-	printf("%s\n", name);
+	status = buscarIdNoCualificado(g, "e", "E", &item, name);
+	printf("%s %s\n", status == 0 ? "Encontrado" : "No encontrado", name);
 
-	buscarIdNoCualificado(g, "Aclase", "E", &item, name);
-	printf("%s\n", name);
+	status = buscarIdNoCualificado(g, "Aclase", "E", &item, name);
+	printf("%s %s\n", status == 0 ? "Encontrado" : "No encontrado", name);
 	
 	free(name);
 	deleteGraph(g);

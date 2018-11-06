@@ -35,9 +35,9 @@ enum clase {
 /* Tipo de acceso */
 enum acceso {
 	NINGUNO = 1,
-	ACCESO_CLASE,
-	ACCESO_HERENCIA,
-	ACCESO_TODOS
+	ACCESO_CLASE,	//hidden
+	ACCESO_HERENCIA,//secret
+	ACCESO_TODOS	//exposed
 };
 /* Tipo miembro */
 enum miembro {

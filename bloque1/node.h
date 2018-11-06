@@ -14,6 +14,7 @@ int nameCompare(Node *node, char *name);
 void deleteNode(Node *node);
 void printNode(Node *node);
 char *getName(Node *node);
+char *getNameFunc(Node *node);
 char **getAttributes(Node *node);
 int getNumAttributes(Node *node);
 int abrirAmbitoFunc(Node *node,
@@ -52,5 +53,6 @@ TablaSimbolos *getPrimaryScope(Node *node);
 TablaSimbolos *getFuncScope(Node *node);
 
 HT_item *buscarSimbolo(Node *node, char *nombre_id);
+HT_item *buscarSimboloFunc(Node *node, char *nombre_id);
 
 #endif
