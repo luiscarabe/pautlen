@@ -104,6 +104,67 @@ int getNumAttributes(Node *node){
 	return ht_get_count(node->primary_scope);
 }
 
+int insertarTablaAmbitos(Node *node,
+		const char* key,            int categoria,  
+		int tipo,                   int clase, 
+		int direcciones,            int numero_parametros, 
+		int posicion_parametro,     int numero_variables_locales, 
+		int posicion_variable_local,
+		int tamanio,                int numero_atributos_clase, 
+		int numero_atributos_instancia, 
+		int numero_metodos_sobreescribibles, 
+		int numero_metodos_no_sobreescribibles, 
+		int tipo_acceso,            int tipo_miembro, 
+		int posicion_atributo_instancia, 
+		int posicion_metodo_sobreescribible, 
+		int num_acumulado_atributos_instancia, 
+		int num_acumulado_metodos_sobreescritura, 
+		int * tipo_args){
+
+	char *name;
+
+	if (numero_parametros < 0 || !tipo_args || !node || !key) return ERR;
+	if (!node->curr_func) return ERR;
+	
+	name = (char *) malloc(sizeof(char) * (strlen(key) + 2 + strlen(node->curr_func)));
+	if (!name) return ERR;
+	
+	if(strcpy(name, node->curr_func) < 0){
+		free(name);
+		return ERR;
+	}
+
+	if (!strcat(strcat(name, "_"), node->curr_func)){
+		free(name);
+		return ERR;
+	}
+
+	if (!ht_insert_item(node->func_scope, 
+										 name,
+										 categoria,
+										 tipo,
+										 clase,
+										 direcciones,
+										 numero_parametros,
+										 posicion_parametro,
+										 numero_variables_locales,
+										 posicion_variable_local,
+										 tamanio,
+										 numero_atributos_clase,
+										 numero_atributos_instancia,
+										 numero_metodos_sobreescribibles,
+										 numero_metodos_no_sobreescribibles,
+										 tipo_acceso,
+										 tipo_miembro,
+										 posicion_atributo_instancia,
+										 posicion_metodo_sobreescribible,
+										 num_acumulado_atributos_instancia,
+										 num_acumulado_metodos_sobreescritura,
+										 tipo_args))
+		return ERR;
+	return OK;
+}
+
 int insertarTablaSimbolos(Node *node,
 		const char* key,            int categoria,  
 		int tipo,                   int clase, 
@@ -176,23 +237,53 @@ int abrirAmbitoFunc(Node *node,
                                 int acceso_metodo, 
                                 int tipo_metodo, 
                                 int posicion_metodo_sobre, 
-                                int tamanio){
-	char *name;
+                                int tamanio,
+                                int numero_parametros,
+                                int *tipo_args){
+	char *name, type[2];
+	int i;
 
 	if (!node) return -1;
 
-	name = (char *) malloc(sizeof(char) * (strlen(node->name) + strlen(id_ambito) + 2));
-	if (!name) return -1;
+	node->curr_func = (char *) malloc(sizeof(char) * (strlen(id_ambito) + 1 + 2*numero_parametros));
+	if (!node->curr_func)	return -1;
+
+	if (strcpy(node->curr_func, id_ambito) < 0){
+		free(node->curr_func);
+		node->curr_func = NULL;
+		return -1;
+	}
+
+	for (i = 0; i < numero_parametros; i++){
+		sprintf(type, "%d", tipo_args[i]);
+		if (!strcat(strcat(node->curr_func, "@"), type)){
+			free(node->curr_func);
+			node->curr_func = NULL;
+			return ERR;
+		}
+	}
+
+	name = (char *) malloc(sizeof(char) * (strlen(node->name) + strlen(node->curr_func) + 1));
+	if (!name){
+		free(node->curr_func);
+		node->curr_func = NULL;
+		return -1;
+	}
 
 	if (strcpy(name, node->name) < 0){
 		free(name);
+		free(node->curr_func);
+		node->curr_func = NULL;
 		return -1;
 	}
 
-	if (!strcat(strcat(name, "_"), id_ambito)){
+	if (!strcat(strcat(name, "_"), node->curr_func)){
 		free(name);
+		free(node->curr_func);
+		node->curr_func = NULL;
 		return -1;
 	}
+
 
 	if (!ht_insert_item(node->primary_scope, 
 										 name,
@@ -217,17 +308,6 @@ int abrirAmbitoFunc(Node *node,
 										 0,
 										 0)){
 		free(name);
-		return -1;
-	}
-
-
-	node->curr_func = (char *) malloc(sizeof(char) * (strlen(id_ambito) + 1));
-	if (!node->curr_func){
-		free(name);
-		return -1;
-	}
-	if (strcpy(node->curr_func, id_ambito) < 0){
-		free(name);
 		free(node->curr_func);
 		node->curr_func = NULL;
 		return -1;
@@ -237,9 +317,9 @@ int abrirAmbitoFunc(Node *node,
 	if (!node->func_scope){
 		free(name);
 		free(node->curr_func);
+		node->curr_func = NULL;
 	 	return -1;
 	}
-
 
 	if (!ht_insert_item(node->func_scope, 
 										 name,
@@ -266,6 +346,7 @@ int abrirAmbitoFunc(Node *node,
 		ht_del_hash_table(node->func_scope);
 		free(name);
 		free(node->curr_func);
+		node->curr_func = NULL;
 		return -1;
 	}
 	free(name);

@@ -75,8 +75,9 @@ int main(int argc, char const *argv[]){
 															INT, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO,
 															MIEMBRO_NO_UNICO, 0, 0, 0, 0, NULL);
 
+	int tipo[2] = {INT, BOOLEAN};
 	tablaSimbolosClasesAbrirAmbitoEnClase(g, "ABCD", "funcabcd", METODO_SOBREESCRIBIBLE, 
-											NINGUNO, INT, 2, 8);
+											NINGUNO, INT, 2, 8, 2, tipo);
 
 	if (buscarIdNoCualificado(g, "funcabcd", "ABCD", &item, name) == -1)
 		printf("No se encuentra \n");
