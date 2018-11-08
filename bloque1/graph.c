@@ -454,6 +454,72 @@ int modificar_insertar(TablaSimbolos *ht,
 }
 
 
+int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase, 
+		int categoria,
+		char* id,                        int clase,
+		int tipo,												 int direcciones,                    
+		int numero_parametros,           int numero_variables_locales,        
+		int posicion_variable_local,     int posicion_parametro,
+		int tamanio,                     int numero_atributos_clase,            
+		int numero_atributos_instancia,  int numero_metodos_sobreescribibles,    
+		int numero_metodos_no_sobreescribibles,
+		int tipo_acceso,                 int tipo_miembro, 
+		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
+		int num_acumulado_atributos_instancia,   
+		int num_acumulado_metodos_sobreescritura,
+		int * tipo_args){
+
+	int index_clase, ret;
+	char *name;
+
+	if (!grafo || !id_clase || !id) return ERR;
+
+	index_clase = indexOf(grafo, id_clase);
+	if (index_clase == -1) return ERR;
+	if (!getNameFunc(grafo->nodes[index_clase])) return ERR;
+
+	name = (char *) malloc(sizeof(char) * (strlen(getNameFunc(grafo->nodes[index_clase])) + strlen(id) + 2));
+	if (!name) return -1;
+
+	if (strcpy(name, getNameFunc(grafo->nodes[index_clase])) < 0){
+		free(name);
+		return -1;
+	}
+
+	if (!strcat(strcat(name, "_"), id)){
+		free(name);
+		return -1;
+	}
+
+	ret = insertarTablaAmbitos(grafo->nodes[index_clase], 
+								name,
+								categoria,
+								tipo,
+								clase,
+								direcciones,
+								numero_parametros,
+								posicion_parametro,
+								numero_variables_locales,
+								posicion_variable_local,
+								tamanio,
+								numero_atributos_clase,
+								numero_atributos_instancia,
+								numero_metodos_sobreescribibles,
+								numero_metodos_no_sobreescribibles,
+								tipo_acceso,
+								tipo_miembro,
+								posicion_atributo_instancia,
+								posicion_metodo_sobreescribible,
+								num_acumulado_atributos_instancia,
+								num_acumulado_metodos_sobreescritura,
+								tipo_args);
+
+	free(name);
+	return ret;
+
+}
+
+
 int insertarTablaSimbolosClases(Graph * grafo, 
 		char * id_clase,                 int categoria,
 		char* id,                        int clase,
@@ -513,41 +579,43 @@ int insertarTablaSimbolosClases(Graph * grafo,
 	}
 
 	ret = insertarTablaSimbolos(grafo->nodes[index_clase], 
-															 name,
-															 categoria,
-															 tipo,
-															 clase,
-															 direcciones,
-															 numero_parametros,
-															 posicion_parametro,
-															 numero_variables_locales,
-															 posicion_variable_local,
-															 tamanio,
-															 numero_atributos_clase,
-															 numero_atributos_instancia,
-															 numero_metodos_sobreescribibles,
-															 numero_metodos_no_sobreescribibles,
-															 tipo_acceso,
-															 tipo_miembro,
-															 posicion_atributo_instancia,
-															 posicion_metodo_sobreescribible,
-															 num_acumulado_atributos_instancia,
-															 num_acumulado_metodos_sobreescritura,
-															 tipo_args);
+								name,
+								categoria,
+								tipo,
+								clase,
+								direcciones,
+								numero_parametros,
+								posicion_parametro,
+								numero_variables_locales,
+								posicion_variable_local,
+								tamanio,
+								numero_atributos_clase,
+								numero_atributos_instancia,
+								numero_metodos_sobreescribibles,
+								numero_metodos_no_sobreescribibles,
+								tipo_acceso,
+								tipo_miembro,
+								posicion_atributo_instancia,
+								posicion_metodo_sobreescribible,
+								num_acumulado_atributos_instancia,
+								num_acumulado_metodos_sobreescritura,
+								tipo_args);
 
 	free(name);
 	return ret;
 }
 
 
-int tablaSimbolosClasesAbrirAmbitoEnClase(Graph * grafo, 
-																char * id_clase,
-																char* id_ambito, 
-																int categoria_ambito, 
-																int acceso_metodo, 
-																int tipo_metodo, 
-																int posicion_metodo_sobre, 
-																int tamanio){
+int tablaSimbolosClasesAbrirAmbitoEnClase(	Graph * grafo, 
+											char * id_clase,
+											char* id_ambito, 
+											int categoria_ambito, 
+											int acceso_metodo, 
+											int tipo_metodo, 
+											int posicion_metodo_sobre, 
+											int tamanio,
+											int numero_parametros,
+											int *tipo_args){
 
 	int clase;
 
@@ -557,18 +625,18 @@ int tablaSimbolosClasesAbrirAmbitoEnClase(Graph * grafo,
 	if (clase == -1) return -1;
 
 	return abrirAmbitoFunc(grafo->nodes[clase],
-												 id_ambito, 
-												 categoria_ambito, 
-												 acceso_metodo, 
-												 tipo_metodo, 
-												 posicion_metodo_sobre, 
-												 tamanio);
+							id_ambito, 
+							categoria_ambito, 
+							acceso_metodo, 
+							tipo_metodo, 
+							posicion_metodo_sobre, 
+							tamanio,
+							numero_parametros,
+							tipo_args);
 
 }
 
-int tablaSimbolosClasesCerrarAmbitoEnClase(Graph* grafo, 
-                            char * id_clase){
-
+int tablaSimbolosClasesCerrarAmbitoEnClase(Graph* grafo, char * id_clase){
 	int clase;
 
 	if (!grafo || !id_clase) return -1;
@@ -629,11 +697,7 @@ int aplicarAccesos(Graph *g, char * nombre_clase_ambito_actual, char * clase_dec
 	}
 }
 
-int buscarIdEnJerarquiaDesdeClase(Graph *g, 
-																	char * nombre_id,
-                    							char * nombre_clase_desde, 
-																	HT_item ** e,
-																	char * nombre_ambito_encontrado){
+int buscarIdEnJerarquiaDesdeClase(Graph *g, char * nombre_id, char * nombre_clase_desde, HT_item ** e, char * nombre_ambito_encontrado){
 	int i, index, last_found, len;
 	HT_item *result;
 
@@ -643,6 +707,15 @@ int buscarIdEnJerarquiaDesdeClase(Graph *g,
 
 	index = indexOf(g, nombre_clase_desde);
 	if (index == -1) return ERR;
+
+	result = buscarSimboloFunc(g->nodes[index], nombre_id);
+	if (result){
+		len = strlen(getNameFunc(g->nodes[index]));
+		strncpy(nombre_ambito_encontrado, getNameFunc(g->nodes[index]), len*sizeof(char));
+		nombre_ambito_encontrado[len] = '\0';
+		*e = result;
+		return OK;
+	}
 
 	result = buscarSimbolo(g->nodes[index], nombre_id);
 	if (result){
@@ -673,22 +746,13 @@ int buscarIdEnJerarquiaDesdeClase(Graph *g,
 
 }
 
-int buscarIdNoCualificado(Graph *t, 
-                          // tablaAmbitos *tabla_main,
-                 					char * nombre_id, 
-                 					char * nombre_clase_desde,
-                 					HT_item ** e, 
-  												char * nombre_ambito_encontrado){
+int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde, HT_item ** e, char * nombre_ambito_encontrado){
 	HT_item *ret;
 
 	if (!t || !nombre_id || !nombre_clase_desde || !e)
 		return ERR;
 
-	if (buscarIdEnJerarquiaDesdeClase(t, 
-																		nombre_id,
-                    							  nombre_clase_desde, 
-																		e,
-																		nombre_ambito_encontrado) == OK)
+	if (buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_desde, e, nombre_ambito_encontrado) == OK)
 		return OK;
 
 	ret = buscarSimbolo(t->main, nombre_id);
@@ -699,8 +763,6 @@ int buscarIdNoCualificado(Graph *t,
 	*e = ret;
 	return aplicarAccesos(t, nombre_clase_desde, "main", ret);
 }
-
-
 
 
 void imprimirTablasHash(Graph *g){

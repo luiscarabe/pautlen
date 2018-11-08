@@ -24,7 +24,8 @@ int cerrarClase(Graph* t,
 
 // int abrirAmbitoClase(Node** t, char* id_clase, int tamanio);
 
-int insertarTablaSimbolosAmbitos(Node * nodo, int categoria,
+int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase, 
+		int categoria,
 		char* id,                        int clase,
 		int tipo,												 int direcciones,                    
 		int numero_parametros,           int numero_variables_locales,        
@@ -61,14 +62,6 @@ int insertarTablaSimbolosClases(Graph * grafo,
 		int num_acumulado_metodos_sobreescritura,
 		int * tipo_args);
 
-int tablaSimbolosClasesAbrirAmbitoEnClase(Graph * grafo, 
-                                char * id_clase,
-                                char* id_ambito, 
-                                int categoria_ambito, 
-                                int acceso_metodo, 
-                                int tipo_metodo, 
-                                int posicion_metodo_sobre, 
-                                int tamanio);
 
 int tablaSimbolosClasesAbrirAmbitoEnClase(Graph * grafo, 
 																char * id_clase,
@@ -77,7 +70,9 @@ int tablaSimbolosClasesAbrirAmbitoEnClase(Graph * grafo,
 																int acceso_metodo, 
 																int tipo_metodo, 
 																int posicion_metodo_sobre, 
-																int tamanio);
+																int tamanio,
+																int numero_parametros,
+																int *tipo_args);
 
 int tablaSimbolosClasesCerrarAmbitoEnClase(Graph* grafo, 
                             char * id_clase);
