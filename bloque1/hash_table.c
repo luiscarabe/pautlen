@@ -125,25 +125,18 @@ Element * new_element(int categoria,
 											int direcciones,
 											int numero_parametros,
 											int posicion_parametro,
-											int numero_variables_locales,
 											int posicion_variable_local,
 											int tamanio,
-											int numero_atributos_clase,
-											int numero_atributos_instancia,
-											int numero_metodos_sobreescribibles,
-											int numero_metodos_no_sobreescribibles,
 											int tipo_acceso,
 											int tipo_miembro,
 											int posicion_atributo_instancia,
 											int posicion_metodo_sobreescribible,
-											int num_acumulado_atributos_instancia,
-											int num_acumulado_metodos_sobreescritura,
 											int * tipo_args){
 
 	Element * e = NULL;
 
 	if(categoria < 0 || tipo < 0 || clase < 0 || direcciones < 0 || numero_parametros < 0
-		|| posicion_parametro < 0 || numero_variables_locales < 0 || posicion_variable_local < 0){
+		|| posicion_parametro < 0 || posicion_variable_local < 0){
 		/* If anyone of the arguments' value is less than zero return error */
 		printf("ERROR. argumentos new element mal\n");
 		return NULL;
@@ -171,19 +164,19 @@ Element * new_element(int categoria,
 	e->direcciones = direcciones;
 	e->numero_parametros = numero_parametros;
 	e->posicion_parametro = posicion_parametro;
-	e->numero_variables_locales = numero_variables_locales;
+	e->numero_variables_locales = 0;
 	e->posicion_variable_local = posicion_variable_local;
 	e->tamanio = tamanio;
-	e->numero_atributos_clase = numero_atributos_clase;
-	e->numero_atributos_instancia = numero_atributos_instancia;
-	e->numero_metodos_sobreescribibles = numero_metodos_sobreescribibles;
-	e->numero_metodos_no_sobreescribibles = numero_metodos_no_sobreescribibles;
+	e->numero_atributos_clase = 0;
+	e->numero_atributos_instancia = 0;
+	e->numero_metodos_sobreescribibles = 0;
+	e->numero_metodos_no_sobreescribibles = 0;
 	e->tipo_acceso = tipo_acceso;
 	e->tipo_miembro = tipo_miembro;
 	e->posicion_atributo_instancia = posicion_atributo_instancia;
 	e->posicion_metodo_sobreescribible = posicion_metodo_sobreescribible;
-	e->num_acumulado_atributos_instancia = num_acumulado_atributos_instancia;
-	e->num_acumulado_metodos_sobreescritura = num_acumulado_metodos_sobreescritura;
+	e->num_acumulado_atributos_instancia = 0;
+	e->num_acumulado_metodos_sobreescritura = 0;
 
 	return e;
 }
@@ -282,19 +275,12 @@ static HT_item* ht_new_item(const char* k,
 														int direcciones,
 														int numero_parametros,
 														int posicion_parametro,
-														int numero_variables_locales,
 														int posicion_variable_local,
 														int tamanio,
-														int numero_atributos_clase,
-														int numero_atributos_instancia,
-														int numero_metodos_sobreescribibles,
-														int numero_metodos_no_sobreescribibles,
 														int tipo_acceso,
 														int tipo_miembro,
 														int posicion_atributo_instancia,
 														int posicion_metodo_sobreescribible,
-														int num_acumulado_atributos_instancia,
-														int num_acumulado_metodos_sobreescritura,
 														int * tipo_args) {
 
 		HT_item* item = malloc(sizeof(HT_item));
@@ -310,19 +296,12 @@ static HT_item* ht_new_item(const char* k,
 															direcciones,
 															numero_parametros,
 															posicion_parametro,
-															numero_variables_locales,
 															posicion_variable_local,
 															tamanio,
-															numero_atributos_clase,
-															numero_atributos_instancia,
-															numero_metodos_sobreescribibles,
-															numero_metodos_no_sobreescribibles,
 															tipo_acceso,
 															tipo_miembro,
 															posicion_atributo_instancia,
 															posicion_metodo_sobreescribible,
-															num_acumulado_atributos_instancia,
-															num_acumulado_metodos_sobreescritura,
 															tipo_args);
 
 		if(item-> value == NULL){
@@ -525,27 +504,16 @@ void ht_del_hash_table(TablaSimbolos* ht) {
 	free(ht);
 }
 
-HT_item * ht_insert_item(TablaSimbolos* ht, const char* key,
-																			int categoria,
-																			int tipo,
-																			int clase,
-																			int direcciones,
-																			int numero_parametros,
-																			int posicion_parametro,
-																			int numero_variables_locales,
-																			int posicion_variable_local,
-																			int tamanio,
-																			int numero_atributos_clase,
-																			int numero_atributos_instancia,
-																			int numero_metodos_sobreescribibles,
-																			int numero_metodos_no_sobreescribibles,
-																			int tipo_acceso,
-																			int tipo_miembro,
-																			int posicion_atributo_instancia,
-																			int posicion_metodo_sobreescribible,
-																			int num_acumulado_atributos_instancia,
-																			int num_acumulado_metodos_sobreescritura,
-																			int * tipo_args) {
+HT_item * ht_insert_item(TablaSimbolos* ht, 
+		const char* key,							int categoria,	
+		int tipo,											int clase, 
+		int direcciones, 							int numero_parametros, 
+		int posicion_parametro,
+		int posicion_variable_local, 	int tamanio, 
+		int tipo_acceso, 							int tipo_miembro, 
+		int posicion_atributo_instancia, 
+		int posicion_metodo_sobreescribible, 
+		int * tipo_args) {
 
 
 	int index;
@@ -558,19 +526,12 @@ HT_item * ht_insert_item(TablaSimbolos* ht, const char* key,
 															direcciones,
 															numero_parametros,
 															posicion_parametro,
-															numero_variables_locales,
 															posicion_variable_local,
 															tamanio,
-															numero_atributos_clase,
-															numero_atributos_instancia,
-															numero_metodos_sobreescribibles,
-															numero_metodos_no_sobreescribibles,
 															tipo_acceso,
 															tipo_miembro,
 															posicion_atributo_instancia,
 															posicion_metodo_sobreescribible,
-															num_acumulado_atributos_instancia,
-															num_acumulado_metodos_sobreescritura,
 															tipo_args);
 
 	if (item == NULL) {

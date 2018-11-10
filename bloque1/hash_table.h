@@ -67,16 +67,11 @@ HT_item * ht_insert_item(TablaSimbolos* ht,
 		const char* key,							int categoria,	
 		int tipo,											int clase, 
 		int direcciones, 							int numero_parametros, 
-		int posicion_parametro, 			int numero_variables_locales, 
+		int posicion_parametro,
 		int posicion_variable_local, 	int tamanio, 
-		int numero_atributos_clase, 	int numero_atributos_instancia, 
-		int numero_metodos_sobreescribibles, 
-		int numero_metodos_no_sobreescribibles, 
 		int tipo_acceso, 							int tipo_miembro, 
 		int posicion_atributo_instancia, 
 		int posicion_metodo_sobreescribible, 
-		int num_acumulado_atributos_instancia, 
-		int num_acumulado_metodos_sobreescritura, 
 		int * tipo_args);
 
 char ** ht_get_name_symbols(TablaSimbolos * ts);

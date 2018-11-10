@@ -3,5 +3,4 @@
 *.dot
 core*
 *.P
-graph-test
-hash-test
+*test

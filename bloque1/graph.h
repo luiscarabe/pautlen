@@ -15,12 +15,7 @@ int iniciarTablaSimbolosClases(Graph** t, char * nombre);
 int abrirClase(Graph* t, char* id_clase);
 int abrirClaseHereda(Graph* t, char* id_clase, ...);
 int cerrarClase(Graph* t,
-                char* id_clase, 
-                int num_atributos_clase, 
-                int num_atributos_instancia, 
-                int num_metodos_sobreescribibles, 
-                int num_metodos_no_sobreescribibles);
-
+                char* id_clase);
 
 // int abrirAmbitoClase(Node** t, char* id_clase, int tamanio);
 
@@ -28,15 +23,11 @@ int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase,
 		int categoria,
 		char* id,                        int clase,
 		int tipo,												 int direcciones,                    
-		int numero_parametros,           int numero_variables_locales,        
+		int numero_parametros,                 
 		int posicion_variable_local,     int posicion_parametro,
-		int tamanio,                     int numero_atributos_clase,            
-		int numero_atributos_instancia,  int numero_metodos_sobreescribibles,    
-		int numero_metodos_no_sobreescribibles,
+		int tamanio,                                
 		int tipo_acceso,                 int tipo_miembro, 
 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
-		int num_acumulado_atributos_instancia,   
-		int num_acumulado_metodos_sobreescritura,
 		int * tipo_args);
 
 // int abrirAmbitoPrefijos(Node* node, 
@@ -51,20 +42,48 @@ int insertarTablaSimbolosClases(Graph * grafo,
 		char * id_clase,                 int categoria,
 		char* id,                        int clase,
 		int tipo,												 int direcciones,                    
-		int numero_parametros,           int numero_variables_locales,        
+		int numero_parametros,        
 		int posicion_variable_local,     int posicion_parametro,
-		int tamanio,                     int numero_atributos_clase,            
-		int numero_atributos_instancia,  int numero_metodos_sobreescribibles,    
-		int numero_metodos_no_sobreescribibles,
+		int tamanio,      
 		int tipo_acceso,                 int tipo_miembro, 
 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
-		int num_acumulado_atributos_instancia,   
-		int num_acumulado_metodos_sobreescritura,
 		int * tipo_args);
 
+int insertarTablaSimbolosMain(Graph * grafo, int categoria,
+		char* id,                        int clase,
+		int tipo,												 int direcciones,                    
+		int numero_parametros,        
+		int posicion_variable_local,     int posicion_parametro,
+		int tamanio,      
+		int tipo_acceso,                 int tipo_miembro, 
+		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
+		int * tipo_args);
+
+int insertarTablaSimbolosAmbitosMain(Graph *grafo, 
+		int categoria,
+		char* id,                        int clase,
+		int tipo,												 int direcciones,                    
+		int numero_parametros,                 
+		int posicion_variable_local,     int posicion_parametro,
+		int tamanio,                                
+		int tipo_acceso,                 int tipo_miembro, 
+		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
+		int * tipo_args);
+
+int tablaSimbolosClasesCerrarAmbitoEnMain(Graph* grafo);
 
 int tablaSimbolosClasesAbrirAmbitoEnClase(Graph * grafo, 
 																char * id_clase,
+																char* id_ambito, 
+																int categoria_ambito, 
+																int acceso_metodo, 
+																int tipo_metodo, 
+																int posicion_metodo_sobre, 
+																int tamanio,
+																int numero_parametros,
+																int *tipo_args);
+
+int tablaSimbolosClasesAbrirAmbitoEnMain(Graph * grafo, 
 																char* id_ambito, 
 																int categoria_ambito, 
 																int acceso_metodo, 
