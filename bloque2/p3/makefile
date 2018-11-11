@@ -16,7 +16,7 @@ lex.yy.o: lex.yy.c
 	$(CC) $(CCFLAGS) -c $< -o $@
 
 pruebaSintactico: pruebaSintactico.c
-	$(CC) $(CCFLAGS) -o $@ $<
+	$(CC) $(CCFLAGS) -o $@ $< lex.yy.c y.tab.c
 
 clean:
 	rm -f y.tab.o lex.yy.o pruebaSintactico y.tab.h y.tab.c lex.yy.c 

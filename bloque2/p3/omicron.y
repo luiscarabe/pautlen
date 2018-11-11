@@ -1,10 +1,11 @@
 %{
 	#include <stdio.h>
 	#include <stdlib.h>
-	#include "lex.yy.c"
 
 	/* En main*/
+	extern FILE* yyin;
 	extern FILE* fout;
+
 
 	/* En fichero especificacion Flex*/
 	extern int yylex(void);

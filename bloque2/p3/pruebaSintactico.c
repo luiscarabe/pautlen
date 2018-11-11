@@ -9,9 +9,8 @@ Grupo 5: Alejandro Cabana, Luis Cárabe, Emilio Cuesta, Blanca Martín, Pablo Al
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "y.tab.c"
 
-extern FILE* yyin;
+FILE* yyin;
 FILE* fout;
 
 int main(int argc, char** argv){
