@@ -25,7 +25,7 @@ EXEC_SOURCES = $(shell grep -l "^int main" $(SOURCES) | xargs)
 EXECS = $(shell echo $(EXEC_SOURCES) | sed -e 's:\.c[p]*::g')
 DEPS = $(shell echo $(SOURCES) | sed -e 's:\.c[p]*:\.d:g')
 
-all:	graph-test hash-test declararMiembroClase_test declararMiembroInstancia_test
+all:	graph-test hash-test declararMiembroClase_test declararMiembroInstancia_test usoIdentificadorCualificado_test
 
 graph-test: graph-test.o graph.o node.o hash_table.o
 
@@ -39,7 +39,8 @@ declararMiembroClase_test: declararMiembroClase_test.o graph.o node.o hash_table
 
 declararMiembroInstancia_test: declararMiembroInstancia_test.o graph.o node.o hash_table.o
 
-#usoIdentificadorCualificado_test: usoIdentificadorCualificado_test.o graph.o node.o hash_table.o
+usoIdentificadorCualificado_test: usoIdentificadorCualificado_test.o graph.o node.o hash_table.o
+
 # receta para hacer un .d (dependencias automaticas de tipo .h para tus .o)
 %.d : %.c
 	@set -e; $(CC) -MM $(CFLAGS) $< \

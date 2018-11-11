@@ -114,7 +114,16 @@ int buscarParaDeclararMiembroInstancia(Graph *t,
 													HT_item ** e,
 													char * nombre_ambito_encontrado);
 
+int buscarIdCualificadoClase(	Graph *g, char * nombre_clase_cualifica,
+								char * nombre_id, char * nombre_clase_desde,
+								HT_item ** e,
+								char * nombre_ambito_encontrado);
 
+int buscarIdCualificadoInstancia(	Graph *g,
+									char * nombre_instancia_cualifica,
+									char * nombre_id, char * nombre_clase_desde,
+									HT_item ** e,
+									char * nombre_ambito_encontrado);
 
 // Para debuggear - usar con precaucion
 void imprimirTablasHash(Graph *g);

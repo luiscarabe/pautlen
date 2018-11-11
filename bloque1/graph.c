@@ -737,6 +737,7 @@ int aplicarAccesos(Graph *g, char * nombre_clase_ambito_actual, char * clase_dec
 	if (!g || !nombre_clase_ambito_actual || !clase_declaro || !pelem) return ERR;
 
 	access = HT_itemGetAccess(pelem);
+	//printf("Acceso desde %s a %s: %d\n", nombre_clase_ambito_actual, clase_declaro, access);
 
 	if (strcmp(nombre_clase_ambito_actual, "main") == 0){
 		if (access == ACCESO_CLASE)
@@ -875,10 +876,71 @@ int buscarParaDeclararMiembroInstancia(Graph *t, char * nombre_id, char * nombre
 	return ERR;
 }
 
+int buscarIdCualificadoClase(	Graph *g, char * nombre_clase_cualifica,
+								char * nombre_id, char * nombre_clase_desde,
+								HT_item ** e,
+								char * nombre_ambito_encontrado){
+	int index_clase_cualifica;
+
+	if (!g || !nombre_clase_cualifica || !nombre_id || !nombre_clase_desde || !e || !nombre_ambito_encontrado)
+		return ERR;
+
+	index_clase_cualifica = indexOf(g, nombre_clase_cualifica);
+	if(index_clase_cualifica == ERR) return ERR;
+
+	if (buscarIdEnJerarquiaDesdeClase(g, nombre_id, nombre_clase_cualifica, e, nombre_ambito_encontrado) == ERR)
+		return ERR;
+
+	return aplicarAccesos(g, nombre_clase_desde, nombre_ambito_encontrado, *e);
+}
+
+
+
+int buscarIdCualificadoInstancia(	Graph *g,
+									char * nombre_instancia_cualifica,
+									char * nombre_id, char * nombre_clase_desde,
+									HT_item ** e,
+									char * nombre_ambito_encontrado){
+	int index_clase;
+
+	if (!g || ! nombre_instancia_cualifica || !nombre_id || !nombre_clase_desde || !e || !nombre_ambito_encontrado)
+		return ERR;
+
+
+	// Busca el nombre de la instancia
+	if (buscarIdNoCualificado(g, nombre_instancia_cualifica, nombre_clase_desde, e, nombre_ambito_encontrado) == ERR){
+		printf("No encontrada instancia_cualifica %s\n", nombre_instancia_cualifica);
+		return ERR;
+	}
+
+	// Mira la clase a la que pertenece la instancia
+	index_clase = - HT_itemGetClass(*e);
+	if (index_clase < 0){
+		printf("%s no es una instancia de clase\n", nombre_instancia_cualifica);
+		return ERR;
+	}
+
+	// Mira si hay acceso a la instancia desde el ambito actual
+	if (aplicarAccesos(g, nombre_clase_desde, nombre_ambito_encontrado, *e) == ERR){
+		printf("No hay acceso desde %s a %s\n", nombre_clase_desde, nombre_instancia_cualifica);
+		return ERR;
+	}
+
+	// printf("Buscando %s en jerarquia desde %s\n", nombre_id, getName(g->nodes[index_clase]));
+
+	if (buscarIdEnJerarquiaDesdeClase(g, nombre_id, getName(g->nodes[index_clase]), e, nombre_ambito_encontrado) == ERR){
+		// printf("No encontrado %s\n", nombre_id);
+		return ERR;
+	}
+
+	return aplicarAccesos(g, nombre_clase_desde, nombre_ambito_encontrado, *e);
+}
+
+
 void imprimirTablasHash(Graph *g){
 	if (!g) return;
 
-	printf("Tabla del main");
+	printf("Tabla del main\n");
 	imprimirTablaPpal(g->main);
 	printf("\nfunc:\n");
 	imprimirTablaFunc(g->main);
