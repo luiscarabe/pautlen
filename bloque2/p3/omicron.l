@@ -9,7 +9,7 @@
 	extern FILE* fout;
 
 	int yylex();
-	FILE* yyin;
+	extern FILE* yyin;
 	int yyleng;
 	char* yytext;
 
