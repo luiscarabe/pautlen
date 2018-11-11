@@ -8,22 +8,40 @@
 // Libera memoria otra persona
 int main(int argc, char const *argv[]){
 	Graph *g;
+	HT_item *item;
+	char *name = (char *) malloc(sizeof(char)*64);
 
 	iniciarTablaSimbolosClases(&g, "Menudotestazo2");
 
 	abrirClase(g, "AA");
+
+	if (buscarParaDeclararMiembroClase(g, "sA1", "AA", &item, name) == -1)
+		printf("No se encuentra \n");
+	else printf("%s\n", name);
 	
 	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "sA1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_UNICO, 0, 0, NULL);
 
+	if (buscarParaDeclararMiembroClase(g, "sA1", "AA", &item, name) == -1)
+		printf("No se encuentra \n");
+	else printf("%s\n", name);
+
 	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "sA1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_UNICO, 0, 0, NULL);
 
+	if (buscarParaDeclararMiembroClase(g, "hA1", "AA", &item, name) == -1)
+		printf("No se encuentra \n");
+	else printf("%s\n", name);
+
 	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "hA1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_CLASE,
 								MIEMBRO_UNICO, 0, 0, NULL);
+
+	if (buscarParaDeclararMiembroClase(g, "eA1", "AA", &item, name) == -1)
+		printf("No se encuentra \n");
+	else printf("%s\n", name);
 
 	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "eA1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_TODOS,
@@ -47,13 +65,33 @@ int main(int argc, char const *argv[]){
 
 	abrirClase(g, "BB");
 
+	if (buscarParaDeclararMiembroClase(g, "sA1", "BB", &item, name) == -1)
+		printf("No se encuentra \n");
+	else printf("%s\n", name);
+
 	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "sA1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_UNICO, 0, 0, NULL);
 
+	if (buscarParaDeclararMiembroClase(g, "sA1", "BB", &item, name) == -1)
+		printf("No se encuentra \n");
+	else printf("%s\n", name);
+
+	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "sA1", ESCALAR, 
+								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
+								MIEMBRO_UNICO, 0, 0, NULL);
+
+	if (buscarParaDeclararMiembroClase(g, "hA1", "BB", &item, name) == -1)
+		printf("No se encuentra \n");
+	else printf("%s\n", name);
+
 	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "hA1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_CLASE,
 								MIEMBRO_UNICO, 0, 0, NULL);
+
+	if (buscarParaDeclararMiembroClase(g, "xA1", "BB", &item, name) == -1)
+		printf("No se encuentra \n");
+	else printf("%s\n", name);
 
 	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "xA1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_TODOS,

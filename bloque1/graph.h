@@ -102,6 +102,17 @@ int buscarIdNoCualificado(Graph *t,
                  					char * nombre_clase_desde,
                  					HT_item ** e, 
   												char * nombre_ambito_encontrado);
+int buscarParaDeclararMiembroClase(Graph *t,
+													char * nombre_id,
+													char * nombre_clase_desde,
+													HT_item ** e,
+													char * nombre_ambito_encontrado);
+
+int buscarParaDeclararMiembroInstancia(Graph *t,
+													char * nombre_id,
+													char * nombre_clase_desde,
+													HT_item ** e,
+													char * nombre_ambito_encontrado);
 
 
 
