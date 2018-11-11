@@ -837,6 +837,44 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 }
 
 
+int buscarParaDeclararMiembroClase(Graph *t, char * nombre_id, char * nombre_clase_desde, HT_item ** e, char * nombre_ambito_encontrado){
+	int index, len;
+	HT_item * result;
+
+	if (!t || !nombre_id || !nombre_clase_desde || !e)
+		return ERR;
+
+	//segun las transparencias esto solo se debe buscar en la clase, NO en jerarquia
+	//if (buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_desde, e, nombre_ambito_encontrado) == OK)
+	//	return OK;
+
+	index = indexOf(t, nombre_clase_desde);
+	if (index == -1) return ERR;
+
+	// No tiene sentido buscar en la función
+	result = buscarSimbolo(t->nodes[index], nombre_id);
+	if (result){
+		len = strlen(getName(t->nodes[index]));
+		strncpy(nombre_ambito_encontrado, getName(t->nodes[index]), len*sizeof(char));
+		nombre_ambito_encontrado[len] = '\0';
+		*e = result;
+		return OK;
+	}
+
+	return ERR;
+}
+
+int buscarParaDeclararMiembroInstancia(Graph *t, char * nombre_id, char * nombre_clase_desde, HT_item ** e, char * nombre_ambito_encontrado){
+
+	if (!t || !nombre_id || !nombre_clase_desde || !e)
+		return ERR;
+
+	if (buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_desde, e, nombre_ambito_encontrado) == OK)
+		return OK;
+
+	return ERR;
+}
+
 void imprimirTablasHash(Graph *g){
 	if (!g) return;
 
