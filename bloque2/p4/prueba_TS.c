@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "omicron.h"
+#include "graph.h"
 
 // OPERACIONES PRINCIPALES
 // Del main: 
@@ -49,6 +50,7 @@
 // Declaramos estas variables aqui para que puedan ser referenciadas por extern (tal vez haga falta en un futuro)
 FILE* fin; 
 FILE* fout;
+Graph *tabla_clases;
 
 void gestion_inicia_tsc();
 void gestion_cerrar_tsc();
@@ -160,45 +162,38 @@ void gestion_inicia_tsc(){
 	
 	//TODO: Amiguedad en el enunciado, en el ejemplo si tiene un arg pero en las especificaciones no
 
-	//TODO:
-	//iniciarTablaSimbolosClases(&tabla_clases, token);
+	iniciarTablaSimbolosClases(&tabla_clases, "hola");
 
 }
 
 void gestion_cerrar_tsc(){
 	//Sin argumentos ni parametros
 
-	//TODO:
-	//cerrarTablaSimbolosClases(ej_tabla_clases);
-	//tablaSimbolosClasesToDot(ej_tabla_clases);
-	//graph_destroy(ej_tabla_clases);
+	tablaSimbolosClasesToDot(tabla_clases);
+  imprimirTablasHash(tabla_clases);
+
+	deleteGraph(tabla_clases);
 
 }
 
 void gestion_inicia_tsa_main(){
 	//Sin argumentos ni parametros
 
-	//TODO:		
-	//iniciarTablaSimbolosAmbitos(&tabla_main);
-
+	return;
 }
 
 void gestion_cerrar_tsa_main(){
 	//Sin argumentos ni parametros
 
-	//TODO:
-	//cerrarAmbitoMain(&tabla_main);
-	//liberarTablaSimbolosAmbitos(&tabla_main);
-
+	return;
 }
 
 void gestion_abrir_ambito_ppal_main(){
 	//Sin argumentos ni parametros
 
-	//TODO
-	//abrirAmbitoPpalMain(&tabla_main);
-
+	return;
 }
+
 void gestion_insertar_tsa_main(){
 	/*Sin parametros.
 	Argumentos:
@@ -235,8 +230,9 @@ void gestion_insertar_tsa_main(){
 	free(aux);
 
 	//TODO:
-	//insertarTablaSimbolosAmbitos(&tabla_main, "main_v1",VARIABLE, INT, ESCALAR, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, ACCESO_CLASE, MIEMBRO_UNICO, 0, 0, 0, 0, 0,0, NULL );
 
+	insertarTablaSimbolosMain(tabla_clases, categoria, nombre_id, estructura, tipo_basico, 0, 0, 0, 0, 0, tipo_acceso, tipo_miembro, 0, 0, NULL);
+	
 	free(nombre_id);
 	return;
 }
@@ -256,8 +252,7 @@ void gestion_abrir_ambito_tsa_main(){
 	free(aux);
 
 	//TODO
-	//abrirAmbitoMain(&tabla_main,ambito,FUNCION, tipo_basico, NINGUNO, NINGUNO, 0, TAMANIO_TABLA);
-
+	tablaSimbolosClasesAbrirAmbitoEnMain(tabla_clases, nombre_ambito, FUNCION, NINGUNO, tipo_basico, 0, 0, 0, NULL);
 
 	free(nombre_ambito);
 	return;
@@ -266,9 +261,7 @@ void gestion_abrir_ambito_tsa_main(){
 void gestion_cerrar_ambito_tsa_main(){
 	//Sin argumentos ni parametros
 
-	//TODO:
-	//cerrarAmbito(&tabla_main);
-
+	tablaSimbolosClasesCerrarAmbitoEnMain(tabla_clases);
 	return;
 }
 
@@ -281,10 +274,7 @@ void gestion_abrir_clase(){
 
 	leer_siguiente(&nombre_clase);
 
-	//TODO:
-	//abrirClase(ej_tabla_clases,nombre_clase);
-	//graph_enrouteParentsLastNode(ej_tabla_clases);
-
+	abrirClase(tabla_clases, nombre_clase);
 	free(nombre_clase);
 	return;
 
@@ -309,26 +299,22 @@ void gestion_abrir_clase_hereda(){
 	/*Aqui no aplicamos leer siguiente por el tema del numero de 
 	  argumentos desconocido*/
 	while ((token=strtok(NULL," \n\t"))!=NULL){
-        num_padres++;
-        nombres_padres = (char **) realloc(nombres_padres, sizeof(char*)*num_padres);                     
-        nombres_padres[num_padres-1]= (char*)malloc((strlen(token)+1)*sizeof(char));
-        strcpy(nombres_padres[num_padres-1], token);
-    }
+    num_padres++;
+    nombres_padres = (char **) realloc(nombres_padres, sizeof(char*)*num_padres);                     
+    nombres_padres[num_padres-1]= (char*)malloc((strlen(token)+1)*sizeof(char));
+    strcpy(nombres_padres[num_padres-1], token);
+  }
 
-	//TODO:
-    /*abrirClaseHeredaN(tabla_clases, 
-                    nombre_clase_declarandose,          
-                    num_padres,nombres_padres);
+  abrirClaseHeredaN(tabla_clases, 
+                  nombre_clase,          
+                  num_padres,nombres_padres);
+  for(i=0; i<num_padres; i++){
+  	free(nombres_padres[i]);
+  }
+  free(nombres_padres);
+  free(nombre_clase);
 
-    graph_enrouteParentsLastNode(tabla_clases);*/
-
-    for(i=0; i<num_padres; i++){
-    	free(nombres_padres[i]);
-    }
-    free(nombres_padres);
-    free(nombre_clase);
-
-    return;
+  return;
 
 }
 
@@ -342,10 +328,7 @@ void gestion_cerrar_clase(){
 
 	leer_siguiente(&nombre_clase);
 	
-	//TODO
-	//cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
-
-
+	cerrarClase(tabla_clases, nombre_clase);
 	free(nombre_clase);
 	return;
 }
@@ -388,8 +371,8 @@ void gestion_insertar_tsc(){
 	tipo_miembro = atoi(aux);
 	free(aux);
 
-	//TODO
-	//insertarTablaSimbolosClases(ej_tabla_clases,"AA","AA_a1", ATRIBUTO_CLASE, INT, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, ACCESO_TODOS, MIEMBRO_UNICO, 0, 0, 0, 0,  0,0,NULL );
+	insertarTablaSimbolosClases(tabla_clases, nombre_clase, categoria, nombre_simbolo, estructura,
+		tipo_basico, 0, 0, 0, 0, 0, tipo_acceso, tipo_miembro, 0, 0, NULL);                    
 
 	free(nombre_clase);
 	free(nombre_simbolo);
@@ -431,15 +414,10 @@ void gestion_abrir_ambito_tsc(){
 	tipo_miembro = atoi(aux);
 	free(aux);
 
-
-
-	//TODO
-	/*tablaSimbolosClasesAbrirAmbitoEnClase(     
-            ej_tabla_clases,"AA","AA_mA0",                 
-            METODO_SOBREESCRIBIBLE,      
-            ACCESO_TODOS, 
-            MIEMBRO_NO_UNICO, 0, 
-            TAMANIO_TABLA);*/
+	if (tipo_miembro == MIEMBRO_UNICO)
+		tablaSimbolosClasesAbrirAmbitoEnClase(tabla_clases, nombre_clase, nombre_ambito, METODO_NO_SOBREESCRIBIBLE, NINGUNO, tipo_basico, 0, 0, 0, NULL);
+	else
+		tablaSimbolosClasesAbrirAmbitoEnClase(tabla_clases, nombre_clase, nombre_ambito, METODO_SOBREESCRIBIBLE, NINGUNO, tipo_basico, 0, 0, 0, NULL);
 
 	free(nombre_clase);
 	free(nombre_ambito);
@@ -457,8 +435,9 @@ void gestion_cerrar_ambito_tsc(){
 
 	leer_siguiente(&nombre_clase);
 
-	//TODO
-	//tablaSimbolosClasesCerrarAmbitoEnClase(ej_tabla_clases, "AA");
+	imprimirTablasHash(tabla_clases);
+	printf("____________________________________________\n");
+	tablaSimbolosClasesCerrarAmbitoEnClase(tabla_clases, nombre_clase);
 
 	free(nombre_clase);
 	return;
@@ -494,6 +473,8 @@ void gestion_buscar(){
 				nombre_id
 				nombre_clase_desde*/
 
+	HT_item *e;
+	char *name = (char *) malloc(sizeof(char) * 64);
 	char  *parametro = NULL;
 	char  *nombre_id = NULL, *nombre_clase_desde = NULL, 
 		  *nombre_miembro = NULL, *nombre_clase = NULL, 
@@ -505,8 +486,13 @@ void gestion_buscar(){
 
 		leer_siguiente(&nombre_id);
 
-		//TODO llamada
+		if (buscarIdNoCualificado(tabla_clases, nombre_id,
+													"main", &e, name) == OK)
+			printf("TOK_DECLARAR_MAIN OK\n");
+		else
+			printf("TOK_DECLARAR_MAIN ERR\n");
 
+		free(name);
 		free(nombre_id);
 
 	} else if(strcmp(parametro, TOK_DECLARAR_MIEMBRO_CLASE) == 0){
@@ -514,8 +500,12 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_clase_desde);
 		leer_siguiente(&nombre_miembro);
 
-		//TODO llamada
+		if (buscarParaDeclararMiembroClase(tabla_clases, nombre_miembro, nombre_clase_desde, &e, name) == OK)
+			printf("TOK_DECLARAR_MIEMBRO_CLASE OK\n");
+		else
+			printf("TOK_DECLARAR_MIEMBRO_CLASE ERR\n");
 
+		free(name);
 		free(nombre_clase_desde);
 		free(nombre_miembro);
 
@@ -524,8 +514,12 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_clase_desde);
 		leer_siguiente(&nombre_miembro);
 
-		//TODO llamada
+		if (buscarParaDeclararMiembroInstancia(tabla_clases, nombre_miembro, nombre_clase_desde, &e, name) == OK)
+			printf("TOK_DECLARAR_MIEMBRO_INSTANCIA OK\n");
+		else
+			printf("TOK_DECLARAR_MIEMBRO_INSTANCIA ERR\n");
 
+		free(name);
 		free(nombre_clase_desde);
 		free(nombre_miembro);
 
@@ -534,8 +528,13 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_clase);
 		leer_siguiente(&nombre_id);
 
-		//TODO llamada
+		if (buscarIdNoCualificado(tabla_clases, nombre_id,
+													nombre_clase, &e, name) == OK)
+			printf("TOK_DECLARAR_ID_LOCAL_METODO OK\n");
+		else
+			printf("TOK_DECLARAR_ID_LOCAL_METODO ERR\n");
 
+		free(name);
 		free(nombre_clase);
 		free(nombre_id);
 
@@ -544,8 +543,13 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 		leer_siguiente(&nombre_clase);
 
-		//TODO llamada
+		if (buscarIdNoCualificado(tabla_clases, nombre_id,
+													nombre_clase, &e, name) == OK)
+			printf("TOK_JERARQUIA OK\n");
+		else
+			printf("TOK_JERARQUIA ERR\n");
 
+		free(name);
 		free(nombre_id);
 		free(nombre_clase);
 
@@ -554,8 +558,13 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 		leer_siguiente(&nombre_clase_desde);
 
-		//TODO llamada
+		if (buscarIdNoCualificado(tabla_clases, nombre_id,
+													nombre_clase, &e, name) == OK)
+			printf("TOK_ID_NO_CUALIFICADO OK\n");
+		else
+			printf("TOK_ID_NO_CUALIFICADO ERR\n");
 
+		free(name);
 		free(nombre_id);
 		free(nombre_clase_desde);
 
@@ -565,8 +574,13 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 		leer_siguiente(&nombre_clase_desde);
 
-		//TODO llamada
+		if (buscarIdCualificadoInstancia(tabla_clases, nombre_instancia,
+													nombre_id, nombre_clase, &e, name) == OK)
+			printf("TOK_ID_CUALIFICADO_INSTANCIA OK\n");
+		else
+			printf("TOK_ID_CUALIFICADO_INSTANCIA ERR\n");
 
+		free(name);
 		free(nombre_instancia);
 		free(nombre_id);
 		free(nombre_clase_desde);
@@ -577,8 +591,13 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 		leer_siguiente(&nombre_clase_desde);
 
-		//TODO llamada
+		if (buscarIdCualificadoClase(tabla_clases, nombre_instancia,
+													nombre_id, nombre_clase, &e, name) == OK)
+			printf("TOK_ID_CUALIFICADO_CLASE OK\n");
+		else
+			printf("TOK_ID_CUALIFICADO_CLASE ERR\n");
 
+		free(name);
 		free(nombre_clase_cualifica);
 		free(nombre_id);
 		free(nombre_clase_desde);
