@@ -9,94 +9,186 @@
 int main(int argc, char const *argv[]){
 	Graph *g;
 
+	HT_item *item;
+	char *name = (char *) malloc(sizeof(char)*64);
+
 	iniciarTablaSimbolosClases(&g, "Menudotestazo3");
 
+	// CLASE AA
+
+	printf("Variables AA\n");
 	abrirClase(g, "AA");
-	
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "sa1", ESCALAR, 
+
+	if (buscarParaDeclararMiembroInstancia(g, "sa1", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "sa1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
+	
+	
 
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "sa1", ESCALAR, 
-								INT, 0, 0, 0, 0, 0, ACCESO_CLASE,
-								MIEMBRO_NO_UNICO, 0, 0, NULL);
-
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "ha1", ESCALAR, 
+	if (buscarParaDeclararMiembroInstancia(g, "sa1", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "sa1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "xa1", ESCALAR, 
-								INT, 0, 0, 0, 0, 0, ACCESO_TODOS,
+	if (buscarParaDeclararMiembroInstancia(g, "ha1", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "ha1", ESCALAR, 
+								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
+
+	if (buscarParaDeclararMiembroInstancia(g, "xa1", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "xa1", ESCALAR, 
+								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
+								MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 	
-	int tipos[1] = {INT};
-	tablaSimbolosClasesAbrirAmbitoEnClase(g, "AA", "mA1", METODO_SOBREESCRIBIBLE, 
-											ACCESO_CLASE, INT, 0, 0, 1, tipos);
 
-	tablaSimbolosClasesCerrarAmbitoEnClase(g, "AA");
+	printf("Métodos AA\n");
+	//METODOS
+	if (buscarParaDeclararMiembroInstancia(g, "mA1", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosAmbitos(g, "AA", METODO_SOBREESCRIBIBLE, "mA1", 0, 
+									INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
+									MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 	
-	tablaSimbolosClasesAbrirAmbitoEnClase(g, "AA", "mA1", METODO_SOBREESCRIBIBLE, 
-											ACCESO_HERENCIA, INT, 0, 1, 1, tipos);
+	if (buscarParaDeclararMiembroInstancia(g, "mA1", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosAmbitos(g, "AA", METODO_SOBREESCRIBIBLE, "mA1", 0, 
+									INT, 0, 0, 0, 0, 0, ACCESO_CLASE,
+									MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	tablaSimbolosClasesCerrarAmbitoEnClase(g, "AA");
+	if (buscarParaDeclararMiembroInstancia(g, "mA1", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosAmbitos(g, "AA", METODO_SOBREESCRIBIBLE, "mA1", 0, 
+									INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
+									MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	int tipos1[2] = {INT, BOOLEAN};
-	tablaSimbolosClasesAbrirAmbitoEnClase(g, "AA", "mA1", METODO_SOBREESCRIBIBLE, 
-											ACCESO_HERENCIA, INT, 0, 1, 2, tipos1);
+	if (buscarParaDeclararMiembroInstancia(g, "mA2", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosAmbitos(g, "AA", METODO_SOBREESCRIBIBLE, "mA2", 0, 
+									INT, 0, 0, 0, 0, 0, ACCESO_CLASE,
+									MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	tablaSimbolosClasesCerrarAmbitoEnClase(g, "AA");
+	if (buscarParaDeclararMiembroInstancia(g, "mA3", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosAmbitos(g, "AA", METODO_SOBREESCRIBIBLE, "mA3", 0, 
+									INT, 0, 0, 0, 0, 0, ACCESO_TODOS,
+									MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	tablaSimbolosClasesAbrirAmbitoEnClase(g, "AA", "mA2", METODO_SOBREESCRIBIBLE, 
-											ACCESO_CLASE, INT, 0, 2, 0, NULL);
 
-	tablaSimbolosClasesCerrarAmbitoEnClase(g, "AA");
-
-	tablaSimbolosClasesAbrirAmbitoEnClase(g, "AA", "mA3", METODO_SOBREESCRIBIBLE, 
-											ACCESO_TODOS, INT, 0, 2, 2, tipos1);
-
-	tablaSimbolosClasesCerrarAmbitoEnClase(g, "AA");
-
+	printf("Variables BB\n");
+	// CLASE BB
 	abrirClaseHereda(g, "BB", "AA", NULL);
 
-	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "sa1", ESCALAR, 
+	if (buscarParaDeclararMiembroInstancia(g, "sa1", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "sa1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "ha1", ESCALAR, 
+	
+
+	if (buscarParaDeclararMiembroInstancia(g, "ha1", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "ha1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_CLASE,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "hb1", ESCALAR, 
+	if (buscarParaDeclararMiembroInstancia(g, "hb1", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "hb1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_CLASE,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "xa1", ESCALAR, 
+	if (buscarParaDeclararMiembroInstancia(g, "xa1", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "xa1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_TODOS,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
 
-	tablaSimbolosClasesAbrirAmbitoEnClase(g, "BB", "mA1", METODO_SOBREESCRIBIBLE, 
-											ACCESO_HERENCIA, INT, 0, 3, 1, tipos);
+	printf("Métodos BB\n");
+	//METODOS
 
-	tablaSimbolosClasesCerrarAmbitoEnClase(g, "BB");
+	if (buscarParaDeclararMiembroInstancia(g, "mA1", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosAmbitos(g, "BB", METODO_SOBREESCRIBIBLE, "mA1", 0, 
+									INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
+									MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
+
 	
-	tablaSimbolosClasesAbrirAmbitoEnClase(g, "BB", "mB1", METODO_SOBREESCRIBIBLE, 
-											ACCESO_CLASE, INT, 0, 4, 0, NULL);
+	if (buscarParaDeclararMiembroInstancia(g, "mB1", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosAmbitos(g, "BB", METODO_SOBREESCRIBIBLE, "mB1", 0, 
+									INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
+									MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	tablaSimbolosClasesCerrarAmbitoEnClase(g, "BB");
+	if (buscarParaDeclararMiembroInstancia(g, "mA2", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosAmbitos(g, "BB", METODO_SOBREESCRIBIBLE, "mA2", 0, 
+									INT, 0, 0, 0, 0, 0, ACCESO_CLASE,
+									MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	tablaSimbolosClasesAbrirAmbitoEnClase(g, "BB", "mA2", METODO_SOBREESCRIBIBLE, 
-											ACCESO_CLASE, INT, 0, 5, 0, NULL);
+	if (buscarParaDeclararMiembroInstancia(g, "mA3", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosAmbitos(g, "BB", METODO_SOBREESCRIBIBLE, "mA3", 0, 
+									INT, 0, 0, 0, 0, 0, ACCESO_TODOS,
+									MIEMBRO_NO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s o en jerarquía. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	tablaSimbolosClasesCerrarAmbitoEnClase(g, "BB");
-
-	int tipos2[2] = {BOOLEAN, INT};
-	tablaSimbolosClasesAbrirAmbitoEnClase(g, "BB", "mA3", METODO_SOBREESCRIBIBLE, 
-											ACCESO_TODOS, INT, 0, 6, 2, tipos2);
-
-	tablaSimbolosClasesCerrarAmbitoEnClase(g, "BB");
-
-	abrirClaseHereda(g, "BB", "AA", NULL);
 
 
 	return 0;

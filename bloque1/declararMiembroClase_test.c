@@ -15,37 +15,44 @@ int main(int argc, char const *argv[]){
 
 	abrirClase(g, "AA");
 
-	if (buscarParaDeclararMiembroClase(g, "sA1", "AA", &item, name) == -1)
-		printf("No se encuentra \n");
-	else printf("%s\n", name);
+	if (buscarParaDeclararMiembroClase(g, "sA1", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "sA1", ESCALAR, 
+								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
+								MIEMBRO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s. NO SE PUEDE DECLARAR\n", name);
+	}
+		
+
+	if (buscarParaDeclararMiembroClase(g, "sA1", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "sA1", ESCALAR, 
+								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
+								MIEMBRO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s. NO SE PUEDE DECLARAR\n", name);
+	}
+
 	
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "sA1", ESCALAR, 
+
+	if (buscarParaDeclararMiembroClase(g, "hA1", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "hA1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	if (buscarParaDeclararMiembroClase(g, "sA1", "AA", &item, name) == -1)
-		printf("No se encuentra \n");
-	else printf("%s\n", name);
-
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "sA1", ESCALAR, 
+	if (buscarParaDeclararMiembroClase(g, "eA1", "AA", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "eA1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_UNICO, 0, 0, NULL);
-
-	if (buscarParaDeclararMiembroClase(g, "hA1", "AA", &item, name) == -1)
-		printf("No se encuentra \n");
-	else printf("%s\n", name);
-
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "hA1", ESCALAR, 
-								INT, 0, 0, 0, 0, 0, ACCESO_CLASE,
-								MIEMBRO_UNICO, 0, 0, NULL);
-
-	if (buscarParaDeclararMiembroClase(g, "eA1", "AA", &item, name) == -1)
-		printf("No se encuentra \n");
-	else printf("%s\n", name);
-
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_CLASE, "eA1", ESCALAR, 
-								INT, 0, 0, 0, 0, 0, ACCESO_TODOS,
-								MIEMBRO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s. NO SE PUEDE DECLARAR\n", name);
+	}
 	
 	int tipos[1] = {INT};
 	tablaSimbolosClasesAbrirAmbitoEnClase(g, "AA", "MA1", METODO_NO_SOBREESCRIBIBLE, 
@@ -65,37 +72,43 @@ int main(int argc, char const *argv[]){
 
 	abrirClase(g, "BB");
 
-	if (buscarParaDeclararMiembroClase(g, "sA1", "BB", &item, name) == -1)
-		printf("No se encuentra \n");
-	else printf("%s\n", name);
-
-	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "sA1", ESCALAR, 
+	if (buscarParaDeclararMiembroClase(g, "sA1", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "sA1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	if (buscarParaDeclararMiembroClase(g, "sA1", "BB", &item, name) == -1)
-		printf("No se encuentra \n");
-	else printf("%s\n", name);
+	
 
-	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "sA1", ESCALAR, 
+	if (buscarParaDeclararMiembroClase(g, "sA1", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "sA1", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	if (buscarParaDeclararMiembroClase(g, "hA1", "BB", &item, name) == -1)
-		printf("No se encuentra \n");
-	else printf("%s\n", name);
-
-	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "hA1", ESCALAR, 
-								INT, 0, 0, 0, 0, 0, ACCESO_CLASE,
+	if (buscarParaDeclararMiembroClase(g, "hA1", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "hA1", ESCALAR, 
+								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s. NO SE PUEDE DECLARAR\n", name);
+	}
 
-	if (buscarParaDeclararMiembroClase(g, "xA1", "BB", &item, name) == -1)
-		printf("No se encuentra \n");
-	else printf("%s\n", name);
-
-	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "xA1", ESCALAR, 
-								INT, 0, 0, 0, 0, 0, ACCESO_TODOS,
+	if (buscarParaDeclararMiembroClase(g, "xA1", "BB", &item, name) == -1){
+		printf("No se encuentra. SE PUEDE DECLARAR\n");
+		insertarTablaSimbolosClases(g, "BB", ATRIBUTO_CLASE, "xA1", ESCALAR, 
+								INT, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_UNICO, 0, 0, NULL);
+	}else{
+		printf("Se encuentra en la clase %s. NO SE PUEDE DECLARAR\n", name);
+	}
 
 	tablaSimbolosClasesAbrirAmbitoEnClase(g, "BB", "MB1", METODO_NO_SOBREESCRIBIBLE, 
 											ACCESO_HERENCIA, INT, 0, 0, 1, tipos);
