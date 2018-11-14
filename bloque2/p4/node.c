@@ -104,57 +104,111 @@ int getNumAttributes(Node *node){
 	return ht_get_count(node->primary_scope);
 }
 
-int insertarTablaAmbitos(Node *node,
-		const char* key,            int categoria,  
-		int tipo,                   int clase, 
-		int direcciones,            int numero_parametros, 
-		int posicion_parametro, 
-		int posicion_variable_local,
-		int tamanio,      
-		int tipo_acceso,            int tipo_miembro, 
-		int posicion_atributo_instancia, 
-		int posicion_metodo_sobreescribible, 
-		int * tipo_args){
+// int insertarTablaAmbitos(Node *node,
+// 		const char* key,            int categoria,  
+// 		int tipo,                   int clase, 
+// 		int direcciones,            int numero_parametros, 
+// 		int posicion_parametro, 
+// 		int posicion_variable_local,
+// 		int tamanio,      
+// 		int tipo_acceso,            int tipo_miembro, 
+// 		int posicion_atributo_instancia, 
+// 		int posicion_metodo_sobreescribible, 
+// 		int * tipo_args){
 
-	// char *name;
+// 	// char *name;
 
-	if (numero_parametros < 0 || !node || !key) return ERR;
-	if (!node->curr_func) return ERR;
+// 	if (numero_parametros < 0 || !node || !key) return ERR;
+// 	if (!node->curr_func) return ERR;
 
 	
-	// name = (char *) malloc(sizeof(char) * (strlen(key) + 2 + strlen(node->curr_func)));
-	// if (!name) return ERR;
+// 	// name = (char *) malloc(sizeof(char) * (strlen(key) + 2 + strlen(node->curr_func)));
+// 	// if (!name) return ERR;
 	
-	// if(strcpy(name, node->curr_func) < 0){
-	// 	free(name);
-	// 	return ERR;
-	// }
+// 	// if(strcpy(name, node->curr_func) < 0){
+// 	// 	free(name);
+// 	// 	return ERR;
+// 	// }
 
-	// if (!strcat(strcat(name, "_"), key)){
-	// 	free(name);
-	// 	return ERR;
-	// }
+// 	// if (!strcat(strcat(name, "_"), key)){
+// 	// 	free(name);
+// 	// 	return ERR;
+// 	// }
 
-	if (!ht_insert_item(node->func_scope, 
-										 key,
-										 categoria,
-										 tipo,
-										 clase,
-										 direcciones,
-										 numero_parametros,
-										 posicion_parametro,
-										 posicion_variable_local,
-										 tamanio,
-										 tipo_acceso,
-										 tipo_miembro,
-										 posicion_atributo_instancia,
-										 posicion_metodo_sobreescribible,
-										 tipo_args))
-		return ERR;
-	return OK;
-}
+// 	if (!ht_insert_item(node->func_scope, 
+// 										 key,
+// 										 categoria,
+// 										 tipo,
+// 										 clase,
+// 										 direcciones,
+// 										 numero_parametros,
+// 										 posicion_parametro,
+// 										 posicion_variable_local,
+// 										 tamanio,
+// 										 tipo_acceso,
+// 										 tipo_miembro,
+// 										 posicion_atributo_instancia,
+// 										 posicion_metodo_sobreescribible,
+// 										 tipo_args))
+// 		return ERR;
+// 	return OK;
+// }
 
-int insertarTablaSimbolos(Node *node,
+// int insertarTablaSimbolos(Node *node,
+// 		const char* key,            int categoria,  
+// 		int tipo,                   int clase, 
+// 		int direcciones,            int numero_parametros, 
+// 		int posicion_parametro,
+// 		int posicion_variable_local,
+// 		int tamanio,           
+// 		int tipo_acceso,            int tipo_miembro, 
+// 		int posicion_atributo_instancia, 
+// 		int posicion_metodo_sobreescribible, 
+// 		int * tipo_args){
+// 	char *name, type[2];
+// 	int i;
+	
+// 	if (!node || !key) return -1;
+
+// 	// if (categoria == FUNCION || categoria == METODO_SOBREESCRIBIBLE || categoria == METODO_NO_SOBREESCRIBIBLE){
+// 	// 	if (numero_parametros < 0 || !tipo_args) return ERR;
+// 	// 	name = (char *) malloc(sizeof(char) * (strlen(key) + 1 + 2*numero_parametros));
+// 	// 	if (!name) return ERR;
+// 	// 	if(strcpy(name, key) < 0){
+// 	// 		free(name);
+// 	// 		return ERR;
+// 	// 	}
+// 	// 	for (i = 0; i < numero_parametros; i ++){
+// 	// 		sprintf(type, "%d", tipo_args[i]);
+// 	// 		if (strcat(strcat(name, "@"), type) < 0){
+// 	// 			free(name);
+// 	// 			return ERR;
+// 	// 		}
+// 	// 	}
+// 	// } else {
+// 	// 	name = key;
+// 	// }
+
+// 	if (!ht_insert_item(node->primary_scope, 
+// 										 key,
+// 										 categoria,
+// 										 tipo,
+// 										 clase,
+// 										 direcciones,
+// 										 numero_parametros,
+// 										 posicion_parametro,
+// 										 posicion_variable_local,
+// 										 tamanio,
+// 										 tipo_acceso,
+// 										 tipo_miembro,
+// 										 posicion_atributo_instancia,
+// 										 posicion_metodo_sobreescribible,
+// 										 tipo_args))
+// 		return -1;
+// 	return 0;
+// }
+
+int insertarTablaNodo(Node *node,
 		const char* key,            int categoria,  
 		int tipo,                   int clase, 
 		int direcciones,            int numero_parametros, 
@@ -165,9 +219,9 @@ int insertarTablaSimbolos(Node *node,
 		int posicion_atributo_instancia, 
 		int posicion_metodo_sobreescribible, 
 		int * tipo_args){
-	char *name, type[2];
-	int i;
 	
+	TablaSimbolos *ts;
+
 	if (!node || !key) return -1;
 
 	// if (categoria == FUNCION || categoria == METODO_SOBREESCRIBIBLE || categoria == METODO_NO_SOBREESCRIBIBLE){
@@ -189,7 +243,12 @@ int insertarTablaSimbolos(Node *node,
 	// 	name = key;
 	// }
 
-	if (!ht_insert_item(node->primary_scope, 
+	if (node->func_scope)
+		ts = node->func_scope;
+	else
+		ts = node->primary_scope;
+
+	if (!ht_insert_item(ts, 
 										 key,
 										 categoria,
 										 tipo,
@@ -204,8 +263,10 @@ int insertarTablaSimbolos(Node *node,
 										 posicion_atributo_instancia,
 										 posicion_metodo_sobreescribible,
 										 tipo_args))
-		return -1;
-	return 0;
+			return ERR;
+
+	return OK;
+	
 }
 
 int abrirAmbitoFunc(Node *node,
