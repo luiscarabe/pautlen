@@ -341,14 +341,30 @@ int abrirClase(Graph* t, char* id_clase){
 		return 0;
 	}
 
-	insertarTablaSimbolos(t->main, name, CLASE, 0, OBJETO, 
+	insertarTablaNodo(t->main, name, CLASE, 0, OBJETO, 
 		0, 0, 0, 0, 0, 0, 0, 0, 0, NULL);
 
-	insertarTablaSimbolos(node, id_clase, CLASE, 0, OBJETO, 
+	insertarTablaNodo(node, id_clase, CLASE, 0, OBJETO, 
 		0, 0, 0, 0, 0, 0, 0, 0, 0, NULL);
 
 	free(name);
 	return addNode(t, node);
+}
+
+int abrirClaseHeredaN(Graph* t, char* id_clase, int num_padres, char **id_padres){
+	int i, p, n;
+
+	if (!t || !id_clase) return -1;
+
+	if ((n = abrirClase(t, id_clase)) == -1) return -1;
+
+	for (i = 0; i < num_padres; i++){
+		if ((p = indexOf(t, id_padres[i])) < 0)
+			return -i;
+		addParent(t, n, p);
+	}
+
+	return 0;
 }
 
 int abrirClaseHereda(Graph* t, char* id_clase, ...){
@@ -404,16 +420,6 @@ int cerrarClase(Graph* t,
 	return 0;
 }
 
-// int abrirAmbitoClase(Node** t, char* id_clase, int tamanio){
-
-// 	if (!id_clase || tamanio <= 0 || !t) return -1;
-
-// 	*t = newNodeTam(id_clase, tamanio);
-// 	if (!*t) return -1;
-
-// 	return 0;
-// }
-
 int modificar_insertar(TablaSimbolos *ht, 
 											 TablaSimbolos *main, 
 											 char *id_clase, 
@@ -459,11 +465,10 @@ int insertarTablaSimbolosAmbitosMain(Graph *grafo,
 		int tipo_acceso,                 int tipo_miembro, 
 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
 		int * tipo_args){
-	int ret;
 
 	if (!grafo || !id) return ERR;
 
-	ret = insertarTablaAmbitos(grafo->main, 
+	return insertarTablaNodo(grafo->main, 
 								id,
 								categoria,
 								tipo,
@@ -479,7 +484,6 @@ int insertarTablaSimbolosAmbitosMain(Graph *grafo,
 								posicion_metodo_sobreescribible,
 								tipo_args);
 
-	return ret;
 }
 
 int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase, 
@@ -493,14 +497,14 @@ int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase,
 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
 		int * tipo_args){
 
-	int index_clase, ret;
+	int index_clase;
 
 	if (!grafo || !id_clase || !id) return ERR;
 
 	index_clase = indexOf(grafo, id_clase);
-	if (index_clase == -1) return ERR;
+	if (index_clase == ERR) return ERR;
 
-	ret = insertarTablaAmbitos(grafo->nodes[index_clase], 
+	return insertarTablaNodo(grafo->nodes[index_clase], 
 								id,
 								categoria,
 								tipo,
@@ -516,7 +520,6 @@ int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase,
 								posicion_metodo_sobreescribible,
 								tipo_args);
 
-	return ret;
 
 }
 
@@ -529,41 +532,24 @@ int insertarTablaSimbolosMain(Graph * grafo, int categoria,
 		int tipo_acceso,                 int tipo_miembro, 
 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
 		int * tipo_args){
-	int ret;
-	char *name;
 
 	if (!grafo || !id) return -1;
 
-	name = (char *) malloc(sizeof(char) * (strlen(id) + 6));
-	if (!name) return ERR;
-
-	if (strcpy(name, "main_") < 0){
-		free(name);
-		return ERR;
-	}
-	if (!strcat(name, id)){
-		free(name);
-		return ERR;
-	}
-
-	ret = insertarTablaSimbolos(grafo->main, 
-							name,
-							categoria,
-							tipo,
-							clase,
-							direcciones,
-							numero_parametros,
-							posicion_parametro,
-							posicion_variable_local,
-							tamanio,
-							tipo_acceso,
-							tipo_miembro,
-							posicion_atributo_instancia,
-							posicion_metodo_sobreescribible,
-							tipo_args);
-
-	free(name);
-	return ret;
+	return insertarTablaNodo(grafo->main, 
+								id,
+								categoria,
+								tipo,
+								clase,
+								direcciones,
+								numero_parametros,
+								posicion_parametro,
+								posicion_variable_local,
+								tamanio,
+								tipo_acceso,
+								tipo_miembro,
+								posicion_atributo_instancia,
+								posicion_metodo_sobreescribible,
+								tipo_args);
 }
 
 
@@ -578,51 +564,37 @@ int insertarTablaSimbolosClases(Graph * grafo,
 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
 		int * tipo_args){
 
+	int index_clase;
 
-	int index_clase, ret;
-	char *name;
-
-	if (!grafo || !id_clase || !id) return -1;
+	if (!grafo || !id_clase || !id) return ERR;
 
 	index_clase = indexOf(grafo, id_clase);
-	if (index_clase == -1) return -1;
+	if (index_clase == ERR) return ERR;
 
-	name = (char *) malloc(sizeof(char) * (strlen(id_clase) + strlen(id) + 2));
-	if (!name) return -1;
+	// if (categoria == ATRIBUTO_INSTANCIA){
+	// 	if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
+	// 												 getPrimaryScope(grafo->main), 
+	// 												 id_clase, 
+	// 												 1,
+	// 												 &modify_atributos_instancia) == -1){
+	// 		free(name);
+	// 		return -1;
+	// 	}
+	// }
+	// else if (categoria == METODO_SOBREESCRIBIBLE){
+	// 	if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
+	// 												 getPrimaryScope(grafo->main), 
+	// 												 id_clase, 
+	// 												 1,
+	// 												 &modify_metodos_sobreescritura)){
+	// 		free(name);
+	// 		return -1;
+	// 	}
+	// }
 
-	if (strcpy(name, id_clase) < 0){
-		free(name);
-		return -1;
-	}
 
-	if (!strcat(strcat(name, "_"), id)){
-		free(name);
-		return -1;
-	}
-
-	if (categoria == ATRIBUTO_INSTANCIA){
-		if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
-													 getPrimaryScope(grafo->main), 
-													 id_clase, 
-													 1,
-													 &modify_atributos_instancia) == -1){
-			free(name);
-			return -1;
-		}
-	}
-	else if (categoria == METODO_SOBREESCRIBIBLE){
-		if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
-													 getPrimaryScope(grafo->main), 
-													 id_clase, 
-													 1,
-													 &modify_metodos_sobreescritura)){
-			free(name);
-			return -1;
-		}
-	}
-
-	ret = insertarTablaSimbolos(grafo->nodes[index_clase], 
-								name,
+	return insertarTablaNodo(grafo->nodes[index_clase], 
+								id,
 								categoria,
 								tipo,
 								clase,
@@ -637,8 +609,6 @@ int insertarTablaSimbolosClases(Graph * grafo,
 								posicion_metodo_sobreescribible,
 								tipo_args);
 
-	free(name);
-	return ret;
 }
 
 int tablaSimbolosClasesAbrirAmbitoEnMain(Graph * grafo, 
@@ -650,7 +620,7 @@ int tablaSimbolosClasesAbrirAmbitoEnMain(Graph * grafo,
 																int tamanio,
 																int numero_parametros,
 																int *tipo_args){
-	if (!grafo || !id_ambito) return -1;
+	if (!grafo || !id_ambito) return ERR;
 
 	return abrirAmbitoFunc(grafo->main,
 							id_ambito, 
@@ -675,10 +645,10 @@ int tablaSimbolosClasesAbrirAmbitoEnClase(	Graph * grafo,
 
 	int clase;
 
-	if (!grafo || !id_clase || !id_ambito) return -1;
+	if (!grafo || !id_clase || !id_ambito) return ERR;
 
 	clase = indexOf(grafo, id_clase);
-	if (clase == -1) return -1;
+	if (clase == ERR) return ERR;
 
 	return abrirAmbitoFunc(grafo->nodes[clase],
 							id_ambito, 
@@ -875,6 +845,7 @@ int buscarParaDeclararMiembroInstancia(Graph *t, char * nombre_id, char * nombre
 
 	return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
 }
+
 
 int buscarIdCualificadoClase(	Graph *g, char * nombre_clase_cualifica,
 								char * nombre_id, char * nombre_clase_desde,

@@ -15,7 +15,7 @@ int main(int argc, char const *argv[]){
 
 	iniciarTablaSimbolosClases(&g, "Menudotestazo4");
 
-	insertarTablaSimbolosMain(g, VARIABLE, "varGlob", ESCALAR,
+	insertarTablaSimbolosMain(g, VARIABLE, "main_varGlob", ESCALAR,
 								INT, 0, 0, 0, 0, 0, NINGUNO,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
@@ -23,42 +23,42 @@ int main(int argc, char const *argv[]){
 	abrirClase(g, "AA");
 	
 	printf("Atributo inspub\n");
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "inspub", 0, 
+	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "AA_inspub", 0, 
 								OBJETO, 0, 0, 0, 0, 0, ACCESO_TODOS,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
 	printf("Atributo insprot\n");
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "insprot", 0, 
+	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "AA_insprot", 0, 
 								OBJETO, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
 	printf("Atributo inspriv\n");
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "inspriv", 0, 
+	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "AA_inspriv", 0, 
 								OBJETO, 0, 0, 0, 0, 0, ACCESO_CLASE,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
 	printf("Atributo clasepub\n");
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "clasepub", 0, 
+	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "AA_clasepub", 0, 
 								OBJETO, 0, 0, 0, 0, 0, ACCESO_TODOS,
 								MIEMBRO_UNICO, 0, 0, NULL);
 
 	printf("Atributo claseprot\n");
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "claseprot", 0, 
+	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "AA_claseprot", 0, 
 								OBJETO, 0, 0, 0, 0, 0, ACCESO_HERENCIA,
 								MIEMBRO_UNICO, 0, 0, NULL);
 
 	printf("Atributo clasepriv\n");
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "clasepriv", 0, 
+	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "AA_clasepriv", 0, 
 								OBJETO, 0, 0, 0, 0, 0, ACCESO_CLASE,
 								MIEMBRO_UNICO, 0, 0, NULL);
 
 	printf("Atributo miaa\n");
-	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "miaa", 0, 
+	insertarTablaSimbolosClases(g, "AA", ATRIBUTO_INSTANCIA, "AA_miaa", 0, 
 								OBJETO, 0, 0, 0, 0, 0, ACCESO_TODOS,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
 	printf("Funcion prueba\n");
-	tablaSimbolosClasesAbrirAmbitoEnClase(g, "AA", "prueba", METODO_SOBREESCRIBIBLE, 
+	tablaSimbolosClasesAbrirAmbitoEnClase(g, "AA", "AA_prueba", METODO_SOBREESCRIBIBLE, 
 											ACCESO_HERENCIA, INT, 0, 0, 0, NULL);
 
 	status = buscarIdCualificadoInstancia(g, "miaa", "inspriv", "AA", &item, name);
@@ -87,17 +87,17 @@ int main(int argc, char const *argv[]){
 	abrirClaseHereda(g, "BB", "AA", NULL);
 
 	printf("Atributo mibb en BB\n");
-	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_INSTANCIA, "mibb", 0, 
+	insertarTablaSimbolosClases(g, "BB", ATRIBUTO_INSTANCIA, "BB_mibb", 0, 
 								OBJETO, 1, 0, 0, 0, 0, ACCESO_TODOS,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
 	printf("Atributo MainMiBB en main\n");
-	insertarTablaSimbolosMain(g, VARIABLE, "MainMiBB", 0,
+	insertarTablaSimbolosMain(g, VARIABLE, "main_MainMiBB", 0,
 								OBJETO, 1, 0, 0, 0, 0, NINGUNO,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
 	printf("Atributo MainMiBB2 en main\n");
-	insertarTablaSimbolosMain(g, VARIABLE, "MainMiBB2", 0,
+	insertarTablaSimbolosMain(g, VARIABLE, "main_MainMiBB2", 0,
 								OBJETO, 1, 0, 0, 0, 0, NINGUNO,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
@@ -108,7 +108,7 @@ int main(int argc, char const *argv[]){
 	abrirClase(g, "CC");
 
 	printf("Atributo miCC en CC\n");
-	insertarTablaSimbolosClases(g, "CC", ATRIBUTO_INSTANCIA, "micc", 0, 
+	insertarTablaSimbolosClases(g, "CC", ATRIBUTO_INSTANCIA, "CC_micc", 0, 
 								OBJETO, 2, 0, 0, 0, 0, ACCESO_TODOS,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
@@ -116,7 +116,7 @@ int main(int argc, char const *argv[]){
 	abrirClaseHereda(g, "DD", "AA", "CC", NULL);
 
 	printf("Atributo midd en DD\n");
-	insertarTablaSimbolosClases(g, "DD", ATRIBUTO_INSTANCIA, "midd", 0, 
+	insertarTablaSimbolosClases(g, "DD", ATRIBUTO_INSTANCIA, "DD_midd", 0, 
 								OBJETO, 3, 0, 0, 0, 0, ACCESO_TODOS,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
@@ -124,17 +124,17 @@ int main(int argc, char const *argv[]){
 	abrirClaseHereda(g, "EE", "BB", "DD", NULL);
 
 	printf("Atributo miee en EE\n");
-	insertarTablaSimbolosClases(g, "EE", ATRIBUTO_INSTANCIA, "miee", 0, 
+	insertarTablaSimbolosClases(g, "EE", ATRIBUTO_INSTANCIA, "EE_miee", 0, 
 								OBJETO, 4, 0, 0, 0, 0, ACCESO_TODOS,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
 
 	printf("Funcion mE en EE\n");
-	tablaSimbolosClasesAbrirAmbitoEnClase(g, "EE", "mE", METODO_SOBREESCRIBIBLE, 
+	tablaSimbolosClasesAbrirAmbitoEnClase(g, "EE", "EE_mE", METODO_SOBREESCRIBIBLE, 
 											ACCESO_TODOS, 0, 0, 1, 0, NULL);
 
 	printf("Atributo varLoc en funcion mE de EE\n");
-	insertarTablaSimbolosAmbitos(g, "EE", VARIABLE, "varLoc", 0, 
+	insertarTablaSimbolosClases(g, "EE", VARIABLE, "mE_varLoc", 0, 
 								OBJETO, 4, 0, 0, 0, 0, NINGUNO,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
@@ -170,12 +170,12 @@ int main(int argc, char const *argv[]){
 	
 	abrirClaseHereda(g, "FF", "CC", "EE", NULL);
 
-	insertarTablaSimbolosClases(g, "FF", ATRIBUTO_INSTANCIA, "miff", 0, 
+	insertarTablaSimbolosClases(g, "FF", ATRIBUTO_INSTANCIA, "FF_miff", 0, 
 								OBJETO, 5, 0, 0, 0, 0, ACCESO_TODOS,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
 
-	tablaSimbolosClasesAbrirAmbitoEnMain(g, "prueba", FUNCION, NINGUNO,
+	tablaSimbolosClasesAbrirAmbitoEnMain(g, "main_prueba", FUNCION, NINGUNO,
 								INT, 0, 0, 0, NULL);
 
 	printf("*FF\n");
@@ -199,14 +199,14 @@ int main(int argc, char const *argv[]){
 
 	tablaSimbolosClasesCerrarAmbitoEnMain(g);
 	
-	tablaSimbolosClasesAbrirAmbitoEnMain(g, "f2", FUNCION, ACCESO_CLASE,
+	tablaSimbolosClasesAbrirAmbitoEnMain(g, "main_f2", FUNCION, ACCESO_CLASE,
 								INT, 0, 0, 0, NULL);
 
-	insertarTablaSimbolosAmbitosMain(g, VARIABLE, "varLoc", ESCALAR, 
+	insertarTablaSimbolosMain(g, VARIABLE, "main_varLoc", ESCALAR, 
 								INT, 0, 0, 0, 0, 0, NINGUNO,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 
-	insertarTablaSimbolosAmbitosMain(g, VARIABLE, "MainMiBB3", 0, 
+	insertarTablaSimbolosMain(g, VARIABLE, "main_MainMiBB3", 0, 
 								OBJETO, 1, 0, 0, 0, 0, NINGUNO,
 								MIEMBRO_NO_UNICO, 0, 0, NULL);
 

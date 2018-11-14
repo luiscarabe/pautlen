@@ -25,7 +25,7 @@ EXEC_SOURCES = $(shell grep -l "^int main" $(SOURCES) | xargs)
 EXECS = $(shell echo $(EXEC_SOURCES) | sed -e 's:\.c[p]*::g')
 DEPS = $(shell echo $(SOURCES) | sed -e 's:\.c[p]*:\.d:g')
 
-all:	graph-test hash-test declararMiembroClase_test declararMiembroInstancia_test usoIdentificadorCualificado_test
+all:	graph-test hash-test declararMiembroClase_test declararMiembroInstancia_test usoIdentificadorCualificado_test buscarIdNoCualificado_test
 
 graph-test: graph-test.o graph.o node.o hash_table.o
 
@@ -33,7 +33,7 @@ hash-test: hash-test.o hash_table.o
 
 #buscarIdNoCualificado_test declararMiembroClase_test declararMiembroInstancia_test usoIdentificadorCualificado_test
 
-#buscarIdNoCualificado_test: buscarIdNoCualificado_test.o graph.o node.o hash_table.o
+buscarIdNoCualificado_test: buscarIdNoCualificado_test.o graph.o node.o hash_table.o
 
 declararMiembroClase_test: declararMiembroClase_test.o graph.o node.o hash_table.o
 
