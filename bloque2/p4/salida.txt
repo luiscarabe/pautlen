@@ -1,0 +1,48 @@
+Comando: inicia_tsc grafo_enunciado 
+Comando: inicia_tsa_main 
+Comando: abrir_ambito_ppal_main 
+Comando: buscar declarar_main main_v1 
+Comando: insertar_tsa_main main_v1 1 1 1 3 2 
+Comando: abrir_clase AA 
+Comando: buscar declarar_miembro_instancia AA AA_a1 
+Comando: insertar_tsc AA AA_a1 8 1 1 3 2 
+Comando: buscar declarar_miembro_instancia AA AA_sa1 
+Comando: insertar_tsc AA AA_sa1 7 1 1 1 1 
+Comando: buscar declarar_miembro_clase A A_a2 
+Comando: insertar_tsc AA AA_a2 7 1 1 3 1 
+Comando: buscar declarar_miembro_instancia AA AA_mA1@1 
+Comando: abrir_ambito_tsc AA AA_mA1@1 5 3 3 2 
+Comando: buscar declarar_id_local_metodo AA mA1@1_pmA1 
+Comando: insertar_tsc AA mA1@1_pmA1 2 1 1 3 2 
+Comando: buscar id_no_cualificado a1 AA 
+Comando: buscar id_no_cualificado v1 AA 
+Comando: buscar id_no_cualificado pmA1 AA 
+Comando: cerrar_ambito_tsc AA 
+Comando: cerrar_clase AA 
+Comando: abrir_clase_hereda BB 
+Comando: buscar declarar_miembro_instancia BB BB_b1 
+Comando: insertar_tsc BB BB_b1 8 1 1 3 2 
+Comando: buscar declarar_miembro_instancia BB BB_aa1 
+Comando: insertar_tsc BB BB_aa1 8 0 1 3 2 
+Comando: buscar declarar_miembro_instancia BB BB_mB1@1 
+Comando: abrir_ambito_tsc BB BB_mB1@1 5 1 3 2 
+Comando: buscar declarar_id_local_metodo BB mB1@1_pmB1 
+Comando: insertar_tsc BB mB1@1_pmB1 2 1 1 3 2 
+Comando: buscar id_cualificado_instancia aa1 a1 BB 
+Comando: buscar id_cualificado_instancia aa1 sa1 BB 
+Comando: cerrar_ambito_tsc BB 
+Comando: cerrar_clase BB 
+Comando: buscar declarar_main main_a 
+Comando: insertar_tsa_main main_a 1 0 1 3 2 
+Comando: buscar id_no_cualificado a main 
+Comando: buscar id_no_cualificado v1 main 
+Comando: buscar id_no_cualificado v1 main 
+Comando: buscar id_cualificado_instancia a mA1@1 main 
+Comando: buscar id_no_cualificado v1 main 
+Comando: buscar id_cualificado_instancia a a1 main 
+Comando: buscar id_no_cualificado x main 
+Comando: buscar id_cualificado_clase AA a1 main 
+Comando: buscar id_cualificado_clase AA sa1 main 
+Comando: buscar id_no_cualificado a main 
+Comando: cerrar_tsa_main 
+Comando: cerrar_tsc 

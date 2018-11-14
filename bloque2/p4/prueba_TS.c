@@ -161,8 +161,15 @@ void gestion_inicia_tsc(){
 	//Sin argumentos ni parametros
 	
 	//TODO: Amiguedad en el enunciado, en el ejemplo si tiene un arg pero en las especificaciones no
+	char* nombre;
 
-	iniciarTablaSimbolosClases(&tabla_clases, "hola");
+	leer_siguiente(&nombre);
+
+	iniciarTablaSimbolosClases(&tabla_clases, nombre);
+
+	free(nombre);
+
+	return;
 
 }
 
@@ -170,9 +177,10 @@ void gestion_cerrar_tsc(){
 	//Sin argumentos ni parametros
 
 	tablaSimbolosClasesToDot(tabla_clases);
-  imprimirTablasHash(tabla_clases);
-
+	imprimirTablasHash(tabla_clases);
 	deleteGraph(tabla_clases);
+
+	return;
 
 }
 
@@ -435,8 +443,7 @@ void gestion_cerrar_ambito_tsc(){
 
 	leer_siguiente(&nombre_clase);
 
-	imprimirTablasHash(tabla_clases);
-	printf("____________________________________________\n");
+	//printf("____________________________________________\n");
 	tablaSimbolosClasesCerrarAmbitoEnClase(tabla_clases, nombre_clase);
 
 	free(nombre_clase);

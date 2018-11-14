@@ -385,22 +385,21 @@ HT_item *buscarSimboloFunc(Node *node, char *nombre_id){
 
 
 	if (node->func_scope){
-		name = (char *) malloc(sizeof(char) * (strlen(node->curr_func) + strlen(nombre_id) + 2));
-		if (!name) return NULL;
+		// name = (char *) malloc(sizeof(char) * (strlen(node->curr_func) + strlen(nombre_id) + 2));
+		// if (!name) return NULL;
 
-		if (strcpy(name, node->curr_func) < 0){
-			free(name);
-			return NULL;
-		}
+		// if (strcpy(name, node->curr_func) < 0){
+		// 	free(name);
+		// 	return NULL;
+		// }
 
-		if (!strcat(strcat(name, "_"), nombre_id)){
-			free(name);
-			return NULL;
-		}
+		// if (!strcat(strcat(name, "_"), nombre_id)){
+		// 	free(name);
+		// 	return NULL;
+		// }
 
-		e = ht_search_item(node->func_scope, name);
+		e = ht_search_item(node->func_scope, nombre_id);
 
-		free(name);
 		return e;
 	}
 	return NULL;
