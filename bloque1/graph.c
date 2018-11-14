@@ -870,10 +870,10 @@ int buscarParaDeclararMiembroInstancia(Graph *t, char * nombre_id, char * nombre
 	if (!t || !nombre_id || !nombre_clase_desde || !e)
 		return ERR;
 
-	if (buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_desde, e, nombre_ambito_encontrado) == OK)
-		return OK;
+	if (buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_desde, e, nombre_ambito_encontrado) == ERR)
+		return ERR;
 
-	return ERR;
+	return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
 }
 
 int buscarIdCualificadoClase(	Graph *g, char * nombre_clase_cualifica,

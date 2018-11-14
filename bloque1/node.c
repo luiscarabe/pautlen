@@ -189,6 +189,7 @@ int insertarTablaSimbolos(Node *node,
 		name = key;
 	}
 
+
 	if (!ht_insert_item(node->primary_scope, 
 										 name,
 										 categoria,
