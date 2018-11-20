@@ -12,7 +12,6 @@ Grupo 5: Alejandro Cabana, Luis Cárabe, Emilio Cuesta, Blanca Martín, Pablo Al
 #include "omicron.h"
 #include "y.tab.h"
 
-
 FILE* yyin;
 FILE* fout;
 

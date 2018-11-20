@@ -9,9 +9,9 @@
 
 	/* Del main*/
 	extern FILE* fout;
+	extern FILE* yyin;
 
 	int yylex();
-	extern FILE* yyin;
 	int yyleng;
 	char* yytext;
 

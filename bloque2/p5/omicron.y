@@ -5,10 +5,9 @@
 	#include "omicron.h"
 	#include "generacion.h"	
 
-	/* En main*/
+	/* Del main*/
 	extern FILE* yyin;
 	extern FILE* fout;
-
 
 	/* En fichero especificacion Flex*/
 	extern int yylex(void);
