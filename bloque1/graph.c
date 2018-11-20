@@ -880,20 +880,20 @@ int buscarIdCualificadoInstancia(	Graph *g,
 
 	// Busca el nombre de la instancia
 	if (buscarIdNoCualificado(g, nombre_instancia_cualifica, nombre_clase_desde, e, nombre_ambito_encontrado) == ERR){
-		printf("No encontrada instancia_cualifica %s\n", nombre_instancia_cualifica);
+		//printf("No encontrada instancia_cualifica %s\n", nombre_instancia_cualifica);
 		return ERR;
 	}
 
 	// Mira la clase a la que pertenece la instancia
 	index_clase = - HT_itemGetClass(*e);
 	if (index_clase < 0){
-		printf("%s no es una instancia de clase\n", nombre_instancia_cualifica);
+		//printf("%s no es una instancia de clase\n", nombre_instancia_cualifica);
 		return ERR;
 	}
 
 	// Mira si hay acceso a la instancia desde el ambito actual
 	if (aplicarAccesos(g, nombre_clase_desde, nombre_ambito_encontrado, *e) == ERR){
-		printf("No hay acceso desde %s a %s\n", nombre_clase_desde, nombre_instancia_cualifica);
+		//printf("No hay acceso desde %s a %s\n", nombre_clase_desde, nombre_instancia_cualifica);
 		return ERR;
 	}
 
@@ -905,6 +905,26 @@ int buscarIdCualificadoInstancia(	Graph *g,
 	}
 
 	return aplicarAccesos(g, nombre_clase_desde, nombre_ambito_encontrado, *e);
+}
+
+int buscarParaDeclararIdTablaSimbolosAmbitos(Graph * g, char* id, HT_item** e, char* id_ambito){
+	int index;
+	Node *clase;
+
+	if(!g || !id || !e || !id_ambito) return ERR;
+
+	if (strcmp(id_ambito, "main") == 0){
+		clase = g->main;
+	}
+	else{
+		index = indexOf(g, id_ambito);
+
+		if (index == ERR) return ERR;
+
+		clase = g->nodes[index];
+	}
+
+	return buscarSimboloEnAmbitoActual(clase, id) ? OK : ERR;
 }
 
 

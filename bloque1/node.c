@@ -290,8 +290,14 @@ int abrirAmbitoFunc(Node *node,
 		return -1;
 	}
 
-	node->curr_func = strtok(name, "_");
-	node->curr_func = strtok(NULL, "_");
+	node->curr_func = (char *) malloc(sizeof(char) * (strlen(id_ambito) + 1));
+	if (!node->curr_func){
+		free(name);
+		return -1;
+	}
+
+	strtok(name, "_");
+	strcpy(node->curr_func, strtok(NULL, "_"));
 
 
 	// for (i = 0; i < numero_parametros; i++){
@@ -340,7 +346,7 @@ int abrirAmbitoFunc(Node *node,
 										 posicion_metodo_sobre,
 										 tipo_args)){
 		free(name);
-		// free(node->curr_func);
+		free(node->curr_func);
 		node->curr_func = NULL;
 		return -1;
 	}
@@ -348,7 +354,7 @@ int abrirAmbitoFunc(Node *node,
 	node->func_scope = ht_new();
 	if (!node->func_scope){
 		free(name);
-		// free(node->curr_func);
+		free(node->curr_func);
 		node->curr_func = NULL;
 	 	return -1;
 	}
@@ -370,7 +376,7 @@ int abrirAmbitoFunc(Node *node,
 										 tipo_args)){
 		ht_del_hash_table(node->func_scope);
 		free(name);
-		// free(node->curr_func);
+		free(node->curr_func);
 		node->curr_func = NULL;
 		return -1;
 	}
@@ -385,8 +391,8 @@ int cerrarAmbitoFunc(Node *node){
 	ht_del_hash_table(node->func_scope);
 	node->func_scope = NULL;
 
-	// free(node->curr_func);
-	node->curr_func = NULL;
+	free(node->curr_func);
+	// node->curr_func = NULL;
 
 	return 0;
 }
@@ -463,4 +469,14 @@ HT_item *buscarSimboloFunc(Node *node, char *nombre_id){
 		return e;
 	}
 	return NULL;
+}
+
+HT_item *buscarSimboloEnAmbitoActual(Node *node, char *nombre_id){
+	if (!node || !nombre_id) return NULL;
+
+	if (node->func_scope){
+		return ht_search_item(node->func_scope, nombre_id);
+	}
+	else
+		return ht_search_item(node->primary_scope, nombre_id);
 }

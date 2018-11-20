@@ -131,4 +131,7 @@ void imprimirTablasHash(Graph *g);
 
 // void graph_enrouteParentsLastNode(Graph * g);
 
-
+int buscarParaDeclararIdTablaSimbolosAmbitos(Graph * g, 
+                                    char* id, 
+                                    HT_item** e,  
+                                    char* id_ambito);

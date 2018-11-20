@@ -77,5 +77,6 @@ TablaSimbolos *getFuncScope(Node *node);
 
 HT_item *buscarSimbolo(Node *node, char *nombre_id);
 HT_item *buscarSimboloFunc(Node *node, char *nombre_id);
+HT_item *buscarSimboloEnAmbitoActual(Node *node, char *nombre_id);
 
 #endif
