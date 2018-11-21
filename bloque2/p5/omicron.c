@@ -2,9 +2,7 @@
 Asignatura: PAUTLEN
 Bloque: Procedural
 Modulo: pruebaMorfo.c
-
 Grupo 5: Alejandro Cabana, Luis Cárabe, Emilio Cuesta, Blanca Martín, Pablo Alejo Polanía
-
 */
 
 #include <stdio.h>

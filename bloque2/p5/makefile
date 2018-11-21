@@ -19,7 +19,7 @@ EXEC_SOURCES = $(shell grep -l "^int main" $(SOURCES) | xargs)
 EXECS = $(shell echo $(EXEC_SOURCES) | sed -e 's:\.c[p]*::g')
 DEPS = $(shell echo $(SOURCES) | sed -e 's:\.c[p]*:\.d:g')
 
-all: generacion.o y.tab.c lex.yy.c y.tab.o lex.yy.o omicron
+all: y.tab.c lex.yy.c generacion.o y.tab.o lex.yy.o omicron
 
 y.tab.c: omicron.y
 	bison -dyv $<
@@ -27,7 +27,6 @@ y.tab.c: omicron.y
 lex.yy.c: omicron.l
 	flex $<
 
-omicron: generacion.o lex.yy.o y.tab.o
 
 # receta para hacer un .d (dependencias automaticas de tipo .h para tus .o)
 %.d : %.c
@@ -45,14 +44,16 @@ omicron: generacion.o lex.yy.o y.tab.o
 	@echo [OK]
 
 # receta para hacer un ejecutable (suponiendo resto de dependencias OK)
-% :	%.o
-	@echo -n compilando ejecutable \'$@\'...
-	@$(CC) $(CFLAGS) $^ -o $@ $(LDLIBS)
-	@echo [OK]
+#% :	%.o
+#	@echo -n compilando ejecutable \'$@\'...
+#	@$(CC) $(CFLAGS) $^ -o $@ $(LDLIBS)
+#	@echo [OK]
 
+omicron: omicron.o generacion.o lex.yy.o y.tab.o
 # limpieza
 clean:
-	@rm -f generacion.o y.tab.c y.tab.h y.output lex.yy.c y.tab.o lex.yy.o omicron
+	@rm -f $(wildcard *.o *.d core* *.P) $(EXECS)
+	@rm -f y.tab.c y.tab.h lex.yy.c 
 
 # ayuda (nunca viene mal)
 help:

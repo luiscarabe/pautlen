@@ -9,43 +9,6 @@ PAULEN
 
 #include <stdio.h>
 
-// Posicionar estos defines
-/* Categoría del dato */
-enum categoria {
-	VARIABLE = 1,
-	PARAMETRO,
-	FUNCION,
-	CLASE,
-	METODO_SOBREESCRIBIBLE,
-	METODO_NO_SOBREESCRIBIBLE,
-	ATRIBUTO_CLASE,
-	ATRIBUTO_INSTANCIA
-};
-/* Tipo básico de dato */
-enum tipo {
-	BOOLEAN = 1,
-	INT
-};
-/* Clase del dato */
-enum clase {
-	ESCALAR = 1,
-	VECTOR,
-	OBJETO
-};
-/* Tipo de acceso */
-enum acceso {
-	NINGUNO = 1,
-	ACCESO_CLASE,	//hidden
-	ACCESO_HERENCIA,//secret
-	ACCESO_TODOS	//exposed
-};
-/* Tipo miembro */
-enum miembro {
-	MIEMBRO_UNICO = 1,
-	MIEMBRO_NO_UNICO
-};
-
-
 
 typedef struct _HT_item HT_item;
 typedef struct _TablaSimbolos TablaSimbolos;
