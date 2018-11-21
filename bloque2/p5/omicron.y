@@ -3,11 +3,15 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include "omicron.h"
-	#include "generacion.h"	
+	#include "generacion.h"
 
 	/* Del main*/
 	extern FILE* yyin;
 	extern FILE* fout;
+
+	/*Fichero para guardar codigo NASM*/
+
+	extern FILE* fpasm;
 
 	/* En fichero especificacion Flex*/
 	extern int yylex(void);
@@ -71,7 +75,6 @@
 
 
 /*SEMANTICO: simbolos no terminales*/
-
 %type <atributos> programa
 %type <atributos> declaraciones
 %type <atributos> declaracion
@@ -84,19 +87,19 @@
 %type <atributos> clase_objeto
 %type <atributos> clase_vector
 %type <atributos> funciones
-%type <atributos> funcion 
+%type <atributos> funcion
 %type <atributos> tipo_retorno
 %type <atributos> parametros_funcion
 %type <atributos> resto_parametros_funcion
 %type <atributos> declaraciones_funcion
-%type <atributos> sentencias 
+%type <atributos> sentencias
 %type <atributos> sentencia
 %type <atributos> sentencia_simple
-%type <atributos> destruir_objeto 
+%type <atributos> destruir_objeto
 %type <atributos> bloque
 %type <atributos> asignacion
 %type <atributos> elemento_vector
-%type <atributos> condicional 
+%type <atributos> condicional
 %type <atributos> bucle
 %type <atributos> lectura
 %type <atributos> escritura
@@ -122,17 +125,18 @@
 
 %% /*Seccion de reglas*/
 
-programa: TOK_MAIN '{' declaraciones funciones sentencias '}' { fprintf(fout, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}
+programa: TOK_MAIN '{' escritura_cabeceras_datos  declaraciones escritura_TS funciones escritura_main sentencias '}' escritura_fin { fprintf(fout, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}
 		| TOK_MAIN '{' funciones sentencias '}' { fprintf(fout, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");} ;
 
 
-declaraciones: declaracion {fprintf(fout, ";R:\tdeclaraciones: declaracion\n");}
+declaraciones:  declaracion {fprintf(fout, ";R:\tdeclaraciones: declaracion\n");}
 			 | declaracion declaraciones {fprintf(fout, ";R:\tdeclaraciones: declaracion declaraciones\n");};
 
 
-declaracion: modificadores_acceso clase identificadores ';' {fprintf(fout, ";R:\tdeclaracion: modificadores_acceso clase identificadores ';'\n");}
+declaracion: modificadores_acceso clase identificadores ';'
+			{fprintf(fout, ";R:\tdeclaracion: modificadores_acceso clase identificadores ';'\n");
+				declarar_variable(fpasm, $3.lexema, $2.tipo,  1);}
  		   | modificadores_acceso declaracion_clase ';'  {fprintf(fout, ";R:\tdeclaracion: modificadores_acceso declaracion_clase ';'\n");};
-
 
 modificadores_acceso: TOK_HIDDEN TOK_UNIQUE {fprintf(fout, ";R:\tmodificadores_acceso: TOK_HIDDEN TOK_UNIQUE\n");}
 					| TOK_SECRET TOK_UNIQUE {fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET TOK_UNIQUE\n");}
@@ -144,6 +148,9 @@ modificadores_acceso: TOK_HIDDEN TOK_UNIQUE {fprintf(fout, ";R:\tmodificadores_a
 					| /*lambda*/{fprintf(fout, ";R:\tmodificadores_acceso: \n");};
 
 clase: clase_escalar {fprintf(fout, ";R:\tclase: clase_escalar\n");}
+										{$$.valor_entero = FALSE;
+	 									$$.tipo = ESCALAR;
+ 										$$.direcciones = 0;};
 	 | clase_vector {fprintf(fout, ";R:\tclase: clase_vector\n");}
 	 | clase_objeto {fprintf(fout, ";R:\tclase: clase_objeto\n");};
 
@@ -159,7 +166,13 @@ clase_escalar: tipo {fprintf(fout, ";R:\tclase_escalar: tipo\n");};
 
 
 tipo: TOK_INT {fprintf(fout, ";R:\ttipo: TOK_INT\n");}
-	| TOK_BOOLEAN {fprintf(fout, ";R:\ttipo: TOK_BOOLEAN\n");};
+{
+	$$.tipo = INT;
+}
+	| TOK_BOOLEAN {fprintf(fout, ";R:\ttipo: TOK_BOOLEAN\n");}
+	{
+	$$.tipo = BOOLEAN;
+	};
 
 
 clase_objeto: '{' TOK_IDENTIFICADOR '}' {fprintf(fout, ";R:\tclase_objeto: '{' TOK_IDENTIFICADOR '}'\n");};
@@ -227,7 +240,10 @@ bloque: condicional {fprintf(fout, ";R:\tbloque: condicional\n");}
 	  | bucle {fprintf(fout, ";R:\tbloque: bucle\n");};
 
 
-asignacion: TOK_IDENTIFICADOR '=' exp {fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '=' exp\n");}
+asignacion: TOK_IDENTIFICADOR '=' exp
+			{fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '=' exp\n");
+			escribir_operando(fpasm,$3.lexema,$3.direcciones);
+			asignar(fpasm, $1.lexema, $3.direcciones);}
 		  | elemento_vector '=' exp {fprintf(fout, ";R:\tasignacion: elemento_vector '=' exp\n");}
 		  | elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(fout, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
 		  | TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
@@ -248,7 +264,9 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR {fprintf(fout, ";R:\tlectura: TOK_SCANF TOK
 	   | TOK_SCANF elemento_vector {fprintf(fout, ";R:\tlectura: TOK_SCANF elemento_vector\n");};
 
 
-escritura: TOK_PRINTF exp {fprintf(fout, ";R:\tescritura: TOK_PRINTF exp\n");};
+escritura: TOK_PRINTF exp {fprintf(fout, ";R:\tescritura: TOK_PRINTF exp\n");
+														escribir_operando(fpasm,$2.lexema,$2.direcciones);
+														escribir(fpasm, $2.direcciones, $2.tipo);};
 
 
 retorno_funcion: TOK_RETURN exp {fprintf(fout, ";R:\tretorno_funcion: TOK_RETURN exp\n");}
@@ -264,7 +282,15 @@ exp: exp '+' exp {fprintf(fout, ";R:\texp: exp '+' exp\n");}
    | exp TOK_OR exp {fprintf(fout, ";R:\texp: exp TOK_OR exp\n");}
    | '!' exp {fprintf(fout, ";R:\texp: '!' exp\n");}
    | TOK_IDENTIFICADOR {fprintf(fout, ";R:\texp: TOK_IDENTIFICADOR\n");}
+	 {$$.tipo = $1.tipo;
+	 strcpy($$.lexema, $1.lexema);
+	 $$.valor_entero = $1.valor_entero;
+	 $$.direcciones = $1.direcciones;}
    | constante {fprintf(fout, ";R:\texp: constante\n");}
+						 {$$.tipo = $1.tipo;
+						 strcpy($$.lexema, $1.lexema);
+						 $$.valor_entero = $1.valor_entero;
+						 $$.direcciones = $1.direcciones;}
    | '(' exp ')' {fprintf(fout, ";R:\texp: '(' exp ')'\n");}
    | '(' comparacion ')' {fprintf(fout, ";R:\texp: '(' comparacion ')'\n");}
    | elemento_vector {fprintf(fout, ";R:\texp: elemento_vector\n");}
@@ -294,24 +320,51 @@ comparacion: exp TOK_IGUAL exp {fprintf(fout, ";R:\tcomparacion: exp TOK_IGUAL e
 
 
 constante: constante_logica {fprintf(fout, ";R:\tconstante: constante_logica\n");}
-		 | constante_entera {fprintf(fout, ";R:\tconstante: constante_entera\n");};
+			{$$.tipo = $1.tipo;
+			$$.valor_entero = $1.valor_entero;
+			$$.direcciones = $1.direcciones;}
+		 | constante_entera {fprintf(fout, ";R:\tconstante: constante_entera\n");}
+		 {$$.tipo = $1.tipo;
+		 strcpy($$.lexema , $1.lexema);
+		 $$.valor_entero = $1.valor_entero;
+		 $$.direcciones = $1.direcciones;};
 
 
-constante_logica: TOK_TRUE {fprintf(fout, ";R:\tconstante_logica: TOK_TRUE\n");} 
+constante_logica: TOK_TRUE {fprintf(fout, ";R:\tconstante_logica: TOK_TRUE\n");}
 					{$$.valor_entero = TRUE;
 					 $$.tipo = BOOLEAN;
 					 $$.direcciones = 0;}
 
-				| TOK_FALSE {fprintf(fout, ";R:\tconstante_logica: TOK_FALSE\n");} 
+				| TOK_FALSE {fprintf(fout, ";R:\tconstante_logica: TOK_FALSE\n");}
 					{$$.valor_entero = FALSE;
 				     $$.tipo = BOOLEAN;
 					 $$.direcciones = 0;};
 
 
-constante_entera: TOK_CONSTANTE_ENTERA {fprintf(fout, ";R:\tconstante_entera: TOK_CONSTANTE_ENTERA\n");} 
+constante_entera: TOK_CONSTANTE_ENTERA {fprintf(fout, ";R:\tconstante_entera: TOK_CONSTANTE_ENTERA\n");}
 					{$$.valor_entero = $1.valor_entero;
+					 strcpy($$.lexema , $1.lexema);
 					 $$.tipo = INT;
-					 $$.direcciones = $1.direcciones;};
+					 $$.direcciones = 0;};
+
+escritura_cabeceras_datos: {
+	escribir_subseccion_data(fpasm);
+	escribir_cabecera_bss(fpasm);
+
+};
+
+escritura_TS:{
+
+};
+
+escritura_main:{
+  escribir_segmento_codigo(fpasm);
+	escribir_inicio_main(fpasm);
+};
+
+escritura_fin:{
+	escribir_fin(fpasm);
+};
 
 
 %%

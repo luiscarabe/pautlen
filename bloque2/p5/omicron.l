@@ -193,6 +193,7 @@ true 		{	col += yyleng;
 						col += yyleng;
 						fprintf(fout, ";D:\t%s\n", yytext);
 						strcpy(yylval.atributos.lexema,yytext);
+						yylval.atributos.direcciones = 1;
 						return TOK_IDENTIFICADOR;
 					}
 
@@ -204,6 +205,7 @@ true 		{	col += yyleng;
 {ENTERO}		{	col += yyleng;
 					fprintf(fout, ";D:\t%s\n", yytext);
 					yylval.atributos.valor_entero = atoi(yytext);
+					strcpy(yylval.atributos.lexema,yytext);
 					return TOK_CONSTANTE_ENTERA;}
 
 {COMENTARIO} 	{	row ++;
