@@ -937,7 +937,7 @@ int buscarParaDeclararIdLocalEnMetodo(Graph *g,
 																			char * nombre_id,
 																			HT_item ** e,
 																			char * nombre_ambito_encontrado){
-	int index;
+	int index, len;
 	Node *clase;
 
 	// No tiene sentido el parámetro nombre_ambito_encontrado no?
@@ -945,14 +945,23 @@ int buscarParaDeclararIdLocalEnMetodo(Graph *g,
 
 	if(!g || !nombre_clase || !nombre_id || !e || !nombre_ambito_encontrado) return ERR;
 
-	index = indexOf(g, nombre_clase);
+	if (strcmp(nombre_clase, "main") == 0){
+		clase = g->main;
+	}
+	else{
+		index = indexOf(g, nombre_clase);
 
-	if(index == ERR) return ERR;
+		if (index == ERR) return ERR;
 
-	clase = g->nodes[index];
+		clase = g->nodes[index];
+	}
 
 	*e = buscarSimboloFunc(clase, nombre_id);
 	if(!*e) return ERR;
+
+	len = strlen(getNameFunc(g->nodes[index]));
+	strncpy(nombre_ambito_encontrado, getNameFunc(g->nodes[index]), len*sizeof(char));
+	nombre_ambito_encontrado[len] = '\0';
 
 	return OK;
 }
