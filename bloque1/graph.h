@@ -135,3 +135,9 @@ int buscarParaDeclararIdTablaSimbolosAmbitos(Graph * g,
                                     char* id, 
                                     HT_item** e,  
                                     char* id_ambito);
+
+int buscarParaDeclararIdLocalEnMetodo(Graph *g,
+																			char * nombre_clase,
+																			char * nombre_id,
+																			HT_item ** e,
+																			char * nombre_ambito_encontrado);

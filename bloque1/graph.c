@@ -911,7 +911,11 @@ int buscarParaDeclararIdTablaSimbolosAmbitos(Graph * g, char* id, HT_item** e, c
 	int index;
 	Node *clase;
 
+	// No tiene sentido el parametro e no??
+	// Creo que habría que asignarlo en la llamada a la búsqueda
+
 	if(!g || !id || !e || !id_ambito) return ERR;
+
 
 	if (strcmp(id_ambito, "main") == 0){
 		clase = g->main;
@@ -927,6 +931,31 @@ int buscarParaDeclararIdTablaSimbolosAmbitos(Graph * g, char* id, HT_item** e, c
 	return buscarSimboloEnAmbitoActual(clase, id) ? OK : ERR;
 }
 
+
+int buscarParaDeclararIdLocalEnMetodo(Graph *g,
+																			char * nombre_clase,
+																			char * nombre_id,
+																			HT_item ** e,
+																			char * nombre_ambito_encontrado){
+	int index;
+	Node *clase;
+
+	// No tiene sentido el parámetro nombre_ambito_encontrado no?
+	// Ni el e no? --> asignacion
+
+	if(!g || !nombre_clase || !nombre_id || !e || !nombre_ambito_encontrado) return ERR;
+
+	index = indexOf(g, nombre_clase);
+
+	if(index == ERR) return ERR;
+
+	clase = g->nodes[index];
+
+	*e = buscarSimboloFunc(clase, nombre_id);
+	if(!*e) return ERR;
+
+	return OK;
+}
 
 void imprimirTablasHash(Graph *g){
 	if (!g) return;
