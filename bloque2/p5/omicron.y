@@ -4,6 +4,7 @@
 	#include <string.h>
 	#include "omicron.h"
 	#include "generacion.h"
+	#include "graph.h"
 
 	/* Del main*/
 	extern FILE* yyin;
