@@ -14,7 +14,7 @@ Grupo 5: Alejandro Cabana, Luis Cárabe, Emilio Cuesta, Blanca Martín, Pablo Al
 
 FILE* yyin;
 FILE* fout;
-FILE* fpasm;
+FILE* compilador_log;
 
 int main(int argc, char** argv){
 
@@ -38,8 +38,8 @@ int main(int argc, char** argv){
     return 1;
   }
 
-  fpasm = fopen("nasm.asm", "w");
-  if (!fpasm){
+  compilador_log = fopen("compilador_log.dat", "w");
+  if (!compilador_log){
     fprintf(stderr, "Fichero NASM inválido.\n");
     fclose(fout);
     fclose(yyin);
