@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "node.h"
-#include "hash_table.h"
+#include "omicron.h"
 
 typedef struct _Node {
 	char *name;

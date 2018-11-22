@@ -76,8 +76,8 @@ int modify_atributos_instancia_acum(TablaSimbolos *ht, const char *key, int x, i
 int modify_metodos_sobre_acum(TablaSimbolos *ht, const char *key, int x, int (*f)(int *a, int b));
 
 // Getters
-enum acceso HT_itemGetAccess(HT_item *e);
-enum categoria HT_itemGetCategory(HT_item *e);
+int HT_itemGetAccess(HT_item *e);
+int HT_itemGetCategory(HT_item *e);
 int HT_itemGetClass(HT_item *e);
 
 
