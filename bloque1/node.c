@@ -12,6 +12,11 @@ typedef struct _Node {
 	TablaSimbolos *primary_scope;
 	TablaSimbolos *func_scope;
 	char *curr_func;
+
+	int numero_atributos_clase;
+	int numero_atributos_instancia;
+	int numero_metodos_sobreescribibles;
+	int numero_metodos_no_sobreescribibles;
 } Node;
 
 Node *newNode(char *name){
@@ -37,6 +42,11 @@ Node *newNode(char *name){
 	}
 
 	strcpy(newNode->name, name);
+
+	newNode->numero_atributos_clase = 0;
+	newNode->numero_atributos_instancia = 0;
+	newNode->numero_metodos_sobreescribibles = 0;
+	newNode->numero_metodos_no_sobreescribibles = 0;
 	return newNode;
 }
 
@@ -63,6 +73,11 @@ Node *newNodeTam(char *name, int tamanio){
 	}
 
 	strcpy(newNode->name, name);
+
+	newNode->numero_atributos_clase = 0;
+	newNode->numero_atributos_instancia = 0;
+	newNode->numero_metodos_sobreescribibles = 0;
+	newNode->numero_metodos_no_sobreescribibles = 0;
 	return newNode;
 }
 
@@ -265,6 +280,22 @@ int insertarTablaNodo(Node *node,
 										 tipo_args))
 			return ERR;
 
+	if (!node->func_scope){
+		switch(categoria){
+			case METODO_SOBREESCRIBIBLE:
+				node->numero_metodos_sobreescribibles++;
+				break;
+			case METODO_NO_SOBREESCRIBIBLE:
+				node->numero_metodos_no_sobreescribibles++;
+				break;
+			case ATRIBUTO_CLASE:
+				node->numero_atributos_clase++;
+				break;
+			case ATRIBUTO_INSTANCIA:
+				node->numero_atributos_instancia++;
+				break;
+		}
+	}
 	return OK;
 	
 }
@@ -415,6 +446,11 @@ TablaSimbolos *getPrimaryScope(Node *node){
 TablaSimbolos *getFuncScope(Node *node){
 	if (!node) return NULL;
 	return node->func_scope;
+}
+
+int getNumMetodosSobreescribibles(Node *node){
+	if (!node) return -1;
+	return node->numero_metodos_sobreescribibles;
 }
 
 HT_item *buscarSimbolo(Node *node, char *nombre_id){

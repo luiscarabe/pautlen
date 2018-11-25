@@ -984,3 +984,73 @@ void imprimirTablasHash(Graph *g){
 	}
 }
 
+
+int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
+	char ***tablas_ms;
+	int **posiciones_rellenas;
+	int i, j, k;
+	int num_metodos_sobre_acumulado;
+
+	if (!g || !f_nasm) return ERR;
+
+	// Conjunto de offsets de cada método sobreescribible
+	// Conjunto de offsets de cada atributo de instancia
+	// Los métodos de clase y los atributos de clase simplemente deben ser definidos
+
+
+	// Tabla de métodos sobreescribiles de cada clase
+	posiciones_rellenas = (int **) malloc(g->n * sizeof(int **));
+	if (!posiciones_rellenas) return ERR;
+
+	tablas_ms = (char ***) malloc(g->n * sizeof(char **));
+	if (!tablas_ms){
+		free(posiciones_rellenas);
+		return ERR;
+	}
+
+	for (i = 0, k = 0, num_metodos_sobre_acumulado = 0; i < g->n; i++){
+		// Dimensionamiento
+		num_metodos_sobre_acumulado += getNumMetodosSobreescribibles(g->nodes[i]);
+
+		tablas_ms[i] = (char **) malloc(num_metodos_sobre_acumulado * sizeof(char *));
+		if (!tablas_ms[i]){
+			for (i--; i >= 0; i--)
+				free(tablas_ms[i]);
+			free(tablas_ms);
+			free(posiciones_rellenas);
+			return ERR;
+		}
+
+		posiciones_rellenas[i] = (int *) malloc((num_metodos_sobre_acumulado + 1) * sizeof(int)); // +1 porque van a acabar todos en -1 (del estilo del '\0' en strings)
+		if (!posiciones_rellenas[i]){
+			for (i--; i >= 0; i--){
+				free(tablas_ms[i]);
+				free(posiciones_rellenas[i]);
+			}
+			free(tablas_ms);
+			free(posiciones_rellenas);
+			return ERR;
+		}
+
+		// Eleccion de padres de los que heredar
+		for (j = 0; j < i; j++){
+			if (g->amatrix[j][i] == 1){ // j padre directo de i
+				for (k = 0; posiciones_rellenas[j][k] != -1; k++){
+					// Copia posiciones rellenas del padre en el nodo actual
+					tablas_ms[i][posiciones_rellenas[j][k]] = tablas_ms[j][posiciones_rellenas[j][k]];
+					posiciones_rellenas[i][k] = posiciones_rellenas[j][k];
+				}
+			}
+		}
+
+		// Sobreescrituras de la clase
+		// Metodos sobreescribibles propios
+
+		// Falta recorrer todos los elementos de la tabla hash de i
+		// Si son metodos sobreescribibles:
+		// 				Comprobar si sobreescriben alguno de los del padre (comparar nombres sin prefijo)
+		// 					1) si lo hacen, sustituir en la misma posicion con el prefijo nuevo
+		// 					2) si no, meterlos en una nueva posicion
+		// 						ir actualizando posiciones rellenas (recordar terminarlo siempre con -1)
+	}
+}
