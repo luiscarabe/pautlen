@@ -571,27 +571,6 @@ int insertarTablaSimbolosClases(Graph * grafo,
 	index_clase = indexOf(grafo, id_clase);
 	if (index_clase == ERR) return ERR;
 
-	// if (categoria == ATRIBUTO_INSTANCIA){
-	// 	if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
-	// 												 getPrimaryScope(grafo->main), 
-	// 												 id_clase, 
-	// 												 1,
-	// 												 &modify_atributos_instancia) == -1){
-	// 		free(name);
-	// 		return -1;
-	// 	}
-	// }
-	// else if (categoria == METODO_SOBREESCRIBIBLE){
-	// 	if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
-	// 												 getPrimaryScope(grafo->main), 
-	// 												 id_clase, 
-	// 												 1,
-	// 												 &modify_metodos_sobreescritura)){
-	// 		free(name);
-	// 		return -1;
-	// 	}
-	// }
-
 
 	return insertarTablaNodo(grafo->nodes[index_clase], 
 								id,
