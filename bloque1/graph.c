@@ -27,6 +27,7 @@ int modificar_insertar(TablaSimbolos *ht,
 											 char *id_clase, 
 											 int x,
 											 int (*f)(TablaSimbolos *ts, const char *key, int incr, int (*g)(int *a, int b)));
+int compararNombresSinPrefijo(char *n1, char *n2);
 
 int increment(int *a, int b){
 	(*a) += b;
@@ -963,6 +964,42 @@ void imprimirTablasHash(Graph *g){
 	}
 }
 
+// Devuelve lo mismo que el strcmp
+int compararNombresSinPrefijo(char *n1, char *n2){
+	char *n1_copia, *n2_copia;	
+	int ret;
+
+	if (!n1 || !n2) return ERR;
+
+	n1_copia = (char *) malloc(sizeof(char) * (strlen(n1) + 1));
+	if (!n1_copia) return ERR;
+	n2_copia = (char *) malloc(sizeof(char) * (strlen(n2) + 1));
+	if (!n2_copia){
+		free(n1_copia);
+		return ERR;
+	}
+
+	if (strcpy(n1_copia, n1) < 0){
+		free(n1_copia);
+		free(n2_copia);
+		return ERR;
+	}
+	if (strcpy(n2_copia, n2) < 0){
+		free(n1_copia);
+		free(n2_copia);
+		return ERR;
+	}
+
+	strtok(n2_copia, "_");
+	strtok(n1_copia, "_");
+
+	ret = strcmp(n2_copia, n1_copia);
+
+	free(n2_copia);
+	free(n1_copia);
+
+	return  ret;
+}
 
 int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 	char ***tablas_ms;
