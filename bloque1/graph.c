@@ -967,6 +967,7 @@ void imprimirTablasHash(Graph *g){
 // Devuelve lo mismo que el strcmp
 int compararNombresSinPrefijo(char *n1, char *n2){
 	char *n1_copia, *n2_copia;	
+	char *tok1, *tok2;
 	int ret;
 
 	if (!n1 || !n2) return ERR;
@@ -990,11 +991,14 @@ int compararNombresSinPrefijo(char *n1, char *n2){
 		return ERR;
 	}
 
-	strtok(n2_copia, "_");
-	strtok(n1_copia, "_");
+	tok1 = strtok(n2_copia, "_");
+	tok1 = strtok(NULL, "_");
+	
+	tok2 = strtok(n1_copia, "_");
+	tok2 = strtok(NULL, "_");
 
-	ret = strcmp(n2_copia, n1_copia);
-	printf("%s %s\n", n2_copia, n1_copia);
+	ret = strcmp(tok1, tok2);
+	printf("%s %s\n", tok1, tok2);
 
 	free(n2_copia);
 	free(n1_copia);
