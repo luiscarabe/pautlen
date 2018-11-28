@@ -74,6 +74,7 @@ void imprimirTablaFunc(Node *n);
 
 TablaSimbolos *getPrimaryScope(Node *node);
 TablaSimbolos *getFuncScope(Node *node);
+int getNumMetodosSobreescribibles(Node *node);
 
 HT_item *buscarSimbolo(Node *node, char *nombre_id);
 HT_item *buscarSimboloFunc(Node *node, char *nombre_id);

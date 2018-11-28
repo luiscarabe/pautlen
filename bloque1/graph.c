@@ -27,6 +27,7 @@ int modificar_insertar(TablaSimbolos *ht,
 											 char *id_clase, 
 											 int x,
 											 int (*f)(TablaSimbolos *ts, const char *key, int incr, int (*g)(int *a, int b)));
+int compararNombresSinPrefijo(char *n1, char *n2);
 
 int increment(int *a, int b){
 	(*a) += b;
@@ -571,27 +572,6 @@ int insertarTablaSimbolosClases(Graph * grafo,
 	index_clase = indexOf(grafo, id_clase);
 	if (index_clase == ERR) return ERR;
 
-	// if (categoria == ATRIBUTO_INSTANCIA){
-	// 	if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
-	// 												 getPrimaryScope(grafo->main), 
-	// 												 id_clase, 
-	// 												 1,
-	// 												 &modify_atributos_instancia) == -1){
-	// 		free(name);
-	// 		return -1;
-	// 	}
-	// }
-	// else if (categoria == METODO_SOBREESCRIBIBLE){
-	// 	if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
-	// 												 getPrimaryScope(grafo->main), 
-	// 												 id_clase, 
-	// 												 1,
-	// 												 &modify_metodos_sobreescritura)){
-	// 		free(name);
-	// 		return -1;
-	// 	}
-	// }
-
 
 	return insertarTablaNodo(grafo->nodes[index_clase], 
 								id,
@@ -984,3 +964,109 @@ void imprimirTablasHash(Graph *g){
 	}
 }
 
+// Devuelve lo mismo que el strcmp
+int compararNombresSinPrefijo(char *n1, char *n2){
+	char *n1_copia, *n2_copia;	
+	int ret;
+
+	if (!n1 || !n2) return ERR;
+
+	n1_copia = (char *) malloc(sizeof(char) * (strlen(n1) + 1));
+	if (!n1_copia) return ERR;
+	n2_copia = (char *) malloc(sizeof(char) * (strlen(n2) + 1));
+	if (!n2_copia){
+		free(n1_copia);
+		return ERR;
+	}
+
+	if (strcpy(n1_copia, n1) < 0){
+		free(n1_copia);
+		free(n2_copia);
+		return ERR;
+	}
+	if (strcpy(n2_copia, n2) < 0){
+		free(n1_copia);
+		free(n2_copia);
+		return ERR;
+	}
+
+	strtok(n2_copia, "_");
+	strtok(n1_copia, "_");
+
+	ret = strcmp(n2_copia, n1_copia);
+
+	free(n2_copia);
+	free(n1_copia);
+
+	return  ret;
+}
+
+int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
+	char ***tablas_ms;
+	int **posiciones_rellenas;
+	int i, j, k;
+	int num_metodos_sobre_acumulado;
+
+	if (!g || !f_nasm) return ERR;
+
+	// Conjunto de offsets de cada método sobreescribible
+	// Conjunto de offsets de cada atributo de instancia
+	// Los métodos de clase y los atributos de clase simplemente deben ser definidos
+
+
+	// Tabla de métodos sobreescribiles de cada clase
+	posiciones_rellenas = (int **) malloc(g->n * sizeof(int **));
+	if (!posiciones_rellenas) return ERR;
+
+	tablas_ms = (char ***) malloc(g->n * sizeof(char **));
+	if (!tablas_ms){
+		free(posiciones_rellenas);
+		return ERR;
+	}
+
+	for (i = 0, k = 0, num_metodos_sobre_acumulado = 0; i < g->n; i++){
+		// Dimensionamiento
+		num_metodos_sobre_acumulado += getNumMetodosSobreescribibles(g->nodes[i]);
+
+		tablas_ms[i] = (char **) malloc(num_metodos_sobre_acumulado * sizeof(char *));
+		if (!tablas_ms[i]){
+			for (i--; i >= 0; i--)
+				free(tablas_ms[i]);
+			free(tablas_ms);
+			free(posiciones_rellenas);
+			return ERR;
+		}
+
+		posiciones_rellenas[i] = (int *) malloc((num_metodos_sobre_acumulado + 1) * sizeof(int)); // +1 porque van a acabar todos en -1 (del estilo del '\0' en strings)
+		if (!posiciones_rellenas[i]){
+			for (i--; i >= 0; i--){
+				free(tablas_ms[i]);
+				free(posiciones_rellenas[i]);
+			}
+			free(tablas_ms);
+			free(posiciones_rellenas);
+			return ERR;
+		}
+
+		// Eleccion de padres de los que heredar
+		for (j = 0; j < i; j++){
+			if (g->amatrix[j][i] == 1){ // j padre directo de i
+				for (k = 0; posiciones_rellenas[j][k] != -1; k++){
+					// Copia posiciones rellenas del padre en el nodo actual
+					tablas_ms[i][posiciones_rellenas[j][k]] = tablas_ms[j][posiciones_rellenas[j][k]];
+					posiciones_rellenas[i][k] = posiciones_rellenas[j][k];
+				}
+			}
+		}
+
+		// Sobreescrituras de la clase
+		// Metodos sobreescribibles propios
+
+		// Falta recorrer todos los elementos de la tabla hash de i
+		// Si son metodos sobreescribibles:
+		// 				Comprobar si sobreescriben alguno de los del padre (comparar nombres sin prefijo)
+		// 					1) si lo hacen, sustituir en la misma posicion con el prefijo nuevo
+		// 					2) si no, meterlos en una nueva posicion
+		// 						ir actualizando posiciones rellenas (recordar terminarlo siempre con -1)
+	}
+}
