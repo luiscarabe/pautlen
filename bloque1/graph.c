@@ -994,6 +994,7 @@ int compararNombresSinPrefijo(char *n1, char *n2){
 	strtok(n1_copia, "_");
 
 	ret = strcmp(n2_copia, n1_copia);
+	printf("%s %s\n", n2_copia, n1_copia);
 
 	free(n2_copia);
 	free(n1_copia);
@@ -1004,8 +1005,10 @@ int compararNombresSinPrefijo(char *n1, char *n2){
 int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 	char ***tablas_ms;
 	int **posiciones_rellenas;
-	int i, j, k;
+	int i, j, k, pos;
 	int num_metodos_sobre_acumulado;
+	int num_metodos_sobre;
+	char **metodos_sobre;
 
 	if (!g || !f_nasm) return ERR;
 
@@ -1025,10 +1028,12 @@ int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 	}
 
 	for (i = 0, k = 0, num_metodos_sobre_acumulado = 0; i < g->n; i++){
+		printf("Clase %d\n", i);
 		// Dimensionamiento
-		num_metodos_sobre_acumulado += getNumMetodosSobreescribibles(g->nodes[i]);
+		printf("\tDimensionamiento\n");
+		num_metodos_sobre = getNumMetodosSobreescribibles(g->nodes[i]);
 
-		tablas_ms[i] = (char **) malloc(num_metodos_sobre_acumulado * sizeof(char *));
+		tablas_ms[i] = (char **) malloc((num_metodos_sobre_acumulado + num_metodos_sobre) * sizeof(char *));
 		if (!tablas_ms[i]){
 			for (i--; i >= 0; i--)
 				free(tablas_ms[i]);
@@ -1037,7 +1042,7 @@ int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 			return ERR;
 		}
 
-		posiciones_rellenas[i] = (int *) malloc((num_metodos_sobre_acumulado + 1) * sizeof(int)); // +1 porque van a acabar todos en -1 (del estilo del '\0' en strings)
+		posiciones_rellenas[i] = (int *) malloc((num_metodos_sobre_acumulado + num_metodos_sobre + 1) * sizeof(int)); // +1 porque van a acabar todos en -1 (del estilo del '\0' en strings)
 		if (!posiciones_rellenas[i]){
 			for (i--; i >= 0; i--){
 				free(tablas_ms[i]);
@@ -1047,20 +1052,49 @@ int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 			free(posiciones_rellenas);
 			return ERR;
 		}
+		posiciones_rellenas[i][0] = -1;
 
 		// Eleccion de padres de los que heredar
+		printf("\tEleccion de padres\n");
 		for (j = 0; j < i; j++){
 			if (g->amatrix[j][i] == 1){ // j padre directo de i
-				for (k = 0; posiciones_rellenas[j][k] != -1; k++){
+				printf("\tPadre: %d\n", j);
+				for (k = 0; (pos = posiciones_rellenas[j][k]) != -1; k++){
 					// Copia posiciones rellenas del padre en el nodo actual
-					tablas_ms[i][posiciones_rellenas[j][k]] = tablas_ms[j][posiciones_rellenas[j][k]];
-					posiciones_rellenas[i][k] = posiciones_rellenas[j][k];
+					tablas_ms[i][pos] = tablas_ms[j][pos];
+					posiciones_rellenas[i][k] = pos;
 				}
 			}
 		}
 
 		// Sobreescrituras de la clase
 		// Metodos sobreescribibles propios
+		printf("\tMetodos propios\n");
+		printf("\tNumero de metodos sobreescribibles: %d\n", num_metodos_sobre);
+		metodos_sobre = get_metodos_sobreescribibles(g->nodes[i]);
+		// num_metodos_sobre inicializado arriba
+		for (j = 0; j < num_metodos_sobre; j++){
+			for (k = 0; (pos = posiciones_rellenas[i][k]) != -1; k++){
+				// Comprobar si el metodo j sobreescribe alguno de los metodos de la clase i
+				if (compararNombresSinPrefijo(tablas_ms[i][pos], metodos_sobre[j]) == 0){
+					printf("hola\n");
+					// Se sobreescribe el metodo
+					tablas_ms[i][pos] = metodos_sobre[j];
+					// Solo puede sobreescribir a uno
+					break;
+				}
+			}
+			// Si no sobreescribe a ninguno
+			if (pos == -1){
+				printf("Buens dias %d\n", j);
+				// Lo meto en una posicion nueva
+				tablas_ms[i][num_metodos_sobre_acumulado] = metodos_sobre[j];
+				posiciones_rellenas[i][k] = num_metodos_sobre_acumulado;
+				posiciones_rellenas[i][k+1] = -1;
+
+				num_metodos_sobre_acumulado++;
+			}
+		}
 
 		// Falta recorrer todos los elementos de la tabla hash de i
 		// Si son metodos sobreescribibles:
@@ -1068,5 +1102,26 @@ int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 		// 					1) si lo hacen, sustituir en la misma posicion con el prefijo nuevo
 		// 					2) si no, meterlos en una nueva posicion
 		// 						ir actualizando posiciones rellenas (recordar terminarlo siempre con -1)
+		printf("\tNumero de metodos sobreescribibles acumulado: %d\n", num_metodos_sobre_acumulado);
+		for (j = 0, k=0; j < num_metodos_sobre_acumulado; j++){
+			printf("%d: ", j*4);
+			if (j == posiciones_rellenas[i][k]){
+				k++;
+				printf("%s", tablas_ms[i][j]);
+			}
+			printf("\n");
+		}
 	}
+
+
+	for (j = 0, k=0; j < num_metodos_sobre_acumulado; j++){
+		printf("%d: ", j*4);
+		if (j == posiciones_rellenas[i-1][k]){
+			k++;
+			printf("%s", tablas_ms[i-1][j]);
+		}
+		printf("\n");
+	}
+
+	return 0;
 }
