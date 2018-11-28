@@ -110,4 +110,4 @@ int buscarParaDeclararIdLocalEnMetodo(Graph *g,
 																			HT_item ** e,
 																			char * nombre_ambito_encontrado);
 
-int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm);
+int tablaSimbolosClasesANasm(Graph *g, FILE *f_nasm);

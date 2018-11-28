@@ -264,7 +264,7 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 	fprintf(f, "\t edge [arrowhead = empty]\n");
 
 	for (i = 0; i < grafo->n; i++){
-		fprintf(f, "\t%s [label=\"{%s|%s\\l" , getName(grafo->nodes[i]), getName(grafo->nodes[i]), getName(grafo->nodes[i]));
+		fprintf(f, "\t%s [label=\"{%s|" , getName(grafo->nodes[i]), getName(grafo->nodes[i]));
 		
 		args = getAttributes(grafo->nodes[i]);
 		num_attributes = getNumAttributes(grafo->nodes[i]);
@@ -998,7 +998,6 @@ int compararNombresSinPrefijo(char *n1, char *n2){
 	tok2 = strtok(NULL, "_");
 
 	ret = strcmp(tok1, tok2);
-	printf("%s %s\n", tok1, tok2);
 
 	free(n2_copia);
 	free(n1_copia);
@@ -1006,10 +1005,10 @@ int compararNombresSinPrefijo(char *n1, char *n2){
 	return  ret;
 }
 
-int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
+int tablaSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 	char ***tablas_ms;
 	int **posiciones_rellenas;
-	int i, j, k, pos;
+	int i, j, k, l, pos;
 	int num_metodos_sobre_acumulado;
 	int num_metodos_sobre;
 	char **metodos_sobre;
@@ -1060,14 +1059,16 @@ int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 
 		// Eleccion de padres de los que heredar
 		printf("\tEleccion de padres\n");
-		for (j = 0; j < i; j++){
+		for (j = 0, l = 0; j < i; j++){
 			if (g->amatrix[j][i] == 1){ // j padre directo de i
 				printf("\tPadre: %d\n", j);
 				for (k = 0; (pos = posiciones_rellenas[j][k]) != -1; k++){
 					// Copia posiciones rellenas del padre en el nodo actual
 					tablas_ms[i][pos] = tablas_ms[j][pos];
-					posiciones_rellenas[i][k] = pos;
+					posiciones_rellenas[i][l+k] = pos;
 				}
+				posiciones_rellenas[i][l+k] = -1;
+				l += k;
 			}
 		}
 
@@ -1081,7 +1082,6 @@ int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 			for (k = 0; (pos = posiciones_rellenas[i][k]) != -1; k++){
 				// Comprobar si el metodo j sobreescribe alguno de los metodos de la clase i
 				if (compararNombresSinPrefijo(tablas_ms[i][pos], metodos_sobre[j]) == 0){
-					printf("hola\n");
 					// Se sobreescribe el metodo
 					tablas_ms[i][pos] = metodos_sobre[j];
 					// Solo puede sobreescribir a uno
@@ -1090,7 +1090,6 @@ int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 			}
 			// Si no sobreescribe a ninguno
 			if (pos == -1){
-				printf("Buens dias %d\n", j);
 				// Lo meto en una posicion nueva
 				tablas_ms[i][num_metodos_sobre_acumulado] = metodos_sobre[j];
 				posiciones_rellenas[i][k] = num_metodos_sobre_acumulado;
@@ -1118,14 +1117,14 @@ int tablSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 	}
 
 
-	for (j = 0, k=0; j < num_metodos_sobre_acumulado; j++){
-		printf("%d: ", j*4);
-		if (j == posiciones_rellenas[i-1][k]){
-			k++;
-			printf("%s", tablas_ms[i-1][j]);
-		}
-		printf("\n");
-	}
+	// for (j = 0, k=0; j < num_metodos_sobre_acumulado; j++){
+	// 	printf("%d: ", j*4);
+	// 	if (j == posiciones_rellenas[i-1][k]){
+	// 		k++;
+	// 		printf("%s", tablas_ms[i-1][j]);
+	// 	}
+	// 	printf("\n");
+	// }
 
 	return 0;
 }

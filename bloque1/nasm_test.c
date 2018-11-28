@@ -21,7 +21,7 @@ int main(int argc, char const *argv[]){
 	tablaSimbolosClasesCerrarAmbitoEnClase(g, "A");
 
 
-	abrirClaseHereda(g, "B", "A", NULL);
+	abrirClase(g, "B");
 	tablaSimbolosClasesAbrirAmbitoEnClase(g, "B", "B_msb1", METODO_SOBREESCRIBIBLE, 
 											ACCESO_TODOS, INT, 0, 0, 0, NULL);
 	tablaSimbolosClasesCerrarAmbitoEnClase(g, "B");
@@ -31,7 +31,7 @@ int main(int argc, char const *argv[]){
 	tablaSimbolosClasesCerrarAmbitoEnClase(g, "B");
 
 
-	abrirClaseHereda(g, "C", "B", NULL);
+	abrirClaseHereda(g, "C", "A", "B", NULL);
 	tablaSimbolosClasesAbrirAmbitoEnClase(g, "C", "C_msc1", METODO_SOBREESCRIBIBLE, 
 											ACCESO_TODOS, INT, 0, 0, 0, NULL);
 	tablaSimbolosClasesCerrarAmbitoEnClase(g, "C");
@@ -41,7 +41,7 @@ int main(int argc, char const *argv[]){
 	tablaSimbolosClasesCerrarAmbitoEnClase(g, "C");
 
 
-	abrirClaseHereda(g, "D", "C", NULL);
+	abrirClaseHereda(g, "D", "A", "B", NULL);
 	tablaSimbolosClasesAbrirAmbitoEnClase(g, "D", "D_msd1", METODO_SOBREESCRIBIBLE, 
 											ACCESO_TODOS, INT, 0, 0, 0, NULL);
 	tablaSimbolosClasesCerrarAmbitoEnClase(g, "D");
@@ -50,8 +50,14 @@ int main(int argc, char const *argv[]){
 											ACCESO_TODOS, INT, 0, 0, 0, NULL);
 	tablaSimbolosClasesCerrarAmbitoEnClase(g, "D");
 
+	tablaSimbolosClasesAbrirAmbitoEnClase(g, "D", "D_msa2", METODO_SOBREESCRIBIBLE, 
+											ACCESO_TODOS, INT, 0, 0, 0, NULL);
+	tablaSimbolosClasesCerrarAmbitoEnClase(g, "D");
 
-	tablSimbolosClasesANasm(g, stdout);
+
+	tablaSimbolosClasesANasm(g, stdout);
+	tablaSimbolosClasesToDot(g);
+	// imprimirTablasHash(g);
 
 	deleteGraph(g);
 
