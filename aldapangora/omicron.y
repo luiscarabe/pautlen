@@ -135,8 +135,7 @@ declaraciones:  declaracion {fprintf(compilador_log, ";R:\tdeclaraciones: declar
 
 
 declaracion: modificadores_acceso clase identificadores ';'
-			{fprintf(compilador_log, ";R:\tdeclaracion: modificadores_acceso clase identificadores ';'\n");
-				declarar_variable(fout, $3.lexema, $2.tipo,  1);}
+			{fprintf(compilador_log, ";R:\tdeclaracion: modificadores_acceso clase identificadores ';'\n");}
  		   | modificadores_acceso declaracion_clase ';'  {fprintf(compilador_log, ";R:\tdeclaracion: modificadores_acceso declaracion_clase ';'\n");};
 
 modificadores_acceso: TOK_HIDDEN TOK_UNIQUE {fprintf(compilador_log, ";R:\tmodificadores_acceso: TOK_HIDDEN TOK_UNIQUE\n");}

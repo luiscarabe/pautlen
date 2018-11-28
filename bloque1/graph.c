@@ -682,7 +682,7 @@ int esDescendiente(Graph *g, char *descendiente, char *antecesor){
 }
 
 int aplicarAccesos(Graph *g, char * nombre_clase_ambito_actual, char * clase_declaro, HT_item * pelem){
-	enum acceso access;
+	int access;
 
 	if (!g || !nombre_clase_ambito_actual || !clase_declaro || !pelem) return ERR;
 

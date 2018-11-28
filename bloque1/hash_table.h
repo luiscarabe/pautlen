@@ -1,6 +1,5 @@
 /**************************************************************************
 hash_table.h
-
 PAULEN
 ***************************************************************************/
 
@@ -8,44 +7,7 @@ PAULEN
 #define HASH_TABLE_H
 
 #include <stdio.h>
-
-// Posicionar estos defines
-/* Categoría del dato */
-enum categoria {
-	VARIABLE = 1,
-	PARAMETRO,
-	FUNCION,
-	CLASE,
-	METODO_SOBREESCRIBIBLE,
-	METODO_NO_SOBREESCRIBIBLE,
-	ATRIBUTO_CLASE,
-	ATRIBUTO_INSTANCIA
-};
-/* Tipo básico de dato */
-enum tipo {
-	BOOLEAN = 1,
-	INT
-};
-/* Clase del dato */
-enum clase {
-	ESCALAR = 1,
-	VECTOR,
-	OBJETO
-};
-/* Tipo de acceso */
-enum acceso {
-	NINGUNO = 1,
-	ACCESO_CLASE,	//hidden
-	ACCESO_HERENCIA,//secret
-	ACCESO_TODOS	//exposed
-};
-/* Tipo miembro */
-enum miembro {
-	MIEMBRO_UNICO = 1,
-	MIEMBRO_NO_UNICO
-};
-
-
+#include "omicron.h"
 
 typedef struct _HT_item HT_item;
 typedef struct _TablaSimbolos TablaSimbolos;
@@ -113,8 +75,8 @@ int modify_atributos_instancia_acum(TablaSimbolos *ht, const char *key, int x, i
 int modify_metodos_sobre_acum(TablaSimbolos *ht, const char *key, int x, int (*f)(int *a, int b));
 
 // Getters
-enum acceso HT_itemGetAccess(HT_item *e);
-enum categoria HT_itemGetCategory(HT_item *e);
+int HT_itemGetAccess(HT_item *e);
+int HT_itemGetCategory(HT_item *e);
 int HT_itemGetClass(HT_item *e);
 
 
