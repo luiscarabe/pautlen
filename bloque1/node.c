@@ -423,7 +423,7 @@ int abrirAmbitoFunc(Node *node,
 										 id_ambito,
 										 categoria_ambito,
 										 tipo_metodo,
-										 METODO_SOBREESCRIBIBLE,
+										 0,
 										 0,
 										 numero_parametros,
 										 0,
@@ -469,6 +469,30 @@ int abrirAmbitoFunc(Node *node,
 		node->curr_func = NULL;
 		return -1;
 	}
+
+	switch(categoria_ambito){
+			case METODO_SOBREESCRIBIBLE:
+				if (!node->metodos_sobreescribibles)
+					node->metodos_sobreescribibles = (char **) malloc(sizeof(char *));
+				else 
+					node->metodos_sobreescribibles = (char **) realloc(node->metodos_sobreescribibles, 
+																														(node->numero_metodos_sobreescribibles + 1) * sizeof(char *));
+				if (!node->metodos_sobreescribibles) return ERR;
+				node->metodos_sobreescribibles[node->numero_metodos_sobreescribibles] = id_ambito;
+				node->numero_metodos_sobreescribibles++;
+				break;
+			case METODO_NO_SOBREESCRIBIBLE:
+				if (!node->metodos_no_sobreescribibles)
+					node->metodos_no_sobreescribibles = (char **) malloc(sizeof(char *));
+				else 
+					node->metodos_no_sobreescribibles = (char **) realloc(node->metodos_no_sobreescribibles, 
+																															 (node->numero_metodos_no_sobreescribibles + 1) * sizeof(char *));
+				if (!node->metodos_no_sobreescribibles) return ERR;
+				node->metodos_no_sobreescribibles[node->numero_metodos_no_sobreescribibles] = id_ambito;
+				node->numero_metodos_no_sobreescribibles++;
+				break;
+	}
+
 	free(name);
 
 	return 0;
@@ -574,3 +598,25 @@ HT_item *buscarSimboloEnAmbitoActual(Node *node, char *nombre_id){
 	else
 		return ht_search_item(node->primary_scope, nombre_id);
 }
+
+char **get_atributos_clase(Node *n){
+	if (!n) return NULL;
+	return n->atributos_clase;
+}
+
+char **get_atributos_instancia(Node *n){
+	if (!n) return NULL;
+	return n->atributos_instancia;
+}
+
+char **get_metodos_sobreescribibles(Node *n){
+	if (!n) return NULL;
+	return n->metodos_sobreescribibles;
+}
+
+char **get_metodos_no_sobreescribibles(Node *n){
+	if (!n) return NULL;
+	return n->metodos_no_sobreescribibles;
+}
+
+
