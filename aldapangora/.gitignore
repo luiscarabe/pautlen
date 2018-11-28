@@ -1,0 +1,6 @@
+*.o
+*.d
+*.dot
+core*
+*.P
+*test
