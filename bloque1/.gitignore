@@ -5,3 +5,4 @@ core*
 vgcore*
 *.P
 *test
+# *.asm

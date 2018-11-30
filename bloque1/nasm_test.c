@@ -8,6 +8,7 @@
 
 int main(int argc, char const *argv[]){
 	Graph *g;
+	FILE *f;
 
 	iniciarTablaSimbolosClases(&g, "Menudotestazo");
 
@@ -54,8 +55,8 @@ int main(int argc, char const *argv[]){
 											ACCESO_TODOS, INT, 0, 0, 0, NULL);
 	tablaSimbolosClasesCerrarAmbitoEnClase(g, "D");
 
-
-	tablaSimbolosClasesANasm(g, stdout);
+	f = fopen("tst.asm", "w+");
+	tablaSimbolosClasesANasm(g, f);
 	tablaSimbolosClasesToDot(g);
 	// imprimirTablasHash(g);
 

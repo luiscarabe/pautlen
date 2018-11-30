@@ -1005,7 +1005,7 @@ int compararNombresSinPrefijo(char *n1, char *n2){
 	return  ret;
 }
 
-int tablaSimbolosClasesANasm(Graph *g, FILE *f_nasm){
+int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 	char ***tablas_ms;
 	int **posiciones_rellenas;
 	int i, j, k, l, pos;
@@ -1013,7 +1013,7 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 	int num_metodos_sobre;
 	char **metodos_sobre;
 
-	if (!g || !f_nasm) return ERR;
+	if (!g || !f) return ERR;
 
 	// Conjunto de offsets de cada método sobreescribible
 	// Conjunto de offsets de cada atributo de instancia
@@ -1030,11 +1030,26 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 		return ERR;
 	}
 
+	fprintf(f, "segment .data\n");
+	num_metodos_sobre_acumulado = 0;
+	for (i = 0; i < g->n; i++){
+		num_metodos_sobre = getNumMetodosSobreescribibles(g->nodes[i]);
+		metodos_sobre = get_metodos_sobreescribibles(g->nodes[i]);
+
+		for (j = 0; j < num_metodos_sobre; j++){
+			fprintf(f, "\t_offset_ms%s dd %d\n", metodos_sobre[j], num_metodos_sobre_acumulado*4);
+			num_metodos_sobre_acumulado++;
+		}
+	}
+
+	fprintf(f, "\nsegment .bss\n");
 	for (i = 0, k = 0, num_metodos_sobre_acumulado = 0; i < g->n; i++){
 		printf("Clase %d\n", i);
 		// Dimensionamiento
 		printf("\tDimensionamiento\n");
 		num_metodos_sobre = getNumMetodosSobreescribibles(g->nodes[i]);
+
+		fprintf(f, "\t_ms%s resd %d\n", getName(g->nodes[i]), num_metodos_sobre_acumulado + num_metodos_sobre);
 
 		tablas_ms[i] = (char **) malloc((num_metodos_sobre_acumulado + num_metodos_sobre) * sizeof(char *));
 		if (!tablas_ms[i]){
@@ -1083,6 +1098,7 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 				// Comprobar si el metodo j sobreescribe alguno de los metodos de la clase i
 				if (compararNombresSinPrefijo(tablas_ms[i][pos], metodos_sobre[j]) == 0){
 					// Se sobreescribe el metodo
+					// Me da que habria que modificar el nombre por tema etiquetas?
 					tablas_ms[i][pos] = metodos_sobre[j];
 					// Solo puede sobreescribir a uno
 					break;
@@ -1117,14 +1133,17 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f_nasm){
 	}
 
 
-	// for (j = 0, k=0; j < num_metodos_sobre_acumulado; j++){
-	// 	printf("%d: ", j*4);
-	// 	if (j == posiciones_rellenas[i-1][k]){
-	// 		k++;
-	// 		printf("%s", tablas_ms[i-1][j]);
-	// 	}
-	// 	printf("\n");
-	// }
-
+	fprintf(f, "\n_create_ms_table:\n");
+	for (i = 0; i < g->n ; i++) {
+		for (j = 0, k = 0; posiciones_rellenas[i][k] != -1; j++){
+			if (j == posiciones_rellenas[i][k]){
+				if (!j || !k) fprintf(f, "\tmov dword [_ms%s], _ms%s\n", getName(g->nodes[i]), tablas_ms[i][j]);
+				else fprintf(f, "\tmov dword [_ms%s+%d], _ms%s\n", getName(g->nodes[i]), k*4, tablas_ms[i][j]);
+				k++;
+			}
+		}
+	}
+	fprintf(f, "\tret\n");
+	
 	return 0;
 }
