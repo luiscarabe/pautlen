@@ -203,9 +203,9 @@ clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
 
 
 identificadores: TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\tidentificadores: TOK_IDENTIFICADOR\n");
-									if(buscarIdNoCualificado(tabla_simbolos, $1.lexema,  	)==OK){
+									if(buscarIdNoCualificado(tabla_simbolos, $1.lexema, "main" , 	, ) == ERROR){
 										fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
-										return ERR;
+										return ERROR;
 									}
 
 									}
