@@ -526,7 +526,7 @@ int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase,
 
 int insertarTablaSimbolosMain(Graph * grafo, int categoria,
 		char* id,                        int clase,
-		int tipo,												 int direcciones,                    
+		int tipo,						 int direcciones,                    
 		int numero_parametros,        
 		int posicion_variable_local,     int posicion_parametro,
 		int tamanio,      

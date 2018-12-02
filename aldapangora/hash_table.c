@@ -843,3 +843,8 @@ int HT_itemGetClass(HT_item *e){
 	if (!e) return -1;
 	return e->value->clase;
 }
+
+int HT_itemGetType(HT_item *e){
+	if (!e) return -1;
+	return e->value->tipo;
+}
