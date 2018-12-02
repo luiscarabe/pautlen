@@ -10,7 +10,6 @@ PAULEN
 #include <math.h>
 
 #include "hash_table.h"
-#include "omicron.h"
 
 #define HASHSIZE 3 // Prime number to choose 1009 
 #define POW 191 // Prime for the hash

@@ -8,7 +8,6 @@
 #include "graph.h"
 #include "node.h"
 #include "hash_table.h"
-#include "omicron.h"
 
 #define NREALLOC 64
 #define min(x, y) ((((x) < (y)) || (y) == 0) ? (x) : (y))
@@ -28,6 +27,7 @@ int modificar_insertar(TablaSimbolos *ht,
 											 char *id_clase, 
 											 int x,
 											 int (*f)(TablaSimbolos *ts, const char *key, int incr, int (*g)(int *a, int b)));
+int compararNombresSinPrefijo(char *n1, char *n2);
 
 int increment(int *a, int b){
 	(*a) += b;
@@ -264,7 +264,7 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 	fprintf(f, "\t edge [arrowhead = empty]\n");
 
 	for (i = 0; i < grafo->n; i++){
-		fprintf(f, "\t%s [label=\"{%s|%s\\l" , getName(grafo->nodes[i]), getName(grafo->nodes[i]), getName(grafo->nodes[i]));
+		fprintf(f, "\t%s [label=\"{%s|" , getName(grafo->nodes[i]), getName(grafo->nodes[i]));
 		
 		args = getAttributes(grafo->nodes[i]);
 		num_attributes = getNumAttributes(grafo->nodes[i]);
@@ -571,27 +571,6 @@ int insertarTablaSimbolosClases(Graph * grafo,
 
 	index_clase = indexOf(grafo, id_clase);
 	if (index_clase == ERR) return ERR;
-
-	// if (categoria == ATRIBUTO_INSTANCIA){
-	// 	if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
-	// 												 getPrimaryScope(grafo->main), 
-	// 												 id_clase, 
-	// 												 1,
-	// 												 &modify_atributos_instancia) == -1){
-	// 		free(name);
-	// 		return -1;
-	// 	}
-	// }
-	// else if (categoria == METODO_SOBREESCRIBIBLE){
-	// 	if (modificar_insertar(getPrimaryScope(grafo->nodes[index_clase]), 
-	// 												 getPrimaryScope(grafo->main), 
-	// 												 id_clase, 
-	// 												 1,
-	// 												 &modify_metodos_sobreescritura)){
-	// 		free(name);
-	// 		return -1;
-	// 	}
-	// }
 
 
 	return insertarTablaNodo(grafo->nodes[index_clase], 
@@ -985,3 +964,186 @@ void imprimirTablasHash(Graph *g){
 	}
 }
 
+// Devuelve lo mismo que el strcmp
+int compararNombresSinPrefijo(char *n1, char *n2){
+	char *n1_copia, *n2_copia;	
+	char *tok1, *tok2;
+	int ret;
+
+	if (!n1 || !n2) return ERR;
+
+	n1_copia = (char *) malloc(sizeof(char) * (strlen(n1) + 1));
+	if (!n1_copia) return ERR;
+	n2_copia = (char *) malloc(sizeof(char) * (strlen(n2) + 1));
+	if (!n2_copia){
+		free(n1_copia);
+		return ERR;
+	}
+
+	if (strcpy(n1_copia, n1) < 0){
+		free(n1_copia);
+		free(n2_copia);
+		return ERR;
+	}
+	if (strcpy(n2_copia, n2) < 0){
+		free(n1_copia);
+		free(n2_copia);
+		return ERR;
+	}
+
+	tok1 = strtok(n2_copia, "_");
+	tok1 = strtok(NULL, "_");
+	
+	tok2 = strtok(n1_copia, "_");
+	tok2 = strtok(NULL, "_");
+
+	ret = strcmp(tok1, tok2);
+
+	free(n2_copia);
+	free(n1_copia);
+
+	return  ret;
+}
+
+int tablaSimbolosClasesANasm(Graph *g, FILE *f){
+	char ***tablas_ms;
+	int **posiciones_rellenas;
+	int i, j, k, l, pos;
+	int num_metodos_sobre_acumulado;
+	int num_metodos_sobre;
+	char **metodos_sobre;
+
+	if (!g || !f) return ERR;
+
+	// Conjunto de offsets de cada método sobreescribible
+	// Conjunto de offsets de cada atributo de instancia
+	// Los métodos de clase y los atributos de clase simplemente deben ser definidos
+
+
+	// Tabla de métodos sobreescribiles de cada clase
+	posiciones_rellenas = (int **) malloc(g->n * sizeof(int **));
+	if (!posiciones_rellenas) return ERR;
+
+	tablas_ms = (char ***) malloc(g->n * sizeof(char **));
+	if (!tablas_ms){
+		free(posiciones_rellenas);
+		return ERR;
+	}
+
+	fprintf(f, "segment .data\n");
+	num_metodos_sobre_acumulado = 0;
+	for (i = 0; i < g->n; i++){
+		num_metodos_sobre = getNumMetodosSobreescribibles(g->nodes[i]);
+		metodos_sobre = get_metodos_sobreescribibles(g->nodes[i]);
+
+		for (j = 0; j < num_metodos_sobre; j++){
+			fprintf(f, "\t_offset_ms%s dd %d\n", metodos_sobre[j], num_metodos_sobre_acumulado*4);
+			num_metodos_sobre_acumulado++;
+		}
+	}
+
+	fprintf(f, "\nsegment .bss\n");
+	for (i = 0, k = 0, num_metodos_sobre_acumulado = 0; i < g->n; i++){
+		printf("Clase %d\n", i);
+		// Dimensionamiento
+		printf("\tDimensionamiento\n");
+		num_metodos_sobre = getNumMetodosSobreescribibles(g->nodes[i]);
+
+		fprintf(f, "\t_ms%s resd %d\n", getName(g->nodes[i]), num_metodos_sobre_acumulado + num_metodos_sobre);
+
+		tablas_ms[i] = (char **) malloc((num_metodos_sobre_acumulado + num_metodos_sobre) * sizeof(char *));
+		if (!tablas_ms[i]){
+			for (i--; i >= 0; i--)
+				free(tablas_ms[i]);
+			free(tablas_ms);
+			free(posiciones_rellenas);
+			return ERR;
+		}
+
+		posiciones_rellenas[i] = (int *) malloc((num_metodos_sobre_acumulado + num_metodos_sobre + 1) * sizeof(int)); // +1 porque van a acabar todos en -1 (del estilo del '\0' en strings)
+		if (!posiciones_rellenas[i]){
+			for (i--; i >= 0; i--){
+				free(tablas_ms[i]);
+				free(posiciones_rellenas[i]);
+			}
+			free(tablas_ms);
+			free(posiciones_rellenas);
+			return ERR;
+		}
+		posiciones_rellenas[i][0] = -1;
+
+		// Eleccion de padres de los que heredar
+		printf("\tEleccion de padres\n");
+		for (j = 0, l = 0; j < i; j++){
+			if (g->amatrix[j][i] == 1){ // j padre directo de i
+				printf("\tPadre: %d\n", j);
+				for (k = 0; (pos = posiciones_rellenas[j][k]) != -1; k++){
+					// Copia posiciones rellenas del padre en el nodo actual
+					tablas_ms[i][pos] = tablas_ms[j][pos];
+					posiciones_rellenas[i][l+k] = pos;
+				}
+				posiciones_rellenas[i][l+k] = -1;
+				l += k;
+			}
+		}
+
+		// Sobreescrituras de la clase
+		// Metodos sobreescribibles propios
+		printf("\tMetodos propios\n");
+		printf("\tNumero de metodos sobreescribibles: %d\n", num_metodos_sobre);
+		metodos_sobre = get_metodos_sobreescribibles(g->nodes[i]);
+		// num_metodos_sobre inicializado arriba
+		for (j = 0; j < num_metodos_sobre; j++){
+			for (k = 0; (pos = posiciones_rellenas[i][k]) != -1; k++){
+				// Comprobar si el metodo j sobreescribe alguno de los metodos de la clase i
+				if (compararNombresSinPrefijo(tablas_ms[i][pos], metodos_sobre[j]) == 0){
+					// Se sobreescribe el metodo
+					// Me da que habria que modificar el nombre por tema etiquetas?
+					tablas_ms[i][pos] = metodos_sobre[j];
+					// Solo puede sobreescribir a uno
+					break;
+				}
+			}
+			// Si no sobreescribe a ninguno
+			if (pos == -1){
+				// Lo meto en una posicion nueva
+				tablas_ms[i][num_metodos_sobre_acumulado] = metodos_sobre[j];
+				posiciones_rellenas[i][k] = num_metodos_sobre_acumulado;
+				posiciones_rellenas[i][k+1] = -1;
+
+				num_metodos_sobre_acumulado++;
+			}
+		}
+
+		// Falta recorrer todos los elementos de la tabla hash de i
+		// Si son metodos sobreescribibles:
+		// 				Comprobar si sobreescriben alguno de los del padre (comparar nombres sin prefijo)
+		// 					1) si lo hacen, sustituir en la misma posicion con el prefijo nuevo
+		// 					2) si no, meterlos en una nueva posicion
+		// 						ir actualizando posiciones rellenas (recordar terminarlo siempre con -1)
+		printf("\tNumero de metodos sobreescribibles acumulado: %d\n", num_metodos_sobre_acumulado);
+		for (j = 0, k=0; j < num_metodos_sobre_acumulado; j++){
+			printf("%d: ", j*4);
+			if (j == posiciones_rellenas[i][k]){
+				k++;
+				printf("%s", tablas_ms[i][j]);
+			}
+			printf("\n");
+		}
+	}
+
+
+	fprintf(f, "\n_create_ms_table:\n");
+	for (i = 0; i < g->n ; i++) {
+		for (j = 0, k = 0; posiciones_rellenas[i][k] != -1; j++){
+			if (j == posiciones_rellenas[i][k]){
+				if (!j || !k) fprintf(f, "\tmov dword [_ms%s], _ms%s\n", getName(g->nodes[i]), tablas_ms[i][j]);
+				else fprintf(f, "\tmov dword [_ms%s+%d], _ms%s\n", getName(g->nodes[i]), k*4, tablas_ms[i][j]);
+				k++;
+			}
+		}
+	}
+	fprintf(f, "\tret\n");
+	
+	return 0;
+}

@@ -20,6 +20,18 @@
 	extern int col;
 	extern int error_flag;
 
+	Graph* tabla_simbolos;
+
+	/*Variables globales necesarias para la inserción de identificadores en la tabla de símbolos*/
+	int categoria;
+	int tipo_actual;
+	int clase_actual;
+	int tamanio_vector_actual;
+	int num_variable_local_actual;
+	int pos_variable_local_actual;
+	int num_param;
+	int pos_param;
+
 	/* Locales */
 	int yyerror (const char *s);
 
@@ -114,7 +126,10 @@
 %type <atributos> constante_logica
 %type <atributos> constante_entera
 %type <atributos> identificadores
-
+%type <atributos> incioTabla
+%type <atributos> escritura_cabeceras_datos
+%type <atributos> escritura_TS
+%type <atributos> escritura_main
 
 %left '+' '-' TOK_OR
 %left '*' '/' TOK_AND
@@ -126,9 +141,10 @@
 
 %% /*Seccion de reglas*/
 
-programa: TOK_MAIN '{' escritura_cabeceras_datos  declaraciones escritura_TS funciones escritura_main sentencias '}' escritura_fin { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}
+programa: inicioTabla TOK_MAIN '{' escritura_cabeceras_datos  declaraciones escritura_TS funciones escritura_main sentencias '}' escritura_fin { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}
 		| TOK_MAIN '{' funciones sentencias '}' { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");} ;
 
+inicioTabla: { iniciarTablaSimbolosClases(&tabla_simbolos, "Tablasimbolos"); }
 
 declaraciones:  declaracion {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion\n");}
 			 | declaracion declaraciones {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion declaraciones\n");};
@@ -148,9 +164,7 @@ modificadores_acceso: TOK_HIDDEN TOK_UNIQUE {fprintf(compilador_log, ";R:\tmodif
 					| /*lambda*/{fprintf(compilador_log, ";R:\tmodificadores_acceso: \n");};
 
 clase: clase_escalar {fprintf(compilador_log, ";R:\tclase: clase_escalar\n");}
-										{$$.valor_entero = FALSE;
-	 									$$.tipo = ESCALAR;
- 										$$.direcciones = 0;};
+										;
 	 | clase_vector {fprintf(compilador_log, ";R:\tclase: clase_vector\n");}
 	 | clase_objeto {fprintf(compilador_log, ";R:\tclase: clase_objeto\n");};
 
@@ -162,28 +176,39 @@ declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS 
 modificadores_clase: /*lambda*/ {fprintf(compilador_log, ";R:\tmodificadores_clase: \n");};
 
 
-clase_escalar: tipo {fprintf(compilador_log, ";R:\tclase_escalar: tipo\n");};
+clase_escalar: tipo {fprintf(compilador_log, ";R:\tclase_escalar: tipo\n");
+					  clase_actual=ESCALAR;};
 
 
 tipo: TOK_INT {fprintf(compilador_log, ";R:\ttipo: TOK_INT\n");}
-{
-	$$.tipo = INT;
+{ tipo_actual = TOK_INT;
 }
 	| TOK_BOOLEAN {fprintf(compilador_log, ";R:\ttipo: TOK_BOOLEAN\n");}
 	{
-	$$.tipo = BOOLEAN;
+	tipo_actual = TOK_BOOLEAN;
 	};
 
 
 clase_objeto: '{' TOK_IDENTIFICADOR '}' {fprintf(compilador_log, ";R:\tclase_objeto: '{' TOK_IDENTIFICADOR '}'\n");};
 
 
-clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']' {fprintf(compilador_log, ";R:\tclase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'\n");};
+clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']' 
+			{fprintf(compilador_log, ";R:\tclase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'\n");
+			tamanio_vector_actual = $4.valor_entero;
+			clase_actual=VECTOR;
+			if ((tamanio_vector_actual < 1) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)){
+				fprintf(stderr, "Error, tamaño de vector no válido. Linea %d columna %d", row, col);
+				return 0;
+			}};
 
 
 identificadores: TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\tidentificadores: TOK_IDENTIFICADOR\n");
-									strcpy($$.lexema, $1.lexema);
-									$$.direcciones = 1;}
+									if(buscarIdNoCualificado(tabla_simbolos, $1.lexema,  	)==OK){
+										fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
+										return ERR;
+									}
+
+									}
 			   | TOK_IDENTIFICADOR ',' identificadores {fprintf(compilador_log, ";R:\tidentificadores: TOK_IDENTIFICADOR ',' identificadores\n");};
 
 
@@ -242,8 +267,7 @@ bloque: condicional {fprintf(compilador_log, ";R:\tbloque: condicional\n");}
 
 asignacion: TOK_IDENTIFICADOR '=' exp
 			{fprintf(compilador_log, ";R:\tasignacion: TOK_IDENTIFICADOR '=' exp\n");
-			escribir_operando(fout,$3.lexema,$3.direcciones);
-			asignar(fout, $1.lexema, $3.direcciones);}
+			}
 		  | elemento_vector '=' exp {fprintf(compilador_log, ";R:\tasignacion: elemento_vector '=' exp\n");}
 		  | elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
 		  | TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\tasignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
@@ -265,8 +289,7 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\tlectura: TOK
 
 
 escritura: TOK_PRINTF exp {fprintf(compilador_log, ";R:\tescritura: TOK_PRINTF exp\n");
-														escribir_operando(fout,$2.lexema,$2.direcciones);
-														escribir(fout, $2.direcciones, $2.tipo);};
+														};
 
 
 retorno_funcion: TOK_RETURN exp {fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN exp\n");}
@@ -282,15 +305,9 @@ exp: exp '+' exp {fprintf(compilador_log, ";R:\texp: exp '+' exp\n");}
    | exp TOK_OR exp {fprintf(compilador_log, ";R:\texp: exp TOK_OR exp\n");}
    | '!' exp {fprintf(compilador_log, ";R:\texp: '!' exp\n");}
    | TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR\n");}
-	 {$$.tipo = $1.tipo;
-	 strcpy($$.lexema, $1.lexema);
-	 $$.valor_entero = $1.valor_entero;
-	 $$.direcciones = $1.direcciones;}
+	 {}
    | constante {fprintf(compilador_log, ";R:\texp: constante\n");}
-						 {$$.tipo = $1.tipo;
-						 strcpy($$.lexema, $1.lexema);
-						 $$.valor_entero = $1.valor_entero;
-						 $$.direcciones = $1.direcciones;}
+						 {}
    | '(' exp ')' {fprintf(compilador_log, ";R:\texp: '(' exp ')'\n");}
    | '(' comparacion ')' {fprintf(compilador_log, ";R:\texp: '(' comparacion ')'\n");}
    | elemento_vector {fprintf(compilador_log, ";R:\texp: elemento_vector\n");}
@@ -320,32 +337,20 @@ comparacion: exp TOK_IGUAL exp {fprintf(compilador_log, ";R:\tcomparacion: exp T
 
 
 constante: constante_logica {fprintf(compilador_log, ";R:\tconstante: constante_logica\n");}
-			{$$.tipo = $1.tipo;
-			$$.valor_entero = $1.valor_entero;
-			$$.direcciones = $1.direcciones;}
+			{}
 		 | constante_entera {fprintf(compilador_log, ";R:\tconstante: constante_entera\n");}
-		 {$$.tipo = $1.tipo;
-		 strcpy($$.lexema , $1.lexema);
-		 $$.valor_entero = $1.valor_entero;
-		 $$.direcciones = $1.direcciones;};
+		 {};
 
 
 constante_logica: TOK_TRUE {fprintf(compilador_log, ";R:\tconstante_logica: TOK_TRUE\n");}
-					{$$.valor_entero = TRUE;
-					 $$.tipo = BOOLEAN;
-					 $$.direcciones = 0;}
+					{}
 
 				| TOK_FALSE {fprintf(compilador_log, ";R:\tconstante_logica: TOK_FALSE\n");}
-					{$$.valor_entero = FALSE;
-				     $$.tipo = BOOLEAN;
-					 $$.direcciones = 0;};
+					{};
 
 
 constante_entera: TOK_CONSTANTE_ENTERA {fprintf(compilador_log, ";R:\tconstante_entera: TOK_CONSTANTE_ENTERA\n");}
-					{$$.valor_entero = $1.valor_entero;
-					 strcpy($$.lexema , $1.lexema);
-					 $$.tipo = INT;
-					 $$.direcciones = 0;};
+					{};
 
 escritura_cabeceras_datos: {
 	escribir_subseccion_data(fout);

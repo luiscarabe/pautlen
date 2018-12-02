@@ -18,27 +18,6 @@ int abrirClaseHeredaN(Graph* t, char* id_clase, int num_padres, char **id_padres
 int cerrarClase(Graph* t,
                 char* id_clase);
 
-// int abrirAmbitoClase(Node** t, char* id_clase, int tamanio);
-
-// int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase, 
-// 		int categoria,
-// 		char* id,                        int clase,
-// 		int tipo,												 int direcciones,                    
-// 		int numero_parametros,                 
-// 		int posicion_variable_local,     int posicion_parametro,
-// 		int tamanio,                                
-// 		int tipo_acceso,                 int tipo_miembro, 
-// 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
-// 		int * tipo_args);
-
-// int abrirAmbitoPrefijos(Node* node, 
-//                         char* id_ambito, 
-//                         int categoria_ambito, 
-//                         int acceso_metodo, 
-//                         int tipo_metodo, 
-//                         int posicion_metodo_sobre, 
-//                         int tamanio);
-
 int insertarTablaSimbolosClases(Graph * grafo, 
 		char * id_clase,                 int categoria,
 		char* id,                        int clase,
@@ -59,17 +38,6 @@ int insertarTablaSimbolosMain(Graph * grafo, int categoria,
 		int tipo_acceso,                 int tipo_miembro, 
 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
 		int * tipo_args);
-
-// int insertarTablaSimbolosAmbitosMain(Graph *grafo, 
-// 		int categoria,
-// 		char* id,                        int clase,
-// 		int tipo,												 int direcciones,                    
-// 		int numero_parametros,                 
-// 		int posicion_variable_local,     int posicion_parametro,
-// 		int tamanio,                                
-// 		int tipo_acceso,                 int tipo_miembro, 
-// 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
-// 		int * tipo_args);
 
 int tablaSimbolosClasesCerrarAmbitoEnMain(Graph* grafo);
 
@@ -102,7 +70,8 @@ int buscarIdNoCualificado(Graph *t,
                  					char * nombre_id, 
                  					char * nombre_clase_desde,
                  					HT_item ** e, 
-  												char * nombre_ambito_encontrado);
+  									char * nombre_ambito_encontrado);
+
 int buscarParaDeclararMiembroClase(Graph *t,
 													char * nombre_id,
 													char * nombre_clase_desde,
@@ -141,3 +110,5 @@ int buscarParaDeclararIdLocalEnMetodo(Graph *g,
 																			char * nombre_id,
 																			HT_item ** e,
 																			char * nombre_ambito_encontrado);
+
+int tablaSimbolosClasesANasm(Graph *g, FILE *f_nasm);
