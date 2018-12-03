@@ -305,8 +305,7 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 			char nombre[100];
 			char nombre_ambito_encontrado [100];
 			HT_item* e;
-			sprintf(nombre, "main_%s", $1.lexema);
-			printf("buscando variabe %s", nombre);
+			sprintf(nombre, "%s", $1.lexema);
 			if(buscarIdNoCualificado(tabla_simbolos,
                  					nombre,
                  					"main",

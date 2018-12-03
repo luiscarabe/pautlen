@@ -1,0 +1,7 @@
+make
+./omicron $1 $2
+./omicron pr_s3_0.ol pr_s3_0.asm
+nasm -g -felf32 $2.asm
+gcc -m32 -o programa -g olib.o pr_s3_0.o
+./pr_s3_0
+
