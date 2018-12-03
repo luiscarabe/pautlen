@@ -164,10 +164,10 @@ modificadores_acceso: TOK_HIDDEN TOK_UNIQUE {fprintf(compilador_log, ";R:\tmodif
 					| TOK_UNIQUE {fprintf(compilador_log, ";R:\tmodificadores_acceso: TOK_UNIQUE\n");}
 					| /*lambda*/{fprintf(compilador_log, ";R:\tmodificadores_acceso: \n");};
 
-clase: clase_escalar 
+clase: clase_escalar
 		{ fprintf(compilador_log, ";R:\tclase: clase_escalar\n");
-		  clase_actual=ESCALAR;	}								
-	 | clase_vector 
+		  clase_actual=ESCALAR;	}
+	 | clase_vector
 	 	{ fprintf(compilador_log, ";R:\tclase: clase_vector\n");
 	 	  clase_actual = VECTOR; }
 	 | clase_objeto
@@ -182,16 +182,16 @@ declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS 
 modificadores_clase: /*lambda*/ {fprintf(compilador_log, ";R:\tmodificadores_clase: \n");};
 
 
-clase_escalar: tipo 
+clase_escalar: tipo
 				{ fprintf(compilador_log, ";R:\tclase_escalar: tipo\n");
 				  tamanio_vector_actual = 1;};
 
 
-tipo: TOK_INT 
+tipo: TOK_INT
 		{   fprintf(compilador_log, ";R:\ttipo: TOK_INT\n");
 			tipo_actual = INT;
 	    }
-	| TOK_BOOLEAN 
+	| TOK_BOOLEAN
 		{ 	fprintf(compilador_log, ";R:\ttipo: TOK_BOOLEAN\n");
 			tipo_actual = BOOLEAN;
 		};
@@ -200,7 +200,7 @@ tipo: TOK_INT
 clase_objeto: '{' TOK_IDENTIFICADOR '}' {fprintf(compilador_log, ";R:\tclase_objeto: '{' TOK_IDENTIFICADOR '}'\n");};
 
 
-clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']' 
+clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
 				{ fprintf(compilador_log, ";R:\tclase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'\n");
 				  tamanio_vector_actual = $4.valor_entero;
 				  if ((tamanio_vector_actual < 1) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)){
@@ -214,7 +214,7 @@ identificadores: identificador {fprintf(compilador_log, ";R:\tidentificadores: T
 			   | identificador ',' identificadores {fprintf(compilador_log, ";R:\tidentificadores: TOK_IDENTIFICADOR ',' identificadores\n");};
 
 
-identificador: TOK_IDENTIFICADOR 
+identificador: TOK_IDENTIFICADOR
 				{
 					HT_item *e;
 					char nombre [100];
@@ -232,13 +232,13 @@ identificador: TOK_IDENTIFICADOR
 					/*TODO llamada correcta funcion*/
 					aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
 											  nombre,         clase_actual,
-											  tipo_actual,	  0,                    
+											  tipo_actual,	  0,
 											  0,      		  0,
-											  0,              tamanio_vector_actual,      
-											  ACCESO_TODOS,        MIEMBRO_NO_UNICO, 
+											  0,              tamanio_vector_actual,
+											  ACCESO_TODOS,        MIEMBRO_NO_UNICO,
 											  0,              0,
 											  NULL);
-					
+
 					printf("RETORNO %d", aux);
 					/*Insertamos en segmento .bss*/
 
@@ -307,19 +307,24 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 			HT_item* e;
 			sprintf(nombre, "main_%s", $1.lexema);
 			printf("buscando variabe %s", nombre);
-			if(buscarIdNoCualificado(tabla_simbolos, 
-                 					nombre, 
+			if(buscarIdNoCualificado(tabla_simbolos,
+                 					nombre,
                  					"main",
-                 					&e, 
+                 					&e,
   									nombre_ambito_encontrado) == ERR){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);}
+    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);
+					return ERR;}
     		else if (HT_itemGetCategory(e) == FUNCION){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede asignar una funcion\n", row, col);}
+    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede asignar una funcion\n", row, col);
+					return ERR;
+				}
     		else if (HT_itemGetClass(e) == VECTOR){
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simboo es vector\n", row, col);
+					return ERR;
     		}
     		else if(HT_itemGetType(e) != $3.tipo){
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Asignacion de tipos incompatibles\n", row, col);
+					return ERR;
     		}
 
     		asignar(fout, $1.lexema, $3.direcciones);
@@ -341,13 +346,38 @@ condicional: TOK_IF '(' exp ')' '{' sentencias '}' {fprintf(compilador_log, ";R:
 bucle: TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(compilador_log, ";R:\tdbucle: TOK_WHILE '(' exp ')' '{' sentencias '}'\n");};
 
 
-lectura: TOK_SCANF TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\tlectura: TOK_SCANF TOK_IDENTIFICADOR\n");}
+lectura: TOK_SCANF TOK_IDENTIFICADOR
+				{fprintf(compilador_log, ";R:\tlectura: TOK_SCANF TOK_IDENTIFICADOR\n");
+				//TODO nombre ambito
+			 char nombre[100];
+			 char nombre_ambito_encontrado [100];
+			 HT_item* e;
+			 sprintf(nombre, "%s", $2.lexema);
+			 printf("buscando variabe %s\n", nombre);
+			 if(buscarIdNoCualificado(tabla_simbolos,
+													 nombre,
+													 "main",
+													 &e,
+										 nombre_ambito_encontrado) == ERR){
+					 fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo para scanf.\n", row, col);
+				 	 return ERR;
+				 }
+			else if(HT_itemGetCategory(e) != VARIABLE){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede aplicar scanf a algo que no sea una variable.\n", row, col);
+				return ERR;
+			}
+			else if(HT_itemGetClass(e) != ESCALAR){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede aplicar scanf a una variable no escalar.\n", row, col);
+				return ERR;
+			}
+			leer(fout, $2.lexema, HT_itemGetType(e));
+			}
 	   | TOK_SCANF elemento_vector {fprintf(compilador_log, ";R:\tlectura: TOK_SCANF elemento_vector\n");};
 
 
-escritura: TOK_PRINTF exp 
+escritura: TOK_PRINTF exp
 			{fprintf(compilador_log, ";R:\tescritura: TOK_PRINTF exp\n");
-			escribir(fout, $2.direcciones, $2.tipo);			
+			escribir(fout, $2.direcciones, $2.tipo);
 			};
 
 
@@ -355,7 +385,23 @@ retorno_funcion: TOK_RETURN exp {fprintf(compilador_log, ";R:\tretorno_funcion: 
 			   | TOK_RETURN TOK_NONE {fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN TOK_NONE\n");};
 
 
-exp: exp '+' exp {fprintf(compilador_log, ";R:\texp: exp '+' exp\n");}
+exp: exp '+' exp
+		{fprintf(compilador_log, ";R:\texp: exp '+' exp\n");
+		if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
+			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se pueden sumar booleanos.\n", row, col);
+			return ERR;
+		}
+		/* Sólo se puede generar código si se intenta sumar dos subexpresiones enteras*/
+  if (($1.tipo == INT) && ($3.tipo == INT))
+  {
+  /* Invoca tu función de generación para sumar*/
+  sumar(fout, $1.direcciones, $3.direcciones);
+  /* Propaga los atributos*/
+          $$.tipo = INT;
+          $$.direcciones = 0;
+  }
+}
+
    | exp '-' exp {fprintf(compilador_log, ";R:\texp: exp '-' exp\n");}
    | exp '/' exp {fprintf(compilador_log, ";R:\texp: exp '/' exp\n");}
    | exp '*' exp {fprintf(compilador_log, ";R:\texp: exp '*' exp\n");}
@@ -368,27 +414,30 @@ exp: exp '+' exp {fprintf(compilador_log, ";R:\texp: exp '+' exp\n");}
 			char nombre[100];
 			char nombre_ambito_encontrado [100];
 			HT_item* e = NULL;
-			sprintf(nombre, "main_%s", $1.lexema);
-			if(buscarIdNoCualificado(tabla_simbolos, 
-                 					nombre, 
+			sprintf(nombre, "%s", $1.lexema);
+			if(buscarIdNoCualificado(tabla_simbolos,
+                 					nombre,
                  					"main",
-                 					&e, 
+                 					&e,
   									nombre_ambito_encontrado) == ERR){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo.\n", row, col);}
+    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo.\n", row, col);
+				  return ERR;}
     		else if (HT_itemGetCategory(e) == FUNCION){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. El simbolo en asignacion es una funcion\n", row, col);}
+    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. El simbolo en asignacion es una funcion\n", row, col);
+				  return ERR;}
     		else if (HT_itemGetClass(e) == VECTOR){
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simboo es vector\n", row, col);
+					return ERR;
     		}
     		$$.tipo = HT_itemGetType(e);
     		$$.direcciones = 1;
     		escribir_operando(fout, $1.lexema, 1);
     	}
-   | constante 
+   | constante
    		{fprintf(compilador_log, ";R:\texp: constante\n");
    		 $$.tipo = $1.tipo;
    		 $$.direcciones = $1.direcciones; }
-						
+
    | '(' exp ')' {fprintf(compilador_log, ";R:\texp: '(' exp ')'\n");}
    | '(' comparacion ')' {fprintf(compilador_log, ";R:\texp: '(' comparacion ')'\n");}
    | elemento_vector {fprintf(compilador_log, ";R:\texp: elemento_vector\n");}
@@ -419,7 +468,7 @@ comparacion: exp TOK_IGUAL exp {fprintf(compilador_log, ";R:\tcomparacion: exp T
 
 constante: constante_logica {fprintf(compilador_log, ";R:\tconstante: constante_logica\n");}
 			{}
-		 | constante_entera 
+		 | constante_entera
 		 {
 		 	fprintf(compilador_log, ";R:\tconstante: constante_entera\n");
 		 	$$.tipo = $1.tipo;
@@ -434,7 +483,7 @@ constante_logica: TOK_TRUE {fprintf(compilador_log, ";R:\tconstante_logica: TOK_
 					{};
 
 
-constante_entera: TOK_CONSTANTE_ENTERA 
+constante_entera: TOK_CONSTANTE_ENTERA
 					{fprintf(compilador_log, ";R:\tconstante_entera: TOK_CONSTANTE_ENTERA\n");
 					 $$.tipo=INT;
 					 $$.direcciones = 0 ;
