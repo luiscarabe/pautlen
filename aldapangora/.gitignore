@@ -4,3 +4,8 @@
 core*
 *.P
 *test
+lex.yy.c
+omicron
+y.output
+y.tab.c
+y.tab.h
