@@ -52,7 +52,7 @@
 #define TOK_ERROR -1
 
 
-/* De aqí para abajo es cosecha propia*/
+/* De aquí para abajo es cosecha propia*/
 #define TOK_FLECHA -567
 
 #define TRUE 1

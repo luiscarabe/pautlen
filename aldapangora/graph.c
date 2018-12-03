@@ -764,8 +764,11 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 	HT_item *ret;
 	int len;
 
-	if (!t || !nombre_id || !nombre_clase_desde || !e)
+	if (!t || !nombre_id || !nombre_clase_desde || !e){
 		return ERR;
+	}
+
+
 
 	if (buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_desde, e, nombre_ambito_encontrado) == OK)
 		return OK;
@@ -773,7 +776,10 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 	ret = buscarSimboloFunc(t->main, nombre_id);
 	if (!ret){
 		ret = buscarSimbolo(t->main, nombre_id);
-		if (!ret) return ERR;
+		if (!ret){
+			printf("HE AQUI EL POBLEMA");
+			return ERR;
+		}
 		strncpy(nombre_ambito_encontrado, "main", 5*sizeof(char));
 		nombre_ambito_encontrado[4] = '\0';
 	}
@@ -784,6 +790,8 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 	}
 	
 	*e = ret;
+
+	printf("nombre ambito encontradooo %s", nombre_ambito_encontrado);
 	return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, ret);
 }
 

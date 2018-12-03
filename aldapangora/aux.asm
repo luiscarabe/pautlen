@@ -15,7 +15,6 @@ main:
 	push dword _x
 	pop dword ecx
 	push dword [ecx]
-	call print_int
 	add esp, 4
 	call print_endofline
 	jmp fin

@@ -78,6 +78,8 @@ int modify_metodos_sobre_acum(TablaSimbolos *ht, const char *key, int x, int (*f
 int HT_itemGetAccess(HT_item *e);
 int HT_itemGetCategory(HT_item *e);
 int HT_itemGetClass(HT_item *e);
+int HT_itemGetType(HT_item *e);
+
 
 
 #endif /* HASH_TABLE_H */

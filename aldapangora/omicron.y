@@ -128,7 +128,7 @@
 %type <atributos> constante_entera
 %type <atributos> identificadores
 %type <atributos> identificador
-%type <atributos> incioTabla
+%type <atributos> inicioTabla
 %type <atributos> escritura_cabeceras_datos
 %type <atributos> escritura_main
 
@@ -143,7 +143,7 @@
 %% /*Seccion de reglas*/
 
 programa: inicioTabla TOK_MAIN '{' escritura_cabeceras_datos  declaraciones  funciones escritura_main sentencias '}' escritura_fin { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}
-		| TOK_MAIN '{' funciones sentencias '}' { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");} ;
+		| inicioTabla TOK_MAIN '{' escritura_cabeceras_datos funciones escritura_main sentencias '}' { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");} ;
 
 inicioTabla: { iniciarTablaSimbolosClases(&tabla_simbolos, "Tablasimbolos"); }
 
@@ -217,26 +217,29 @@ identificadores: identificador {fprintf(compilador_log, ";R:\tidentificadores: T
 identificador: TOK_IDENTIFICADOR 
 				{
 					HT_item *e;
-					char nombre [50];
+					char nombre [100];
+					int aux;
 
 					/*TODO, conseguir el nombre del ambito*/
 					sprintf(nombre, "main_%s", $1.lexema);
-					if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, e, "main") == OK){
+					if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
 						fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
-						return ERROR;
+						return ERR;
 					}
 
-					/*insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
-						nombre,                        clase_actual,
-						tipo_actual,				   0,                    
-						0,        
-						0,     0,
-						tamanio_vector_actual,      
-						int tipo_acceso,                 int tipo_miembro, 
-						int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
-						int * tipo_args);
-					/*TODO TODO FIX */
+					printf("declarando variable %s", nombre);
 
+					/*TODO llamada correcta funcion*/
+					aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
+											  nombre,         clase_actual,
+											  tipo_actual,	  0,                    
+											  0,      		  0,
+											  0,              tamanio_vector_actual,      
+											  ACCESO_TODOS,        MIEMBRO_NO_UNICO, 
+											  0,              0,
+											  NULL);
+					
+					printf("RETORNO %d", aux);
 					/*Insertamos en segmento .bss*/
 
 					declarar_variable(fout, $1.lexema,  tipo_actual,  tamanio_vector_actual);
@@ -298,19 +301,20 @@ bloque: condicional {fprintf(compilador_log, ";R:\tbloque: condicional\n");}
 
 asignacion: TOK_IDENTIFICADOR '=' exp
 			{fprintf(compilador_log, ";R:\tasignacion: TOK_IDENTIFICADOR '=' exp\n");
-			 //TODO conseguir nombre con ambit bien
-			char nombre[50];
+			 //TODO nombre ambito
+			char nombre[100];
 			char nombre_ambito_encontrado [100];
 			HT_item* e;
-			sprintf(nombre "main_%s", $1.lexema);
+			sprintf(nombre, "main_%s", $1.lexema);
+			printf("buscando variabe %s", nombre);
 			if(buscarIdNoCualificado(tabla_simbolos, 
                  					nombre, 
                  					"main",
-                 					e, 
-  									nombre_ambito_encontrado) == ERROR){
+                 					&e, 
+  									nombre_ambito_encontrado) == ERR){
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);}
     		else if (HT_itemGetCategory(e) == FUNCION){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. El simbolo en asignacion es una funcion\n", row, col);}
+    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede asignar una funcion\n", row, col);}
     		else if (HT_itemGetClass(e) == VECTOR){
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simboo es vector\n", row, col);
     		}
@@ -318,7 +322,7 @@ asignacion: TOK_IDENTIFICADOR '=' exp
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Asignacion de tipos incompatibles\n", row, col);
     		}
 
-    		asignar(fout, $1.lexema, $3.es_direccion);
+    		asignar(fout, $1.lexema, $3.direcciones);
 
 			}
 		  | elemento_vector '=' exp {fprintf(compilador_log, ";R:\tasignacion: elemento_vector '=' exp\n");}
@@ -343,7 +347,7 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\tlectura: TOK
 
 escritura: TOK_PRINTF exp 
 			{fprintf(compilador_log, ";R:\tescritura: TOK_PRINTF exp\n");
-			escribir(fout, $2.es_direccion, $2.tipo)			
+			escribir(fout, $2.direcciones, $2.tipo);			
 			};
 
 
@@ -361,15 +365,15 @@ exp: exp '+' exp {fprintf(compilador_log, ";R:\texp: exp '+' exp\n");}
    | '!' exp {fprintf(compilador_log, ";R:\texp: '!' exp\n");}
    | TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR\n");
 	//TODO conseguir nombre con ambit bien
-			char nombre[50];
+			char nombre[100];
 			char nombre_ambito_encontrado [100];
-			HT_item* e;
-			sprintf(nombre "main_%s", $1.lexema);
+			HT_item* e = NULL;
+			sprintf(nombre, "main_%s", $1.lexema);
 			if(buscarIdNoCualificado(tabla_simbolos, 
                  					nombre, 
                  					"main",
-                 					e, 
-  									nombre_ambito_encontrado) == ERROR){
+                 					&e, 
+  									nombre_ambito_encontrado) == ERR){
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo.\n", row, col);}
     		else if (HT_itemGetCategory(e) == FUNCION){
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. El simbolo en asignacion es una funcion\n", row, col);}
@@ -377,15 +381,14 @@ exp: exp '+' exp {fprintf(compilador_log, ";R:\texp: exp '+' exp\n");}
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simboo es vector\n", row, col);
     		}
     		$$.tipo = HT_itemGetType(e);
-    		$$.es_direccion = 1;
-    		sprintf(nombre "%d", $1.lexema);
-    		escribir_operando(fout, nombre, 1);
+    		$$.direcciones = 1;
+    		escribir_operando(fout, $1.lexema, 1);
     	}
    | constante 
    		{fprintf(compilador_log, ";R:\texp: constante\n");
    		 $$.tipo = $1.tipo;
-   		 $$.es_direccion = $1.es_direccion; }
-						 {}
+   		 $$.direcciones = $1.direcciones; }
+						
    | '(' exp ')' {fprintf(compilador_log, ";R:\texp: '(' exp ')'\n");}
    | '(' comparacion ')' {fprintf(compilador_log, ";R:\texp: '(' comparacion ')'\n");}
    | elemento_vector {fprintf(compilador_log, ";R:\texp: elemento_vector\n");}
@@ -420,7 +423,8 @@ constante: constante_logica {fprintf(compilador_log, ";R:\tconstante: constante_
 		 {
 		 	fprintf(compilador_log, ";R:\tconstante: constante_entera\n");
 		 	$$.tipo = $1.tipo;
-		 	$$.es_direccion = $1.es_direccion};
+		 	$$.direcciones = $1.direcciones;
+		 };
 
 
 constante_logica: TOK_TRUE {fprintf(compilador_log, ";R:\tconstante_logica: TOK_TRUE\n");}
@@ -433,10 +437,10 @@ constante_logica: TOK_TRUE {fprintf(compilador_log, ";R:\tconstante_logica: TOK_
 constante_entera: TOK_CONSTANTE_ENTERA 
 					{fprintf(compilador_log, ";R:\tconstante_entera: TOK_CONSTANTE_ENTERA\n");
 					 $$.tipo=INT;
-					 $$.es_direccion = 0 ;
+					 $$.direcciones = 0 ;
 					 $$.valor_entero = $1.valor_entero;
 					 char aux[10];
-					 sprintf(aux, "%d", $1.valor_entero)
+					 sprintf(aux, "%d", $1.valor_entero);
 					 escribir_operando(fout, aux, 0);
 					};
 
