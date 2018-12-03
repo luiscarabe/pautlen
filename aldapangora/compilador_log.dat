@@ -8,26 +8,23 @@
 ;D:	x1
 ;D:	,
 ;D:	x2
-;D:	,
-;D:	x3
 ;D:	;
 ;R:	identificadores: TOK_IDENTIFICADOR
 ;R:	identificadores: TOK_IDENTIFICADOR ',' identificadores
-;R:	identificadores: TOK_IDENTIFICADOR ',' identificadores
 ;R:	declaracion: modificadores_acceso clase identificadores ';'
-;D:	x3
-;R:	declaraciones: declaracion
-;R:	funciones: 
-;D:	=
-;D:	9
-;R:	constante_entera: TOK_CONSTANTE_ENTERA
-;R:	constante: constante_entera
-;R:	exp: constante
+;D:	boolean
+;R:	modificadores_acceso: 
+;R:	tipo: TOK_BOOLEAN
+;R:	clase_escalar: tipo
+;R:	clase: clase_escalar
+;D:	y1
 ;D:	;
-;R:	asignacion: TOK_IDENTIFICADOR '=' exp
-;R:	sentencia_simple: asignacion
-;R:	sentencia: sentencia_simple ';'
+;R:	identificadores: TOK_IDENTIFICADOR
+;R:	declaracion: modificadores_acceso clase identificadores ';'
 ;D:	scanf
+;R:	declaraciones: declaracion
+;R:	declaraciones: declaracion declaraciones
+;R:	funciones: 
 ;D:	x1
 ;D:	;
 ;R:	lectura: TOK_SCANF TOK_IDENTIFICADOR
@@ -56,8 +53,23 @@
 ;R:	escritura: TOK_PRINTF exp
 ;R:	sentencia_simple: escritura
 ;R:	sentencia: sentencia_simple ';'
+;D:	y1
+;D:	=
+;D:	(
+;D:	x1
+;D:	==
+;R:	exp: TOK_IDENTIFICADOR
+;D:	x2
+;D:	)
+;R:	exp: TOK_IDENTIFICADOR
+;R:	comparacion: exp TOK_IGUAL exp
+;R:	exp: '(' comparacion ')'
+;D:	;
+;R:	asignacion: TOK_IDENTIFICADOR '=' exp
+;R:	sentencia_simple: asignacion
+;R:	sentencia: sentencia_simple ';'
 ;D:	printf
-;D:	x3
+;D:	y1
 ;D:	;
 ;R:	exp: TOK_IDENTIFICADOR
 ;R:	escritura: TOK_PRINTF exp

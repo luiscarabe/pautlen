@@ -20,6 +20,9 @@
 	extern int col;
 	extern int error_flag;
 
+	/* variable para la generacion de etiquetas */
+	int etiqueta=1;
+
 	Graph* tabla_simbolos;
 
 	/*Variables globales necesarias para la inserción de identificadores en la tabla de símbolos*/
@@ -114,6 +117,8 @@
 %type <atributos> asignacion
 %type <atributos> elemento_vector
 %type <atributos> condicional
+%type <atributos> if_exp
+%type <atributos> if_exp_sentencias
 %type <atributos> bucle
 %type <atributos> lectura
 %type <atributos> escritura
@@ -134,7 +139,7 @@
 
 %left '+' '-' TOK_OR
 %left '*' '/' TOK_AND
-%right NEG_UNARIA '!'
+%right NEG_UNARIA '!'TOK_IF '(' exp ')' '{' sentencias '}'
 
 /*Axioma*/
 %start programa
@@ -338,8 +343,31 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 elemento_vector: TOK_IDENTIFICADOR '[' exp ']' {fprintf(compilador_log, ";R:\telemento_vector: TOK_IDENTIFICADOR '[' exp ']'\n");};
 
 
-condicional: TOK_IF '(' exp ')' '{' sentencias '}' {fprintf(compilador_log, ";R:\tcondicional: TOK_IF '(' exp ')' '{' sentencias '}'\n");}
-		   | TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}' {fprintf(compilador_log, ";R:\tcondicional: TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'\n");};
+condicional: if_exp_sentencias {fprintf(compilador_log, ";R:\tcondicional: TOK_IF '(' exp ')' '{' sentencias '}'\n");}
+		   | if_exp_sentencias TOK_ELSE '{' sentencias '}' {fprintf(compilador_log, ";R:\tcondicional: TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'\n");};
+
+if_exp_sentencias:    if_exp sentencias '}'
+if_exp: TOK_IF '(' exp ')' '{'
+				{
+					/* Si el tipo de la expresión $3.tipo no es BOOLEAN  salir con Error */
+					if($3.tipo != BOOLEAN){
+						fprintf(stderr, "****Error semantico en [lin %d, col %d]. Condición no booleana.\n", row, col);
+						return ERR;
+					}
+
+				/* En este momento, en el que vamos a comenzar a escribir etiquetas para los saltos debemos reservar la nuestra (etiqueta++) y propagar su valor para que al reducir el conjunto de las 3 reglas del if-then-else siempre tengamos el valor de la etiqueta vinculada con esta estructura como atributo de alguno de los no terminales  */
+					$$.etiqueta=etiqueta++;
+
+				/* Realizaremos la comprobación del if-then-else
+				Sacamos su valor de la pila, ej. pop eax
+				Si es dirección ($3.es_direccion == 1) ... mov eax, [eax]
+				Comparamos con 0,  cmp eax, 0
+				Hacemos el salto al final de la rama then en este caso,
+									 je near fin_then<$$.etiqueta>
+				*/
+
+				}
+
 
 
 bucle: TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(compilador_log, ";R:\tdbucle: TOK_WHILE '(' exp ')' '{' sentencias '}'\n");};
@@ -360,7 +388,8 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
 										 nombre_ambito_encontrado) == ERR){
 					 fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo para scanf.\n", row, col);
 				 	 return ERR;
-				 }
+				 }	fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede aplicar scanf a algo que no sea una variable.\n", row, col);
+				return ERR;
 			else if(HT_itemGetCategory(e) != VARIABLE){
 				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede aplicar scanf a algo que no sea una variable.\n", row, col);
 				return ERR;
@@ -438,7 +467,12 @@ exp: exp '+' exp
    		 $$.direcciones = $1.direcciones; }
 
    | '(' exp ')' {fprintf(compilador_log, ";R:\texp: '(' exp ')'\n");}
-   | '(' comparacion ')' {fprintf(compilador_log, ";R:\texp: '(' comparacion ')'\n");}
+   | '(' comparacion ')'
+	 		{fprintf(compilador_log, ";R:\texp: '(' comparacion ')'\n");
+			$$.tipo = $2.tipo;
+    	$$.direcciones = $2.direcciones;
+
+		}
    | elemento_vector {fprintf(compilador_log, ";R:\texp: elemento_vector\n");}
    | TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
    | identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
@@ -457,7 +491,28 @@ resto_lista_expresiones: ',' exp resto_lista_expresiones {fprintf(compilador_log
 					   | /*lambda*/ {fprintf(compilador_log, ";R:\tresto_lista_expresiones: \n");};
 
 
-comparacion: exp TOK_IGUAL exp {fprintf(compilador_log, ";R:\tcomparacion: exp TOK_IGUAL exp\n");}
+comparacion: exp TOK_IGUAL exp
+						{fprintf(compilador_log, ";R:\tcomparacion: exp TOK_IGUAL exp\n");
+						/* Si alguna de las expresiones es booleana, salir con Error */
+						if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN))
+						{
+							fprintf(stderr, "****Error sintactico en [lin %d, col %d]. No se pueden igualar booleanos.\n", row, col);
+						  return ERR;
+						}
+
+						/* Sólo hay que realizar acciones si ambas expresiones son enteras */
+						if (($1.tipo == INT) && ($3.tipo == INT))
+						{
+						/* Genera código para la comparación */
+						igual(fout, $1.direcciones, $3.direcciones, etiqueta);
+						/* Ajusta la semántica
+						Incrementa el valor de etiqueta para reservarla
+						Propaga tipo y es dirección*/
+						etiqueta++;
+						$$.tipo = BOOLEAN;
+						$$.direcciones = 0;
+						}
+					}
 		   | exp TOK_DISTINTO exp {fprintf(compilador_log, ";R:\tcomparacion: exp TOK_DISTINTO exp\n");}
 		   | exp TOK_MENORIGUAL exp {fprintf(compilador_log, ";R:\tcomparacion: exp TOK_MENORIGUAL exp\n");}
 		   | exp TOK_MAYORIGUAL exp {fprintf(compilador_log, ";R:\tcomparacion: exp TOK_MAYORIGUAL exp\n");}
