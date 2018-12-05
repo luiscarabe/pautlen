@@ -21,7 +21,8 @@
 	extern int error_flag;
 
 	/* variable para la generacion de etiquetas */
-	int etiqueta=1;
+	int etiqueta = 0;
+	int cuantos_no = 0;
 
 	Graph* tabla_simbolos;
 
@@ -139,7 +140,7 @@
 
 %left '+' '-' TOK_OR
 %left '*' '/' TOK_AND
-%right NEG_UNARIA '!'TOK_IF '(' exp ')' '{' sentencias '}'
+%right NEG_UNARIA '!'
 
 /*Axioma*/
 %start programa
@@ -150,7 +151,10 @@
 programa: inicioTabla TOK_MAIN '{' escritura_cabeceras_datos  declaraciones  funciones escritura_main sentencias '}' escritura_fin { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}
 		| inicioTabla TOK_MAIN '{' escritura_cabeceras_datos funciones escritura_main sentencias '}' { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");} ;
 
-inicioTabla: { iniciarTablaSimbolosClases(&tabla_simbolos, "Tablasimbolos"); }
+inicioTabla: 
+	{ 
+		iniciarTablaSimbolosClases(&tabla_simbolos, "Tablasimbolos"); 
+	}
 
 declaraciones:  declaracion {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion\n");}
 			 | declaracion declaraciones {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion declaraciones\n");};
@@ -193,11 +197,13 @@ clase_escalar: tipo
 
 
 tipo: TOK_INT
-		{   fprintf(compilador_log, ";R:\ttipo: TOK_INT\n");
+		{   
+			fprintf(compilador_log, ";R:\ttipo: TOK_INT\n");
 			tipo_actual = INT;
 	    }
 	| TOK_BOOLEAN
-		{ 	fprintf(compilador_log, ";R:\ttipo: TOK_BOOLEAN\n");
+		{ 	
+			fprintf(compilador_log, ";R:\ttipo: TOK_BOOLEAN\n");
 			tipo_actual = BOOLEAN;
 		};
 
@@ -206,16 +212,16 @@ clase_objeto: '{' TOK_IDENTIFICADOR '}' {fprintf(compilador_log, ";R:\tclase_obj
 
 
 clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
-				{ fprintf(compilador_log, ";R:\tclase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'\n");
-				  tamanio_vector_actual = $4.valor_entero;
-				  if ((tamanio_vector_actual < 1) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)){
-					fprintf(stderr, "Error, tamaño de vector no válido. Linea %d columna %d", row, col);
-					return 0;
-					}};
+				{ 
+					tamanio_vector_actual = $4.valor_entero;
+					if ((tamanio_vector_actual < 1) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)){
+						fprintf(stderr, "Error, tamaño de vector no válido. Linea %d columna %d", row, col);
+						return ERR;
+					}
+				};
 
 
-identificadores: identificador {fprintf(compilador_log, ";R:\tidentificadores: TOK_IDENTIFICADOR\n");
-								}
+identificadores: identificador {fprintf(compilador_log, ";R:\tidentificadores: TOK_IDENTIFICADOR\n");}
 			   | identificador ',' identificadores {fprintf(compilador_log, ";R:\tidentificadores: TOK_IDENTIFICADOR ',' identificadores\n");};
 
 
@@ -232,7 +238,6 @@ identificador: TOK_IDENTIFICADOR
 						return ERR;
 					}
 
-					printf("declarando variable %s", nombre);
 
 					/*TODO llamada correcta funcion*/
 					aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
@@ -244,7 +249,6 @@ identificador: TOK_IDENTIFICADOR
 											  0,              0,
 											  NULL);
 
-					printf("RETORNO %d", aux);
 					/*Insertamos en segmento .bss*/
 
 					declarar_variable(fout, $1.lexema,  tipo_actual,  tamanio_vector_actual);
@@ -305,33 +309,29 @@ bloque: condicional {fprintf(compilador_log, ";R:\tbloque: condicional\n");}
 
 
 asignacion: TOK_IDENTIFICADOR '=' exp
-			{fprintf(compilador_log, ";R:\tasignacion: TOK_IDENTIFICADOR '=' exp\n");
-			 //TODO nombre ambito
-			char nombre[100];
-			char nombre_ambito_encontrado [100];
-			HT_item* e;
-			sprintf(nombre, "%s", $1.lexema);
-			if(buscarIdNoCualificado(tabla_simbolos,
-                 					nombre,
-                 					"main",
-                 					&e,
-  									nombre_ambito_encontrado) == ERR){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);
-					return ERR;}
-    		else if (HT_itemGetCategory(e) == FUNCION){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede asignar una funcion\n", row, col);
-					return ERR;
-				}
-    		else if (HT_itemGetClass(e) == VECTOR){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simboo es vector\n", row, col);
-					return ERR;
-    		}
-    		else if(HT_itemGetType(e) != $3.tipo){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Asignacion de tipos incompatibles\n", row, col);
-					return ERR;
-    		}
+			{
+				//TODO nombre ambito
+				char nombre[100];
+				char nombre_ambito_encontrado [100];
+				HT_item* e;
+				sprintf(nombre, "%s", $1.lexema);
+				if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
+	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);
+						return ERR;}
+	    		else if (HT_itemGetCategory(e) == FUNCION){
+	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede asignar una funcion\n", row, col);
+						return ERR;
+					}
+	    		else if (HT_itemGetClass(e) == VECTOR){
+	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simboo es vector\n", row, col);
+						return ERR;
+	    		}
+	    		else if(HT_itemGetType(e) != $3.tipo){
+	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Asignacion de tipos incompatibles\n", row, col);
+						return ERR;
+	    		}
 
-    		asignar(fout, $1.lexema, $3.direcciones);
+	    		asignar(fout, $1.lexema, $3.direcciones);
 
 			}
 		  | elemento_vector '=' exp {fprintf(compilador_log, ";R:\tasignacion: elemento_vector '=' exp\n");}
@@ -343,10 +343,33 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 elemento_vector: TOK_IDENTIFICADOR '[' exp ']' {fprintf(compilador_log, ";R:\telemento_vector: TOK_IDENTIFICADOR '[' exp ']'\n");};
 
 
-condicional: if_exp_sentencias {fprintf(compilador_log, ";R:\tcondicional: TOK_IF '(' exp ')' '{' sentencias '}'\n");}
-		   | if_exp_sentencias TOK_ELSE '{' sentencias '}' {fprintf(compilador_log, ";R:\tcondicional: TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'\n");};
+condicional: if_exp_sentencias 
+			{
+			  //TODO: Si no nos dan alternativa esto hay que arreglarlo, no parece muy complicado 
 
-if_exp_sentencias:    if_exp sentencias '}'
+			}
+		   | if_exp_sentencias TOK_ELSE '{' sentencias '}' 
+		    {
+
+				/* Sólo se escribe la etiqueta del final de la estructura, no uses la variable global etiqueta que ya puede haber sido modificada 
+				   por sentencias, utiliza la propagada del primer símbolo $1.etiqueta , por ej. */
+
+		    	$$.etiqueta = $1.etiqueta;
+			 	ifthenelse_fin(fout, $$.etiqueta);
+
+			};
+
+
+if_exp_sentencias: if_exp sentencias '}'
+				{
+					/* Propagamos el valor de la etiqueta reservado por if_exp para que pueda usarlo la regla más externa*/
+					$$.etiqueta = $1.etiqueta;
+				
+					/* Cuando esta regla se resuelve ya se han acabado las sentencias del if. Ponemos un salto al final del bloque condicional.
+					Tambien es necesario escribir la etiqueta de fin de la rama then para saltar si la condición del if no se cumple. */
+					ifthenelse_fin_then(fout, $$.etiqueta);					
+				};
+
 if_exp: TOK_IF '(' exp ')' '{'
 				{
 					/* Si el tipo de la expresión $3.tipo no es BOOLEAN  salir con Error */
@@ -355,18 +378,13 @@ if_exp: TOK_IF '(' exp ')' '{'
 						return ERR;
 					}
 
-				/* En este momento, en el que vamos a comenzar a escribir etiquetas para los saltos debemos reservar la nuestra (etiqueta++) y propagar su valor para que al reducir el conjunto de las 3 reglas del if-then-else siempre tengamos el valor de la etiqueta vinculada con esta estructura como atributo de alguno de los no terminales  */
-					$$.etiqueta=etiqueta++;
+					/* En este momento, en el que vamos a comenzar a escribir etiquetas para los saltos debemos reservar la nuestra (etiqueta++) 
+					y propagar su valor para que al reducir el conjunto de las 3 reglas del if-then-else siempre tengamos el valor de la etiqueta
+					vinculada con esta estructura como atributo de alguno de los no terminales  */
 
-				/* Realizaremos la comprobación del if-then-else
-				Sacamos su valor de la pila, ej. pop eax
-				Si es dirección ($3.es_direccion == 1) ... mov eax, [eax]
-				Comparamos con 0,  cmp eax, 0
-				Hacemos el salto al final de la rama then en este caso,
-									 je near fin_then<$$.etiqueta>
-				*/
-
-				}
+					$$.etiqueta = etiqueta++;
+					ifthenelse_inicio(fout, $3.direcciones, $$.etiqueta);
+				};
 
 
 
@@ -374,22 +392,17 @@ bucle: TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(compilador_log, ";R:\td
 
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR
-				{fprintf(compilador_log, ";R:\tlectura: TOK_SCANF TOK_IDENTIFICADOR\n");
-				//TODO nombre ambito
-			 char nombre[100];
-			 char nombre_ambito_encontrado [100];
-			 HT_item* e;
-			 sprintf(nombre, "%s", $2.lexema);
-			 printf("buscando variabe %s\n", nombre);
-			 if(buscarIdNoCualificado(tabla_simbolos,
-													 nombre,
-													 "main",
-													 &e,
-										 nombre_ambito_encontrado) == ERR){
+		{	
+			fprintf(compilador_log, ";R:\tlectura: TOK_SCANF TOK_IDENTIFICADOR\n");
+			//TODO nombre ambito
+			char nombre[100];
+			char nombre_ambito_encontrado [100];
+			HT_item* e;
+			sprintf(nombre, "%s", $2.lexema);
+			if(buscarIdNoCualificado(tabla_simbolos, nombre,"main", &e, nombre_ambito_encontrado) == ERR){
 					 fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo para scanf.\n", row, col);
 				 	 return ERR;
-				 }	fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede aplicar scanf a algo que no sea una variable.\n", row, col);
-				return ERR;
+			}
 			else if(HT_itemGetCategory(e) != VARIABLE){
 				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede aplicar scanf a algo que no sea una variable.\n", row, col);
 				return ERR;
@@ -399,14 +412,15 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
 				return ERR;
 			}
 			leer(fout, $2.lexema, HT_itemGetType(e));
-			}
+		}
 	   | TOK_SCANF elemento_vector {fprintf(compilador_log, ";R:\tlectura: TOK_SCANF elemento_vector\n");};
 
 
 escritura: TOK_PRINTF exp
-			{fprintf(compilador_log, ";R:\tescritura: TOK_PRINTF exp\n");
+		{
+			fprintf(compilador_log, ";R:\tescritura: TOK_PRINTF exp\n");
 			escribir(fout, $2.direcciones, $2.tipo);
-			};
+		};
 
 
 retorno_funcion: TOK_RETURN exp {fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN exp\n");}
@@ -414,64 +428,152 @@ retorno_funcion: TOK_RETURN exp {fprintf(compilador_log, ";R:\tretorno_funcion: 
 
 
 exp: exp '+' exp
-		{fprintf(compilador_log, ";R:\texp: exp '+' exp\n");
-		if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
-			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se pueden sumar booleanos.\n", row, col);
-			return ERR;
+		{
+			if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se pueden sumar booleanos.\n", row, col);
+				return ERR;
+			}
+			/*Sólo se puede generar código si se intenta sumar dos subexpresiones enteras*/
+			if (($1.tipo == INT) && ($3.tipo == INT)){
+				sumar(fout, $1.direcciones, $3.direcciones);
+			    /* Propaga los atributos*/
+			    $$.tipo = INT;
+				$$.direcciones = 0;
+			}
 		}
-		/* Sólo se puede generar código si se intenta sumar dos subexpresiones enteras*/
-  if (($1.tipo == INT) && ($3.tipo == INT))
-  {
-  /* Invoca tu función de generación para sumar*/
-  sumar(fout, $1.direcciones, $3.direcciones);
-  /* Propaga los atributos*/
-          $$.tipo = INT;
-          $$.direcciones = 0;
-  }
-}
+   | exp '-' exp 
+   		{
+			if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se pueden restar booleanos.\n", row, col);
+				return ERR;
+			}
+			if (($1.tipo == INT) && ($3.tipo == INT)){
+				restar(fout, $1.direcciones, $3.direcciones);
+			    /* Propaga los atributos*/
+			    $$.tipo = INT;
+				$$.direcciones = 0;
+			}
+		}
+   | exp '/' exp 
+   		{
+			if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se pueden dividir booleanos.\n", row, col);
+				return ERR;
+			}
+			if (($1.tipo == INT) && ($3.tipo == INT)){
+				dividir(fout, $1.direcciones, $3.direcciones);
+			    /* Propaga los atributos*/
+			    $$.tipo = INT;
+				$$.direcciones = 0;
+			}
+		}
+   | exp '*' exp 
+   		{
+			if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se pueden multiplicar booleanos.\n", row, col);
+				return ERR;
+			}
+			if (($1.tipo == INT) && ($3.tipo == INT)){
+				multiplicar(fout, $1.direcciones, $3.direcciones);
+			    /* Propaga los atributos*/
+			    $$.tipo = INT;
+				$$.direcciones = 0;
+			}
+		}
+   | '-'  exp %prec NEG_UNARIA
+   		{
+			if (($2.tipo == BOOLEAN)){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede negar aritmeticamente un booleano.\n", row, col);
+				return ERR;
+			}
+			/*Sólo se puede generar código si se intenta sumar dos subexpresiones enteras*/
+			if (($2.tipo == INT)){
+				cambiar_signo(fout, $2.direcciones);
+			    /* Propaga los atributos*/
+			    $$.tipo = INT;
+				$$.direcciones = 0;
+			}
+		}
+   | exp TOK_AND exp 
+   		{
+			if (($1.tipo == INT) || ($3.tipo == INT)){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede hacer un AND sobre enteros.\n", row, col);
+				return ERR;
+			}
+			if (($1.tipo == BOOLEAN) && ($3.tipo == BOOLEAN)){
+				y(fout, $1.direcciones, $3.direcciones);
+			    /* Propaga los atributos*/
+			    $$.tipo = BOOLEAN;
+				$$.direcciones = 0;
+			}
+		}
+   | exp TOK_OR exp
+   		{
+			if (($1.tipo == INT) || ($3.tipo == INT)){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede hacer un OR sobre enteros.\n", row, col);
+				return ERR;
+			}
+			if (($1.tipo == BOOLEAN) && ($3.tipo == BOOLEAN)){
+				o(fout, $1.direcciones, $3.direcciones);
+			    /* Propaga los atributos*/
+			    $$.tipo = BOOLEAN;
+				$$.direcciones = 0;
+			}
+		}
 
-   | exp '-' exp {fprintf(compilador_log, ";R:\texp: exp '-' exp\n");}
-   | exp '/' exp {fprintf(compilador_log, ";R:\texp: exp '/' exp\n");}
-   | exp '*' exp {fprintf(compilador_log, ";R:\texp: exp '*' exp\n");}
-   | '-'  exp %prec NEG_UNARIA {fprintf(compilador_log, ";R:\texp: '-' exp\n");}
-   | exp TOK_AND exp {fprintf(compilador_log, ";R:\texp: exp TOK_AND exp\n");}
-   | exp TOK_OR exp {fprintf(compilador_log, ";R:\texp: exp TOK_OR exp\n");}
-   | '!' exp {fprintf(compilador_log, ";R:\texp: '!' exp\n");}
-   | TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR\n");
-	//TODO conseguir nombre con ambit bien
+   | '!' exp 
+   		{
+			if (($2.tipo == INT)){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede negar logicamente un entero.\n", row, col);
+				return ERR;
+			}
+			/*Sólo se puede generar código si se intenta sumar dos subexpresiones enteras*/
+			if (($2.tipo == BOOLEAN)){
+				cuantos_no++;
+				no(fout, $2.direcciones, cuantos_no);
+			    /* Propaga los atributos*/
+			    $$.tipo = BOOLEAN;
+				$$.direcciones = 0;
+			}
+		}
+   | TOK_IDENTIFICADOR 
+   		{
+			//TODO conseguir nombre con ambito bien
 			char nombre[100];
-			char nombre_ambito_encontrado [100];
+			char nombre_ambito_encontrado[100];
 			HT_item* e = NULL;
 			sprintf(nombre, "%s", $1.lexema);
-			if(buscarIdNoCualificado(tabla_simbolos,
-                 					nombre,
-                 					"main",
-                 					&e,
-  									nombre_ambito_encontrado) == ERR){
+			if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo.\n", row, col);
-				  return ERR;}
+				return ERR;
+			}
     		else if (HT_itemGetCategory(e) == FUNCION){
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. El simbolo en asignacion es una funcion\n", row, col);
-				  return ERR;}
+				return ERR;
+			}
     		else if (HT_itemGetClass(e) == VECTOR){
     			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simboo es vector\n", row, col);
-					return ERR;
+				return ERR;
     		}
+
     		$$.tipo = HT_itemGetType(e);
     		$$.direcciones = 1;
     		escribir_operando(fout, $1.lexema, 1);
     	}
    | constante
-   		{fprintf(compilador_log, ";R:\texp: constante\n");
-   		 $$.tipo = $1.tipo;
-   		 $$.direcciones = $1.direcciones; }
-
-   | '(' exp ')' {fprintf(compilador_log, ";R:\texp: '(' exp ')'\n");}
+   		{
+	   		$$.tipo = $1.tipo;
+	   		$$.direcciones = $1.direcciones; 
+	   	}
+   | '(' exp ')' 
+   		{
+   			$$.tipo = $2.tipo;
+	   		$$.direcciones = $2.direcciones; 
+   		}
    | '(' comparacion ')'
-	 		{fprintf(compilador_log, ";R:\texp: '(' comparacion ')'\n");
+	 	{	
 			$$.tipo = $2.tipo;
-    	$$.direcciones = $2.direcciones;
-
+			$$.direcciones = $2.direcciones;
 		}
    | elemento_vector {fprintf(compilador_log, ";R:\texp: elemento_vector\n");}
    | TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
@@ -492,76 +594,204 @@ resto_lista_expresiones: ',' exp resto_lista_expresiones {fprintf(compilador_log
 
 
 comparacion: exp TOK_IGUAL exp
-						{fprintf(compilador_log, ";R:\tcomparacion: exp TOK_IGUAL exp\n");
-						/* Si alguna de las expresiones es booleana, salir con Error */
-						if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN))
-						{
-							fprintf(stderr, "****Error sintactico en [lin %d, col %d]. No se pueden igualar booleanos.\n", row, col);
-						  return ERR;
-						}
+				{	
+					/* Si alguna de las expresiones es booleana, salir con Error */
+					if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
+						fprintf(stderr, "****Error sintactico en [lin %d, col %d]. No se pueden igualar booleanos.\n", row, col);
+						return ERR;
+					}
 
-						/* Sólo hay que realizar acciones si ambas expresiones son enteras */
-						if (($1.tipo == INT) && ($3.tipo == INT))
-						{
+					/* Sólo hay que realizar acciones si ambas expresiones son enteras */
+					if (($1.tipo == INT) && ($3.tipo == INT)){
+	
+						/*Incrementa el valor de etiqueta para reservarla*/
+						etiqueta++;
+
 						/* Genera código para la comparación */
 						igual(fout, $1.direcciones, $3.direcciones, etiqueta);
+						
 						/* Ajusta la semántica
-						Incrementa el valor de etiqueta para reservarla
-						Propaga tipo y es dirección*/
-						etiqueta++;
+						   Propaga tipo y es dirección*/
 						$$.tipo = BOOLEAN;
 						$$.direcciones = 0;
-						}
 					}
-		   | exp TOK_DISTINTO exp {fprintf(compilador_log, ";R:\tcomparacion: exp TOK_DISTINTO exp\n");}
-		   | exp TOK_MENORIGUAL exp {fprintf(compilador_log, ";R:\tcomparacion: exp TOK_MENORIGUAL exp\n");}
-		   | exp TOK_MAYORIGUAL exp {fprintf(compilador_log, ";R:\tcomparacion: exp TOK_MAYORIGUAL exp\n");}
-		   | exp '<' exp {fprintf(compilador_log, ";R:\tcomparacion: exp '<' exp\n");}
-		   | exp '>' exp {fprintf(compilador_log, ";R:\tcomparacion: exp '>' exp\n");};
+				}
+		   | exp TOK_DISTINTO exp 
+		   		{
+					/* Si alguna de las expresiones es booleana, salir con Error */
+					if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
+						fprintf(stderr, "****Error sintactico en [lin %d, col %d]. No se pueden desigualar booleanos.\n", row, col);
+						return ERR;
+					}
+
+					/* Sólo hay que realizar acciones si ambas expresiones son enteras */
+					if (($1.tipo == INT) && ($3.tipo == INT)){
+	
+						/*Incrementa el valor de etiqueta para reservarla*/
+						etiqueta++;
+
+						/* Genera código para la comparación */
+						distinto(fout, $1.direcciones, $3.direcciones, etiqueta);
+						
+						/* Ajusta la semántica
+						   Propaga tipo y es dirección*/
+						$$.tipo = BOOLEAN;
+						$$.direcciones = 0;
+					}
+		   		}
+		   | exp TOK_MENORIGUAL exp 
+		   		{
+					/* Si alguna de las expresiones es booleana, salir con Error */
+					if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
+						fprintf(stderr, "****Error sintactico en [lin %d, col %d]. No se puede <= booleanos.\n", row, col);
+						return ERR;
+					}
+
+					/* Sólo hay que realizar acciones si ambas expresiones son enteras */
+					if (($1.tipo == INT) && ($3.tipo == INT)){
+	
+						/*Incrementa el valor de etiqueta para reservarla*/
+						etiqueta++;
+
+						/* Genera código para la comparación */
+						menor_igual(fout, $1.direcciones, $3.direcciones, etiqueta);
+						
+						/* Ajusta la semántica
+						   Propaga tipo y es dirección*/
+						$$.tipo = BOOLEAN;
+						$$.direcciones = 0;
+					}
+		   		}
+		   | exp TOK_MAYORIGUAL exp 
+		   		{
+					/* Si alguna de las expresiones es booleana, salir con Error */
+					if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
+						fprintf(stderr, "****Error sintactico en [lin %d, col %d]. No se pueden >= booleanos.\n", row, col);
+						return ERR;
+					}
+
+					/* Sólo hay que realizar acciones si ambas expresiones son enteras */
+					if (($1.tipo == INT) && ($3.tipo == INT)){
+	
+						/*Incrementa el valor de etiqueta para reservarla*/
+						etiqueta++;
+
+						/* Genera código para la comparación */
+						mayor_igual(fout, $1.direcciones, $3.direcciones, etiqueta);
+						
+						/* Ajusta la semántica
+						   Propaga tipo y es dirección*/
+						$$.tipo = BOOLEAN;
+						$$.direcciones = 0;
+					}
+		   		}
+		   | exp '<' exp 
+		   		{
+					/* Si alguna de las expresiones es booleana, salir con Error */
+					if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
+						fprintf(stderr, "****Error sintactico en [lin %d, col %d]. No se puede < booleanos.\n", row, col);
+						return ERR;
+					}
+
+					/* Sólo hay que realizar acciones si ambas expresiones son enteras */
+					if (($1.tipo == INT) && ($3.tipo == INT)){
+	
+						/*Incrementa el valor de etiqueta para reservarla*/
+						etiqueta++;
+
+						/* Genera código para la comparación */
+						menor(fout, $1.direcciones, $3.direcciones, etiqueta);
+						
+						/* Ajusta la semántica
+						   Propaga tipo y es dirección*/
+						$$.tipo = BOOLEAN;
+						$$.direcciones = 0;
+					}
+		   		}
+		   | exp '>' exp {
+					/* Si alguna de las expresiones es booleana, salir con Error */
+					if (($1.tipo == BOOLEAN) || ($3.tipo == BOOLEAN)){
+						fprintf(stderr, "****Error sintactico en [lin %d, col %d]. No se puede > booleanos.\n", row, col);
+						return ERR;
+					}
+
+					/* Sólo hay que realizar acciones si ambas expresiones son enteras */
+					if (($1.tipo == INT) && ($3.tipo == INT)){
+	
+						/*Incrementa el valor de etiqueta para reservarla*/
+						etiqueta++;
+
+						/* Genera código para la comparación */
+						mayor(fout, $1.direcciones, $3.direcciones, etiqueta);
+						
+						/* Ajusta la semántica
+						   Propaga tipo y es dirección*/
+						$$.tipo = BOOLEAN;
+						$$.direcciones = 0;
+					}
+		   		};
 
 
-constante: constante_logica {fprintf(compilador_log, ";R:\tconstante: constante_logica\n");}
-			{}
+constante: constante_logica 
+			{
+				$$.tipo = $1.tipo;
+		 		$$.direcciones = $1.direcciones;
+			}
 		 | constante_entera
-		 {
-		 	fprintf(compilador_log, ";R:\tconstante: constante_entera\n");
-		 	$$.tipo = $1.tipo;
-		 	$$.direcciones = $1.direcciones;
-		 };
+		 	{
+		 		$$.tipo = $1.tipo;
+		 		$$.direcciones = $1.direcciones;
+		 	};
 
 
-constante_logica: TOK_TRUE {fprintf(compilador_log, ";R:\tconstante_logica: TOK_TRUE\n");}
-					{}
+constante_logica: TOK_TRUE
+					{
+						$$.tipo = BOOLEAN;
+						$$.direcciones = 0 ;
+						$$.valor_entero = 1;
+						char aux[10];
+						sprintf(aux, "%d", $$.valor_entero);
+						escribir_operando(fout, aux, 0);	
+					}
 
-				| TOK_FALSE {fprintf(compilador_log, ";R:\tconstante_logica: TOK_FALSE\n");}
-					{};
+				| TOK_FALSE 
+					{
+						$$.tipo = BOOLEAN;
+						$$.direcciones = 0 ;
+						$$.valor_entero = 0;
+						char aux[10];
+						sprintf(aux, "%d", $$.valor_entero);
+						escribir_operando(fout, aux, 0);	
+					};
 
 
 constante_entera: TOK_CONSTANTE_ENTERA
-					{fprintf(compilador_log, ";R:\tconstante_entera: TOK_CONSTANTE_ENTERA\n");
-					 $$.tipo=INT;
-					 $$.direcciones = 0 ;
-					 $$.valor_entero = $1.valor_entero;
-					 char aux[10];
-					 sprintf(aux, "%d", $1.valor_entero);
-					 escribir_operando(fout, aux, 0);
-					};
+				{
+					$$.tipo=INT;
+					$$.direcciones = 0 ;
+					$$.valor_entero = $1.valor_entero;
+					char aux[10];
+					sprintf(aux, "%d", $1.valor_entero);
+					escribir_operando(fout, aux, 0);				
+				};
 
-escritura_cabeceras_datos: {
-	escribir_subseccion_data(fout);
-	escribir_cabecera_bss(fout);
+escritura_cabeceras_datos: /*lambda*/
+	{
+		escribir_subseccion_data(fout);
+		escribir_cabecera_bss(fout);
+	};
 
-};
 
+escritura_main: /*lambda*/
+	{
+  		escribir_segmento_codigo(fout);
+		escribir_inicio_main(fout);
+	};
 
-escritura_main:{
-  escribir_segmento_codigo(fout);
-	escribir_inicio_main(fout);
-};
-
-escritura_fin:{
-	escribir_fin(fout);
-};
+escritura_fin: /*lambda*/
+	{
+		escribir_fin(fout);
+	};
 
 
 %%

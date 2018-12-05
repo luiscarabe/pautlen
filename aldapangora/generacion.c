@@ -174,7 +174,7 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2){
 void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
 /* A la hora de llamar a cualquiera de estas funciones los argumentos se 
 escriben en la pila de izquierda a derecha. Esto es, si por ejemplo
-la operacion es x + y, primero se inserta x en la pila y luego y.
+la operacion es x - y, primero se inserta x en la pila y luego y.
 De esta manera, es necesario extraer y primero. Consecuentemente:
 es_variable_2: Se corresponde con el elemento que esta mas alto en la pila, 
                el segundo operando (y).
@@ -485,3 +485,79 @@ void escribir(FILE* fpasm, int es_variable, int tipo){
 
 
 
+/* Generación de código para el inicio de una estructura if-then
+exp_es_variable 
+Es 1 si la expresión de la condición es algo asimilable a una variable (identificador, acceso a atributo de instancia o clase, elemento de vector
+Es 0 en caso contrario (constante u otro tipo de expresión) */
+
+void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta){
+   /* Realizaremos la comprobación del if-then-else
+   Sacamos su valor de la pila, ej. pop eax
+   Si es dirección ($3.es_direccion == 1) ... mov eax, [eax] */
+   // Recuerdo: cargarDePila ya hace la distincion si es variable o no.
+   cargarDePila(fpasm, exp_es_variable, "eax");
+   
+   /*Comparamos con 0,  cmp eax, 0
+   Hacemos el salto al final de la rama then en este caso,
+   je near fin_then%numetiqueta%>
+
+   Si el resultado que había en la pila es un 0 es que no se cumple la condición. 
+   Saltamos directamente al final de la rama if-then. (No hay else)
+   */
+   fprintf(fpasm, "\tcmp eax, 0\n");
+   fprintf(fpasm, "\tje near fin_then%d\n", etiqueta);
+   return;
+}
+
+
+/* Generación de código para el fin de una estructura if-then */
+void ifthen_fin(FILE * fpasm, int etiqueta){
+  
+   /* Escribes la etiqueta para poder saltar el bloque */
+   fprintf(fpasm, "fin_then%d:\n", etiqueta);
+   return;
+}
+
+
+
+void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta){
+   /* Realizaremos la comprobación del if-then-else
+   Sacamos su valor de la pila, ej. pop eax
+   Si es dirección ($3.es_direccion == 1) ... mov eax, [eax] */
+   // Recuerdo: cargarDePila ya hace la distincion si es variable o no.
+   cargarDePila(fpasm, exp_es_variable, "eax");
+   
+   /*Comparamos con 0,  cmp eax, 0
+   Hacemos el salto al final de la rama then en este caso,
+   je near fin_then%numetiqueta%>
+
+   Si el resultado que había en la pila es un 0 es que no se cumple la condición. 
+   Saltamos directamente al final de la rama if-then. (No hay else)
+   */
+   fprintf(fpasm, "\tcmp eax, 0\n");
+   fprintf(fpasm, "\tje near fin_then%d\n", etiqueta);
+   return;  
+}
+
+
+/* Generación de código para el fin de la rama then de una estructura if-then-else */
+void ifthenelse_fin_then( FILE * fpasm, int etiqueta){
+
+   /* Si vienes ejecutando las instrucciones del bloque if, saltas al final
+   (no quieres ejecutar else)*/
+   fprintf(fpasm, "\tjmp near fin_ifelse%d\n", etiqueta);
+   
+   /* Escribes la etiqueta para poder saltar el bloque */
+   fprintf(fpasm, "fin_then%d:\n", etiqueta);
+   return;
+
+}
+
+
+/* Generación de código para el fin de una estructura if-then-else */
+void ifthenelse_fin( FILE * fpasm, int etiqueta){
+
+   /* Escritura del fin del else, (se salta aqui desde el final del bloque if) */
+   fprintf(fpasm, "fin_ifelse%d:\n", etiqueta);
+   return;
+}

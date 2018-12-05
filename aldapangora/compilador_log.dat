@@ -38,18 +38,11 @@
 ;R:	sentencia: sentencia_simple ';'
 ;D:	printf
 ;D:	3
-;R:	constante_entera: TOK_CONSTANTE_ENTERA
-;R:	constante: constante_entera
-;R:	exp: constante
 ;D:	+
 ;D:	x1
 ;D:	+
-;R:	exp: TOK_IDENTIFICADOR
-;R:	exp: exp '+' exp
 ;D:	x2
 ;D:	;
-;R:	exp: TOK_IDENTIFICADOR
-;R:	exp: exp '+' exp
 ;R:	escritura: TOK_PRINTF exp
 ;R:	sentencia_simple: escritura
 ;R:	sentencia: sentencia_simple ';'
@@ -58,25 +51,49 @@
 ;D:	(
 ;D:	x1
 ;D:	==
-;R:	exp: TOK_IDENTIFICADOR
 ;D:	x2
 ;D:	)
-;R:	exp: TOK_IDENTIFICADOR
-;R:	comparacion: exp TOK_IGUAL exp
-;R:	exp: '(' comparacion ')'
 ;D:	;
-;R:	asignacion: TOK_IDENTIFICADOR '=' exp
 ;R:	sentencia_simple: asignacion
 ;R:	sentencia: sentencia_simple ';'
 ;D:	printf
 ;D:	y1
 ;D:	;
-;R:	exp: TOK_IDENTIFICADOR
+;R:	escritura: TOK_PRINTF exp
+;R:	sentencia_simple: escritura
+;R:	sentencia: sentencia_simple ';'
+;D:	if
+;D:	(
+;D:	(
+;D:	x1
+;D:	==
+;D:	x2
+;D:	)
+;D:	)
+;D:	{
+;D:	printf
+;D:	1
+;D:	;
 ;R:	escritura: TOK_PRINTF exp
 ;R:	sentencia_simple: escritura
 ;R:	sentencia: sentencia_simple ';'
 ;D:	}
 ;R:	sentencias: sentencia
+;D:	else
+;D:	{
+;D:	printf
+;D:	0
+;D:	;
+;R:	escritura: TOK_PRINTF exp
+;R:	sentencia_simple: escritura
+;R:	sentencia: sentencia_simple ';'
+;D:	}
+;R:	sentencias: sentencia
+;R:	bloque: condicional
+;R:	sentencia: bloque
+;D:	}
+;R:	sentencias: sentencia
+;R:	sentencias: sentencia sentencias
 ;R:	sentencias: sentencia sentencias
 ;R:	sentencias: sentencia sentencias
 ;R:	sentencias: sentencia sentencias

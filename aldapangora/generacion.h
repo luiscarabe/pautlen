@@ -135,4 +135,37 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
 void leer(FILE* fpasm, char* nombre, int tipo);
 void escribir(FILE* fpasm, int es_variable, int tipo);
 
+
+/* FUNCIONES DE BLOQUES CONDICIONALES (Practica semantico) */
+
+
+
+/* Generación de código para el inicio de una estructura if-then
+exp_es_variable 
+Es 1 si la expresión de la condición es algo asimilable a una variable (identificador, acceso a atributo de instancia o clase, elemento de vector
+Es 0 en caso contrario (constante u otro tipo de expresión) */
+
+void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta);
+
+
+/* Generación de código para el fin de una estructura if-then */
+void ifthen_fin(FILE * fpasm, int etiqueta);
+
+
+
+/* Generación de código para el inicio de una estructura if-then-else
+exp_es_variable 
+Es 1 si la expresión de la condición es algo asimilable a una variable (identificador, acceso a atributo de instancia o clase, elemento de vector
+Es 0 en caso contrario (constante u otro tipo de expresión */
+
+void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta);
+
+/* Generación de código para el fin de la rama then de una estructura if-then-else */
+void ifthenelse_fin_then( FILE * fpasm, int etiqueta);
+
+
+/* Generación de código para el fin de una estructura if-then-else */
+void ifthenelse_fin( FILE * fpasm, int etiqueta);
+
+
 #endif
