@@ -62,6 +62,7 @@ void ht_del_hash_table(TablaSimbolos* h);
 
 // Para debuggear
 void imprimirTabla(TablaSimbolos *ht);
+void imprimirTablaConFormato(FILE * fout, TablaSimbolos *ht);
 
 // Funciones que he añadido fruto de la desorientación
 int get_num_atributos_instancia(TablaSimbolos *ht, const char *key);

@@ -10,8 +10,9 @@ PAULEN
 #include <math.h>
 
 #include "hash_table.h"
+#include "omicron.h"
 
-#define HASHSIZE 3 // Prime number to choose 1009 
+#define HASHSIZE 1009 // Prime number to choose 1009 
 #define POW 191 // Prime for the hash
 
 
@@ -342,6 +343,191 @@ int print_item(HT_item * item){
 		printf("\t Puntero %d\n", *(item->value->tipo_args)); // (Primera posicion del array)
 	else
 		printf("\t Puntero: (null)");
+
+	return 0;
+}
+
+
+int print_clase(FILE * fout, int clase){
+	if(fout == NULL){
+		return -1;
+	}
+
+	switch(clase){
+		case ESCALAR:
+			fprintf(fout, "CLASE: ESCALAR\t");
+			break;
+		case PUNTERO:
+			fprintf(fout, "CLASE: PUNTERO\t");
+			break;
+		case VECTOR:
+			fprintf(fout, "CLASE: VECTOR\t");
+			break;
+		case CONJUNTO:
+			fprintf(fout, "CLASE: CONJUNTO\t");
+			break;
+		case OBJETO:
+			fprintf(fout, "CLASE: OBJETO\t");
+			break;
+		default:
+			fprintf(fout, "CLASE: (null)\t");
+			break;
+	}
+
+	return OK;
+
+}
+
+int print_tipo(FILE * fout, int tipo){
+	if(fout == NULL){
+		return -1;
+	}
+
+	switch(tipo){
+		case INT:
+			fprintf(fout, "TIPO: ENTERO\t");
+			break;
+		case FLOAT:
+			fprintf(fout, "TIPO: FLOAT\t");
+			break;
+		case BOOLEAN:
+			fprintf(fout, "TIPO: BOOLEAN\t");
+			break;
+		default:
+			fprintf(fout, "TIPO: (null)\t");
+			break;
+	}
+
+	return OK;
+
+}
+
+
+
+int print_acceso(FILE * fout, int acceso){
+	if(fout == NULL){
+		return -1;
+	}
+
+	switch(acceso){
+		case NINGUNO:
+			fprintf(fout, "ACCESO: NINGUNO(%d)\t", acceso);
+			break;
+		case ACCESO_HERENCIA:
+			fprintf(fout, "ACCESO: HERENCIA(%d)\t", acceso);
+			break;
+		case ACCESO_CLASE:
+			fprintf(fout, "ACCESO: CLASE(%d)\t", acceso);
+			break;
+		case ACCESO_TODOS:
+			fprintf(fout, "ACCESO: TODOS(%d)\t", acceso);
+			break;
+		default:
+			fprintf(fout, "acceso ERROR\t");
+			break;
+	}
+
+	return OK;
+
+}
+
+
+int print_tipo_miembro(FILE * fout, int tipo_miembro){
+	if(fout == NULL){
+		return -1;
+	}
+
+	switch(tipo_miembro){
+		case MIEMBRO_UNICO:
+			fprintf(fout, "MIEMBRO: UNICO(1)\t");
+			break;
+		case MIEMBRO_NO_UNICO:
+			fprintf(fout, "MIEMBRO: NO UNICO(2)\t");
+			break;
+		default:
+			fprintf(fout, "tipo_miembro ERROR\t");
+			break;
+	}
+
+	return OK;
+
+}
+
+int print_item_format(FILE * fout, HT_item * item){
+	if(fout == NULL || item == NULL){
+		return -1;
+	}
+
+	switch(item->value->categoria){
+		case VARIABLE:
+			fprintf(fout, "%s VARIABLE\t", item->key);
+			fprintf(fout, "POS_LOCAL: %d\t", item->value->posicion_variable_local);
+			fprintf(fout, "POS ATR. INSTANCIA: %d\t", item->value->posicion_atributo_instancia);
+			fprintf(fout, "Y ACUMULADA: %d\t", item->value->num_acumulado_atributos_instancia);
+			print_clase(fout, item->value->clase);
+			print_tipo(fout, item->value->tipo);
+			fprintf(fout, "DIR: %d\t", item->value->direcciones);
+			print_acceso(fout, item->value->tipo_acceso);
+			print_tipo_miembro(fout, item->value->tipo_miembro);
+
+			break;
+		case PARAMETRO:
+			fprintf(fout, "%s PARAMETRO\t", item->key);
+			fprintf(fout, "POS_PAR: %d\t", item->value->posicion_parametro);
+			fprintf(fout, "POS_LOCAL: %d\t", item->value->posicion_variable_local);
+			print_clase(fout, item->value->clase);
+			print_tipo(fout, item->value->tipo);
+			fprintf(fout, "DIR: %d\t", item->value->direcciones);
+			print_acceso(fout, item->value->tipo_acceso);
+			print_tipo_miembro(fout, item->value->tipo_miembro);
+			break;
+		case FUNCION:
+			break;
+		case CLASE:
+			fprintf(fout, "%s CLASE\t", item->key);
+			fprintf(fout, "CON %d ATR. CLASE, %d ATR. INSTANCIA, %d MET. SOBR., %d MET. NO SOBR., %d ACUM. ATR. INS. Y %d ACUM. MET. SOBR.\t",
+				item->value->numero_atributos_clase,
+				item->value->numero_atributos_instancia,
+				item->value->numero_metodos_sobreescribibles,
+				item->value->numero_metodos_no_sobreescribibles,
+				item->value->num_acumulado_atributos_instancia,
+				item->value->num_acumulado_metodos_sobreescritura);
+
+			break;
+		case METODO_SOBREESCRIBIBLE:
+			fprintf(fout, "%s METODO_SOBREESCRIBIBLE\t", item->key);
+			fprintf(fout, "POS_METODO: %d\t", item->value->posicion_metodo_sobreescribible);
+			fprintf(fout, "Y ACUMULADA: %d\t", item->value->num_acumulado_metodos_sobreescritura);
+			print_clase(fout, item->value->clase);
+			print_tipo(fout, item->value->tipo);
+			fprintf(fout, "#PAR: %d\n", item->value->numero_parametros);
+			fprintf(fout, "#LOCAL %d\n", item->value->numero_variables_locales);
+			print_acceso(fout, item->value->tipo_acceso);
+			print_tipo_miembro(fout, MIEMBRO_NO_UNICO);
+			break;
+		case METODO_NO_SOBREESCRIBIBLE:
+			break;
+		case ATRIBUTO_CLASE:
+			fprintf(fout, "%s ATRIBUTO CLASE\t", item->key);
+			print_clase(fout, item->value->clase);
+			print_tipo(fout, item->value->tipo);
+			fprintf(fout, "DIR: %d\t", item->value->direcciones);
+			print_acceso(fout, item->value->tipo_acceso);
+			print_tipo_miembro(fout, item->value->tipo_miembro);
+			break;
+		case ATRIBUTO_INSTANCIA:
+			fprintf(fout, "%s ATRIBUTO INSTANCIA\t", item->key);
+			fprintf(fout, "POS ATR. INSTANCIA: %d\t", item->value->posicion_atributo_instancia);
+			fprintf(fout, "Y ACUMULADA: %d\t", item->value->num_acumulado_atributos_instancia);
+			print_clase(fout, item->value->clase);
+			print_tipo(fout, item->value->tipo);
+			fprintf(fout, "DIR: %d\t", item->value->direcciones);
+			print_acceso(fout, item->value->tipo_acceso);
+			print_tipo_miembro(fout, item->value->tipo_miembro);
+			break;
+		default:
+			return OK;
+	}
 
 	return 0;
 }
@@ -734,6 +920,26 @@ void imprimirTabla(TablaSimbolos *ht){
 				printf("\n");
 				next = next->next;
 			}
+		}
+	}
+}
+
+void imprimirTablaConFormato(FILE * fout, TablaSimbolos *ht){
+	if (fout == NULL || !ht) return;
+	HT_item *next = NULL;
+
+	for (int i = 0; i < ht->size; i++){
+		if (ht->items[i]){
+			fprintf(fout, "\n**************** Posicion %d ******************\n", i);
+			print_item_format(fout, ht->items[i]);
+			
+			next = ht->items[i]->next;
+			while (next){
+				printf("\n");
+				print_item_format(fout, next);
+				next = next->next;
+			}
+			fprintf(fout, "\n***********************************************\n");
 		}
 	}
 }
