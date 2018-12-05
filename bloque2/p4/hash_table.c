@@ -439,10 +439,10 @@ int print_tipo_miembro(FILE * fout, int tipo_miembro){
 
 	switch(tipo_miembro){
 		case MIEMBRO_UNICO:
-			fprintf(fout, "MIEMBRO: UNICO(1)\t", tipo_miembro);
+			fprintf(fout, "MIEMBRO: UNICO(1)\t");
 			break;
 		case MIEMBRO_NO_UNICO:
-			fprintf(fout, "MIEMBRO: NO UNICO(2)\t", tipo_miembro);
+			fprintf(fout, "MIEMBRO: NO UNICO(2)\t");
 			break;
 		default:
 			fprintf(fout, "tipo_miembro ERROR\t");

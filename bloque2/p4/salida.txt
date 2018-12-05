@@ -154,8 +154,8 @@ AA_a2 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO
 
 =====================END TABLE==========
 
-Comando: buscar id_no_cualificado a1 AA : No encontrado
-Comando: buscar id_no_cualificado v1 AA : No encontrado
+Comando: buscar id_no_cualificado a1 AA : Encontrado en AA
+Comando: buscar id_no_cualificado v1 AA : Encontrado en main
 Comando: buscar id_no_cualificado pmA1 AA : No encontrado
 Comando: cerrar_ambito_tsc AA 
 Comando: cerrar_clase AA 
@@ -297,15 +297,15 @@ main_v1 VARIABLE	POS_LOCAL: 0	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: ESCALA
 
 =====================END TABLE==========
 
-Comando: buscar id_no_cualificado a main : No encontrado
-Comando: buscar id_no_cualificado v1 main : No encontrado
-Comando: buscar id_no_cualificado v1 main : No encontrado
+Comando: buscar id_no_cualificado a main : Encontrado en main
+Comando: buscar id_no_cualificado v1 main : Encontrado en main
+Comando: buscar id_no_cualificado v1 main : Encontrado en main
 Comando: buscar id_cualificado_instancia a mA1@1 main : No encontrado
-Comando: buscar id_no_cualificado v1 main : No encontrado
+Comando: buscar id_no_cualificado v1 main : Encontrado en main
 Comando: buscar id_cualificado_instancia a a1 main : No encontrado
 Comando: buscar id_no_cualificado x main : No encontrado
 Comando: buscar id_cualificado_clase AA a1 main : No encontrado
 Comando: buscar id_cualificado_clase AA sa1 main : No encontrado
-Comando: buscar id_no_cualificado a main : No encontrado
+Comando: buscar id_no_cualificado a main : Encontrado en main
 Comando: cerrar_tsa_main 
 Comando: cerrar_tsc 

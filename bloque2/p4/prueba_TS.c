@@ -546,7 +546,7 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_clase);
 		leer_siguiente(&nombre_id);
 
-		if (buscarIdNoCualificado(tabla_clases, nombre_id,
+		if (buscarParaDeclararIdLocalEnMetodo(tabla_clases, nombre_id,
 													nombre_clase, &e, name) == OK){
 			printf("TOK_DECLARAR_ID_LOCAL_METODO ERR\n");
 			fprintf(fout, ": Existe id: no se puede declarar");
@@ -583,7 +583,7 @@ void gestion_buscar(){
 		//printf("%s, %s", nombre_id, nombre_clase_desde);
 
 		if (buscarIdNoCualificado(tabla_clases, nombre_id,
-													nombre_clase, &e, name) == OK){
+													nombre_clase_desde, &e, name) == OK){
 			printf("TOK_ID_NO_CUALIFICADO OK\n");
 			fprintf(fout, ": Encontrado en %s", name);
 		}else{
@@ -603,7 +603,7 @@ void gestion_buscar(){
 		printf("%s, %s, %s", nombre_instancia, nombre_id, nombre_clase_desde);
 
 		if (buscarIdCualificadoInstancia(tabla_clases, nombre_instancia,
-													nombre_id, nombre_clase, &e, name) == OK){
+													nombre_id, nombre_clase_desde, &e, name) == OK){
 			printf("TOK_ID_CUALIFICADO_INSTANCIA OK\n");
 			fprintf(fout, ": Encontrado en %s", name);
 		}else{
@@ -621,8 +621,8 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 		leer_siguiente(&nombre_clase_desde);
 
-		if (buscarIdCualificadoClase(tabla_clases, nombre_instancia,
-													nombre_id, nombre_clase, &e, name) == OK){
+		if (buscarIdCualificadoClase(tabla_clases, nombre_clase_cualifica
+													nombre_id, nombre_clase_desde, &e, name) == OK){
 			printf("TOK_ID_CUALIFICADO_CLASE OK\n");
 			fprintf(fout, ": Encontrado en %s", name);
 		}else{
