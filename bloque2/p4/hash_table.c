@@ -482,6 +482,12 @@ int print_item_format(FILE * fout, HT_item * item){
 			print_tipo_miembro(fout, item->value->tipo_miembro);
 			break;
 		case FUNCION:
+			print_clase(fout, item->value->clase);
+			print_tipo(fout, item->value->tipo);
+			fprintf(fout, "#PAR: %d\n", item->value->numero_parametros);
+			fprintf(fout, "#LOCAL %d\n", item->value->numero_variables_locales);
+			print_acceso(fout, item->value->tipo_acceso);
+			print_tipo_miembro(fout, MIEMBRO_NO_UNICO);
 			break;
 		case CLASE:
 			fprintf(fout, "%s CLASE\t", item->key);
@@ -506,6 +512,12 @@ int print_item_format(FILE * fout, HT_item * item){
 			print_tipo_miembro(fout, MIEMBRO_NO_UNICO);
 			break;
 		case METODO_NO_SOBREESCRIBIBLE:
+			print_clase(fout, item->value->clase);
+			print_tipo(fout, item->value->tipo);
+			fprintf(fout, "#PAR: %d\n", item->value->numero_parametros);
+			fprintf(fout, "#LOCAL %d\n", item->value->numero_variables_locales);
+			print_acceso(fout, item->value->tipo_acceso);
+			print_tipo_miembro(fout, MIEMBRO_NO_UNICO);
 			break;
 		case ATRIBUTO_CLASE:
 			fprintf(fout, "%s ATRIBUTO CLASE\t", item->key);
