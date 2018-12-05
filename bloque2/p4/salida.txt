@@ -304,8 +304,8 @@ Comando: buscar id_cualificado_instancia a mA1@1 main : No encontrado
 Comando: buscar id_no_cualificado v1 main : Encontrado en main
 Comando: buscar id_cualificado_instancia a a1 main : No encontrado
 Comando: buscar id_no_cualificado x main : No encontrado
-Comando: buscar id_cualificado_clase AA a1 main : No encontrado
-Comando: buscar id_cualificado_clase AA sa1 main : No encontrado
+Comando: buscar id_cualificado_clase AA a1 main : Encontrado en AA
+Comando: buscar id_cualificado_clase AA sa1 main : Encontrado en AA
 Comando: buscar id_no_cualificado a main : Encontrado en main
 Comando: cerrar_tsa_main 
 Comando: cerrar_tsc 
