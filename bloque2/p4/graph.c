@@ -737,7 +737,8 @@ int buscarIdEnJerarquiaDesdeClase(Graph *g, char * nombre_id, char * nombre_clas
 	int i, index, last_found, len;
 	HT_item *result;
 
-	if (!g || !nombre_id || !nombre_clase_desde || !e || !nombre_ambito_encontrado) return ERR;
+	if (!g || !nombre_id || !nombre_clase_desde || !e || !nombre_ambito_encontrado)
+		return ERR;
 
 	last_found = g->n;
 
@@ -745,6 +746,7 @@ int buscarIdEnJerarquiaDesdeClase(Graph *g, char * nombre_id, char * nombre_clas
 	if (index == -1) return ERR;
 
 	result = buscarSimboloFunc(g->nodes[index], nombre_id);
+
 	if (result){
 		len = strlen(getNameFunc(g->nodes[index]));
 		strncpy(nombre_ambito_encontrado, getNameFunc(g->nodes[index]), len*sizeof(char));
@@ -786,9 +788,8 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 	HT_item *ret;
 	int len;
 
-	if (!t || !nombre_id || !nombre_clase_desde || !e){
+	if (!t || !nombre_id || !nombre_clase_desde)
 		return ERR;
-	}
 
 
 

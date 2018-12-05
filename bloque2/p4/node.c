@@ -597,8 +597,8 @@ HT_item *buscarSimboloFunc(Node *node, char *nombre_id){
 			free(name);
 			return NULL;
 		}
-
-		e = ht_search_item(node->func_scope, nombre_id);
+		//esto estaba con nombre_id. Al cambiarlo arrgla prueba_TS pero no se si jode to lo demás
+		e = ht_search_item(node->func_scope, name);
 
 		return e;
 	}
