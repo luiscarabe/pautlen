@@ -241,6 +241,8 @@ void gestion_insertar_tsa_main(){
 
 	insertarTablaSimbolosMain(tabla_clases, categoria, nombre_id, estructura, tipo_basico, 0, 0, 0, 0, 0, tipo_acceso, tipo_miembro, 0, 0, NULL);
 	
+	imprimirTablaTrasActualizacion(fout, tabla_clases, "main");
+
 	free(nombre_id);
 	return;
 }
@@ -382,6 +384,8 @@ void gestion_insertar_tsc(){
 	insertarTablaSimbolosClases(tabla_clases, nombre_clase, categoria, nombre_simbolo, estructura,
 		tipo_basico, 0, 0, 0, 0, 0, tipo_acceso, tipo_miembro, 0, 0, NULL);                    
 
+	imprimirTablaTrasActualizacion(fout, tabla_clases, nombre_clase);
+
 	free(nombre_clase);
 	free(nombre_simbolo);
 
@@ -427,6 +431,7 @@ void gestion_abrir_ambito_tsc(){
 	else
 		tablaSimbolosClasesAbrirAmbitoEnClase(tabla_clases, nombre_clase, nombre_ambito, METODO_SOBREESCRIBIBLE, NINGUNO, tipo_basico, 0, 0, 0, NULL);
 
+	imprimirTablaTrasActualizacion(fout, tabla_clases, nombre_clase);
 	free(nombre_clase);
 	free(nombre_ambito);
 
@@ -494,10 +499,13 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 
 		if (buscarIdNoCualificado(tabla_clases, nombre_id,
-													"main", &e, name) == OK)
-			printf("TOK_DECLARAR_MAIN OK\n");
-		else
+													"main", &e, name) == OK){
 			printf("TOK_DECLARAR_MAIN ERR\n");
+			fprintf(fout, ": Existe id: no se puede declarar");
+		}else{
+			printf("TOK_DECLARAR_MAIN OK\n");
+			fprintf(fout, ": No encontrado: se puede declarar");
+		}
 
 		free(name);
 		free(nombre_id);
@@ -507,12 +515,13 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_clase_desde);
 		leer_siguiente(&nombre_miembro);
 
-		if (buscarParaDeclararMiembroClase(tabla_clases, nombre_miembro, nombre_clase_desde, &e, name) == OK)
-			printf("TOK_DECLARAR_MIEMBRO_CLASE OK\n");
-		else
+		if (buscarParaDeclararMiembroClase(tabla_clases, nombre_miembro, nombre_clase_desde, &e, name) == OK){
 			printf("TOK_DECLARAR_MIEMBRO_CLASE ERR\n");
-
-		free(name);
+			fprintf(fout, ": Existe id: no se puede declarar");
+		}else{
+			printf("TOK_DECLARAR_MIEMBRO_CLASE OK\n");
+			fprintf(fout, ": No encontrado: se puede declarar");
+		}		free(name);
 		free(nombre_clase_desde);
 		free(nombre_miembro);
 
@@ -521,11 +530,13 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_clase_desde);
 		leer_siguiente(&nombre_miembro);
 
-		if (buscarParaDeclararMiembroInstancia(tabla_clases, nombre_miembro, nombre_clase_desde, &e, name) == OK)
-			printf("TOK_DECLARAR_MIEMBRO_INSTANCIA OK\n");
-		else
+		if (buscarParaDeclararMiembroInstancia(tabla_clases, nombre_miembro, nombre_clase_desde, &e, name) == OK){
 			printf("TOK_DECLARAR_MIEMBRO_INSTANCIA ERR\n");
-
+			fprintf(fout, ": Existe id: no se puede declarar");
+		}else{
+			printf("TOK_DECLARAR_MIEMBRO_INSTANCIA OK\n");
+			fprintf(fout, ": No encontrado: se puede declarar");
+		}
 		free(name);
 		free(nombre_clase_desde);
 		free(nombre_miembro);
@@ -535,12 +546,14 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_clase);
 		leer_siguiente(&nombre_id);
 
-		if (buscarIdNoCualificado(tabla_clases, nombre_id,
-													nombre_clase, &e, name) == OK)
-			printf("TOK_DECLARAR_ID_LOCAL_METODO OK\n");
-		else
+		if (buscarParaDeclararIdLocalEnMetodo(tabla_clases, nombre_id,
+													nombre_clase, &e, name) == OK){
 			printf("TOK_DECLARAR_ID_LOCAL_METODO ERR\n");
-
+			fprintf(fout, ": Existe id: no se puede declarar");
+		}else{
+			printf("TOK_DECLARAR_ID_LOCAL_METODO OK\n");
+			fprintf(fout, ": No encontrado: se puede declarar");
+		}
 		free(name);
 		free(nombre_clase);
 		free(nombre_id);
@@ -551,11 +564,13 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_clase);
 
 		if (buscarIdNoCualificado(tabla_clases, nombre_id,
-													nombre_clase, &e, name) == OK)
+													nombre_clase, &e, name) == OK){
 			printf("TOK_JERARQUIA OK\n");
-		else
+			fprintf(fout, ": Existe id: no se puede declarar");
+		}else{
 			printf("TOK_JERARQUIA ERR\n");
-
+			fprintf(fout, ": No encontrado: se puede declarar");
+		}
 		free(name);
 		free(nombre_id);
 		free(nombre_clase);
@@ -565,12 +580,16 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 		leer_siguiente(&nombre_clase_desde);
 
-		if (buscarIdNoCualificado(tabla_clases, nombre_id,
-													nombre_clase, &e, name) == OK)
-			printf("TOK_ID_NO_CUALIFICADO OK\n");
-		else
-			printf("TOK_ID_NO_CUALIFICADO ERR\n");
+		//printf("%s, %s", nombre_id, nombre_clase_desde);
 
+		if (buscarIdNoCualificado(tabla_clases, nombre_id,
+													nombre_clase_desde, &e, name) == OK){
+			printf("TOK_ID_NO_CUALIFICADO OK\n");
+			fprintf(fout, ": Encontrado en %s", name);
+		}else{
+			printf("TOK_ID_NO_CUALIFICADO ERR\n");
+			fprintf(fout, ": No encontrado");
+		}
 		free(name);
 		free(nombre_id);
 		free(nombre_clase_desde);
@@ -581,12 +600,16 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 		leer_siguiente(&nombre_clase_desde);
 
-		if (buscarIdCualificadoInstancia(tabla_clases, nombre_instancia,
-													nombre_id, nombre_clase, &e, name) == OK)
-			printf("TOK_ID_CUALIFICADO_INSTANCIA OK\n");
-		else
-			printf("TOK_ID_CUALIFICADO_INSTANCIA ERR\n");
+		printf("%s, %s, %s", nombre_instancia, nombre_id, nombre_clase_desde);
 
+		if (buscarIdCualificadoInstancia(tabla_clases, nombre_instancia,
+													nombre_id, nombre_clase_desde, &e, name) == OK){
+			printf("TOK_ID_CUALIFICADO_INSTANCIA OK\n");
+			fprintf(fout, ": Encontrado en %s", name);
+		}else{
+			printf("TOK_ID_CUALIFICADO_INSTANCIA ERR\n");
+			fprintf(fout, ": No encontrado");
+		}
 		free(name);
 		free(nombre_instancia);
 		free(nombre_id);
@@ -598,12 +621,14 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 		leer_siguiente(&nombre_clase_desde);
 
-		if (buscarIdCualificadoClase(tabla_clases, nombre_instancia,
-													nombre_id, nombre_clase, &e, name) == OK)
+		if (buscarIdCualificadoClase(tabla_clases, nombre_clase_cualifica,
+													nombre_id, nombre_clase_desde, &e, name) == OK){
 			printf("TOK_ID_CUALIFICADO_CLASE OK\n");
-		else
+			fprintf(fout, ": Encontrado en %s", name);
+		}else{
 			printf("TOK_ID_CUALIFICADO_CLASE ERR\n");
-
+			fprintf(fout, ": No encontrado");
+		}
 		free(name);
 		free(nombre_clase_cualifica);
 		free(nombre_id);
