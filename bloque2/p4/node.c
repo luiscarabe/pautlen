@@ -12,6 +12,17 @@ typedef struct _Node {
 	TablaSimbolos *primary_scope;
 	TablaSimbolos *func_scope;
 	char *curr_func;
+
+	int numero_atributos_clase;
+	int numero_atributos_instancia;
+	int numero_metodos_sobreescribibles;
+	int numero_metodos_no_sobreescribibles;
+
+	char **atributos_clase;
+	char **atributos_instancia;
+	char **metodos_sobreescribibles;
+	char **metodos_no_sobreescribibles;
+
 } Node;
 
 Node *newNode(char *name){
@@ -37,6 +48,17 @@ Node *newNode(char *name){
 	}
 
 	strcpy(newNode->name, name);
+
+	newNode->numero_atributos_clase = 0;
+	newNode->numero_atributos_instancia = 0;
+	newNode->numero_metodos_sobreescribibles = 0;
+	newNode->numero_metodos_no_sobreescribibles = 0;
+
+	newNode->atributos_clase = NULL;
+	newNode->atributos_instancia = NULL;
+	newNode->metodos_sobreescribibles = NULL;
+	newNode->metodos_no_sobreescribibles = NULL;
+
 	return newNode;
 }
 
@@ -63,13 +85,35 @@ Node *newNodeTam(char *name, int tamanio){
 	}
 
 	strcpy(newNode->name, name);
+
+	newNode->numero_atributos_clase = 0;
+	newNode->numero_atributos_instancia = 0;
+	newNode->numero_metodos_sobreescribibles = 0;
+	newNode->numero_metodos_no_sobreescribibles = 0;
+
+	newNode->atributos_clase = NULL;
+	newNode->atributos_instancia = NULL;
+	newNode->metodos_sobreescribibles = NULL;
+	newNode->metodos_no_sobreescribibles = NULL;
+
 	return newNode;
 }
 
 void deleteNode(Node *node){
 	if (!node) return;
+	
 	ht_del_hash_table(node->primary_scope);
 	free(node->name);
+
+	if (node->atributos_clase) 
+		free(node->atributos_clase);
+	if (node->atributos_instancia)
+		free(node->atributos_instancia);
+	if (node->metodos_sobreescribibles)
+		free(node->metodos_sobreescribibles);
+	if (node->metodos_no_sobreescribibles)
+		free(node->metodos_no_sobreescribibles);
+
 	free(node);
 }
 
@@ -265,6 +309,51 @@ int insertarTablaNodo(Node *node,
 										 tipo_args))
 			return ERR;
 
+	if (!node->func_scope){
+		switch(categoria){
+			case METODO_SOBREESCRIBIBLE:
+				if (!node->metodos_sobreescribibles)
+					node->metodos_sobreescribibles = (char **) malloc(sizeof(char *));
+				else 
+					node->metodos_sobreescribibles = (char **) realloc(node->metodos_sobreescribibles, 
+																														(node->numero_metodos_sobreescribibles + 1) * sizeof(char *));
+				if (!node->metodos_sobreescribibles) return ERR;
+				node->metodos_sobreescribibles[node->numero_metodos_sobreescribibles] = key;
+				node->numero_metodos_sobreescribibles++;
+				break;
+			case METODO_NO_SOBREESCRIBIBLE:
+				if (!node->metodos_no_sobreescribibles)
+					node->metodos_no_sobreescribibles = (char **) malloc(sizeof(char *));
+				else 
+					node->metodos_no_sobreescribibles = (char **) realloc(node->metodos_no_sobreescribibles, 
+																															 (node->numero_metodos_no_sobreescribibles + 1) * sizeof(char *));
+				if (!node->metodos_no_sobreescribibles) return ERR;
+				node->metodos_no_sobreescribibles[node->numero_metodos_no_sobreescribibles] = key;
+				node->numero_metodos_no_sobreescribibles++;
+				break;
+			case ATRIBUTO_CLASE:
+				if (!node->atributos_clase)
+					node->atributos_clase = (char **) malloc(sizeof(char *));
+				else 
+					node->atributos_clase = (char **) realloc(node->atributos_clase, 
+																									 (node->numero_atributos_clase + 1) * sizeof(char *));
+				if (!node->atributos_clase) return ERR;
+				node->atributos_clase[node->numero_atributos_clase] = key;
+				node->numero_atributos_clase++;
+				break;
+			case ATRIBUTO_INSTANCIA:
+				if (!node->atributos_instancia)
+					node->atributos_instancia = (char **) malloc(sizeof(char *));
+				else 
+					node->atributos_instancia = (char **) realloc(node->atributos_instancia, 
+																											 (node->numero_atributos_instancia + 1) * sizeof(char *));
+				
+				if (!node->atributos_instancia) return ERR;
+				node->atributos_instancia[node->numero_atributos_instancia] = key;
+				node->numero_atributos_instancia++;
+				break;
+		}
+	}
 	return OK;
 	
 }
@@ -278,8 +367,7 @@ int abrirAmbitoFunc(Node *node,
                     int tamanio,
                     int numero_parametros,
                     int *tipo_args){
-	char *name, type[2];
-	int i;
+	char *name;
 
 	if (!node) return -1;
 
@@ -291,8 +379,14 @@ int abrirAmbitoFunc(Node *node,
 		return -1;
 	}
 
-	node->curr_func = strtok(name, "_");
-	node->curr_func = strtok(NULL, "_");
+	node->curr_func = (char *) malloc(sizeof(char) * (strlen(id_ambito) + 1));
+	if (!node->curr_func){
+		free(name);
+		return -1;
+	}
+
+	strtok(name, "_");
+	strcpy(node->curr_func, strtok(NULL, "_"));
 
 
 	// for (i = 0; i < numero_parametros; i++){
@@ -329,7 +423,7 @@ int abrirAmbitoFunc(Node *node,
 										 id_ambito,
 										 categoria_ambito,
 										 tipo_metodo,
-										 METODO_SOBREESCRIBIBLE,
+										 0,
 										 0,
 										 numero_parametros,
 										 0,
@@ -341,7 +435,7 @@ int abrirAmbitoFunc(Node *node,
 										 posicion_metodo_sobre,
 										 tipo_args)){
 		free(name);
-		// free(node->curr_func);
+		free(node->curr_func);
 		node->curr_func = NULL;
 		return -1;
 	}
@@ -349,7 +443,7 @@ int abrirAmbitoFunc(Node *node,
 	node->func_scope = ht_new();
 	if (!node->func_scope){
 		free(name);
-		// free(node->curr_func);
+		free(node->curr_func);
 		node->curr_func = NULL;
 	 	return -1;
 	}
@@ -371,10 +465,34 @@ int abrirAmbitoFunc(Node *node,
 										 tipo_args)){
 		ht_del_hash_table(node->func_scope);
 		free(name);
-		// free(node->curr_func);
+		free(node->curr_func);
 		node->curr_func = NULL;
 		return -1;
 	}
+
+	switch(categoria_ambito){
+			case METODO_SOBREESCRIBIBLE:
+				if (!node->metodos_sobreescribibles)
+					node->metodos_sobreescribibles = (char **) malloc(sizeof(char *));
+				else 
+					node->metodos_sobreescribibles = (char **) realloc(node->metodos_sobreescribibles, 
+																														(node->numero_metodos_sobreescribibles + 1) * sizeof(char *));
+				if (!node->metodos_sobreescribibles) return ERR;
+				node->metodos_sobreescribibles[node->numero_metodos_sobreescribibles] = id_ambito;
+				node->numero_metodos_sobreescribibles++;
+				break;
+			case METODO_NO_SOBREESCRIBIBLE:
+				if (!node->metodos_no_sobreescribibles)
+					node->metodos_no_sobreescribibles = (char **) malloc(sizeof(char *));
+				else 
+					node->metodos_no_sobreescribibles = (char **) realloc(node->metodos_no_sobreescribibles, 
+																															 (node->numero_metodos_no_sobreescribibles + 1) * sizeof(char *));
+				if (!node->metodos_no_sobreescribibles) return ERR;
+				node->metodos_no_sobreescribibles[node->numero_metodos_no_sobreescribibles] = id_ambito;
+				node->numero_metodos_no_sobreescribibles++;
+				break;
+	}
+
 	free(name);
 
 	return 0;
@@ -386,8 +504,8 @@ int cerrarAmbitoFunc(Node *node){
 	ht_del_hash_table(node->func_scope);
 	node->func_scope = NULL;
 
-	// free(node->curr_func);
-	node->curr_func = NULL;
+	free(node->curr_func);
+	// node->curr_func = NULL;
 
 	return 0;
 }
@@ -402,6 +520,22 @@ void imprimirTablaFunc(Node *n){
 	imprimirTabla(n->func_scope);
 }
 
+void imprimirTablasNode(FILE * fout, Node *node){
+	if (!node || !fout) return;
+
+	if (node->func_scope){
+		fprintf(fout, "\n\n=================== %s =================\n", getNameFunc(node));
+		imprimirTablaConFormato(fout, node->func_scope);
+		fprintf(fout, "\n========================================\n");
+	}
+	
+
+	fprintf(fout, "\n\n=================== %s =================\n", getName(node));
+	imprimirTablaConFormato(fout, node->primary_scope);
+	fprintf(fout, "\n=====================END TABLE==========\n");
+	return;
+}
+
 TablaSimbolos *getPrimaryScope(Node *node){
 	if (!node) return NULL;
 	return node->primary_scope;
@@ -410,6 +544,11 @@ TablaSimbolos *getPrimaryScope(Node *node){
 TablaSimbolos *getFuncScope(Node *node){
 	if (!node) return NULL;
 	return node->func_scope;
+}
+
+int getNumMetodosSobreescribibles(Node *node){
+	if (!node) return -1;
+	return node->numero_metodos_sobreescribibles;
 }
 
 HT_item *buscarSimbolo(Node *node, char *nombre_id){
@@ -439,25 +578,25 @@ HT_item *buscarSimbolo(Node *node, char *nombre_id){
 }
 
 HT_item *buscarSimboloFunc(Node *node, char *nombre_id){
-	char *name;
 	HT_item *e;
-
+	char *name;
+	
 	if (!node || !nombre_id) return NULL;
 
 
 	if (node->func_scope){
-		// name = (char *) malloc(sizeof(char) * (strlen(node->curr_func) + strlen(nombre_id) + 2));
-		// if (!name) return NULL;
+		name = (char *) malloc(sizeof(char) * (strlen(node->curr_func) + strlen(nombre_id) + 2));
+		if (!name) return NULL;
 
-		// if (strcpy(name, node->curr_func) < 0){
-		// 	free(name);
-		// 	return NULL;
-		// }
+		if (strcpy(name, node->curr_func) < 0){
+			free(name);
+			return NULL;
+		}
 
-		// if (!strcat(strcat(name, "_"), nombre_id)){
-		// 	free(name);
-		// 	return NULL;
-		// }
+		if (!strcat(strcat(name, "_"), nombre_id)){
+			free(name);
+			return NULL;
+		}
 
 		e = ht_search_item(node->func_scope, nombre_id);
 
@@ -465,3 +604,35 @@ HT_item *buscarSimboloFunc(Node *node, char *nombre_id){
 	}
 	return NULL;
 }
+
+HT_item *buscarSimboloEnAmbitoActual(Node *node, char *nombre_id){
+	if (!node || !nombre_id) return NULL;
+
+	if (node->func_scope){
+		return ht_search_item(node->func_scope, nombre_id);
+	}
+	else
+		return ht_search_item(node->primary_scope, nombre_id);
+}
+
+char **get_atributos_clase(Node *n){
+	if (!n) return NULL;
+	return n->atributos_clase;
+}
+
+char **get_atributos_instancia(Node *n){
+	if (!n) return NULL;
+	return n->atributos_instancia;
+}
+
+char **get_metodos_sobreescribibles(Node *n){
+	if (!n) return NULL;
+	return n->metodos_sobreescribibles;
+}
+
+char **get_metodos_no_sobreescribibles(Node *n){
+	if (!n) return NULL;
+	return n->metodos_no_sobreescribibles;
+}
+
+

@@ -71,11 +71,20 @@ int insertarTablaNodo(Node *node,
 void imprimirTablaPpal(Node *n);
 void imprimirTablaFunc(Node *n);
 
+void imprimirTablasNode(FILE * fout, Node *n);
+
 
 TablaSimbolos *getPrimaryScope(Node *node);
 TablaSimbolos *getFuncScope(Node *node);
+int getNumMetodosSobreescribibles(Node *node);
 
 HT_item *buscarSimbolo(Node *node, char *nombre_id);
 HT_item *buscarSimboloFunc(Node *node, char *nombre_id);
+HT_item *buscarSimboloEnAmbitoActual(Node *node, char *nombre_id);
+
+char **get_atributos_clase(Node *n);
+char **get_atributos_instancia(Node *n);
+char **get_metodos_sobreescribibles(Node *n);
+char **get_metodos_no_sobreescribibles(Node *n);
 
 #endif
