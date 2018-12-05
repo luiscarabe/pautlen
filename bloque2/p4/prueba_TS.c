@@ -621,7 +621,7 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 		leer_siguiente(&nombre_clase_desde);
 
-		if (buscarIdCualificadoClase(tabla_clases, nombre_clase_cualifica
+		if (buscarIdCualificadoClase(tabla_clases, nombre_clase_cualifica,
 													nombre_id, nombre_clase_desde, &e, name) == OK){
 			printf("TOK_ID_CUALIFICADO_CLASE OK\n");
 			fprintf(fout, ": Encontrado en %s", name);

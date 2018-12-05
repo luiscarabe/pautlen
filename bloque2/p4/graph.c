@@ -317,7 +317,7 @@ int iniciarTablaSimbolosClases(Graph** t, char * nombre){
 
 int abrirClase(Graph* t, char* id_clase){
 	Node *node;
-	char *name;
+	char *name, *name2;
 
 	if (!t || !id_clase) return 0;
 
@@ -330,22 +330,44 @@ int abrirClase(Graph* t, char* id_clase){
 		return 0;
 	}
 
+	name2 = (char *) malloc(sizeof(char) * (strlen(id_clase) + 1)*2);
+	if (!name2){
+		deleteNode(node);
+		return 0;
+	}
+
 	if (strcpy(name, "main_") < 0){
 		deleteNode(node);
 		free(name);
+		free(name2);
 		return 0;
 	}
 
 	if (!strcat(name, id_clase)){
 		deleteNode(node);
 		free(name);
+		free(name2);
+		return 0;
+	}
+
+	if (strcpy(name2, id_clase) < 0){
+		deleteNode(node);
+		free(name),
+		free(name2);
+		return 0;
+	}
+
+	if (!strcat(strcat(name2, "_"), id_clase)){
+		deleteNode(node);
+		free(name);
+		free(name2);
 		return 0;
 	}
 
 	insertarTablaNodo(t->main, name, CLASE, 0, OBJETO, 
 		0, 0, 0, 0, 0, 0, 0, 0, 0, NULL);
 
-	insertarTablaNodo(node, id_clase, CLASE, 0, OBJETO, 
+	insertarTablaNodo(node, name2, CLASE, 0, OBJETO, 
 		0, 0, 0, 0, 0, 0, 0, 0, 0, NULL);
 
 	free(name);
