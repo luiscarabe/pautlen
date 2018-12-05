@@ -895,7 +895,7 @@ int buscarIdCualificadoInstancia(	Graph *g,
 	}
 
 	// Mira la clase a la que pertenece la instancia
-	index_clase = - HT_itemGetClass(*e);
+	index_clase = - HT_itemGetType(*e);
 	if (index_clase < 0){
 		//printf("%s no es una instancia de clase\n", nombre_instancia_cualifica);
 		return ERR;
