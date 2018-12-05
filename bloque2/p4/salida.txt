@@ -270,8 +270,8 @@ BB_aa1 ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: ESCALAR	TI
 
 =====================END TABLE==========
 
-Comando: buscar id_cualificado_instancia aa1 a1 BB : No encontrado
-Comando: buscar id_cualificado_instancia aa1 sa1 BB : No encontrado
+Comando: buscar id_cualificado_instancia aa1 a1 BB : Encontrado en AA
+Comando: buscar id_cualificado_instancia aa1 sa1 BB : Encontrado en AA
 Comando: cerrar_ambito_tsc BB 
 Comando: cerrar_clase BB 
 Comando: buscar declarar_main main_a : No encontrado: se puede declarar
@@ -300,9 +300,9 @@ main_v1 VARIABLE	POS_LOCAL: 0	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: ESCALA
 Comando: buscar id_no_cualificado a main : Encontrado en main
 Comando: buscar id_no_cualificado v1 main : Encontrado en main
 Comando: buscar id_no_cualificado v1 main : Encontrado en main
-Comando: buscar id_cualificado_instancia a mA1@1 main : No encontrado
+Comando: buscar id_cualificado_instancia a mA1@1 main : Encontrado en AA
 Comando: buscar id_no_cualificado v1 main : Encontrado en main
-Comando: buscar id_cualificado_instancia a a1 main : No encontrado
+Comando: buscar id_cualificado_instancia a a1 main : Encontrado en AA
 Comando: buscar id_no_cualificado x main : No encontrado
 Comando: buscar id_cualificado_clase AA a1 main : Encontrado en AA
 Comando: buscar id_cualificado_clase AA sa1 main : Encontrado en AA
