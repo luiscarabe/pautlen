@@ -141,7 +141,7 @@ void escribir(FILE* fpasm, int es_variable, int tipo);
 
 
 /* Generación de código para el inicio de una estructura if-then
-exp_es_variable 
+exp_es_variable
 Es 1 si la expresión de la condición es algo asimilable a una variable (identificador, acceso a atributo de instancia o clase, elemento de vector
 Es 0 en caso contrario (constante u otro tipo de expresión) */
 
@@ -154,7 +154,7 @@ void ifthen_fin(FILE * fpasm, int etiqueta);
 
 
 /* Generación de código para el inicio de una estructura if-then-else
-exp_es_variable 
+exp_es_variable
 Es 1 si la expresión de la condición es algo asimilable a una variable (identificador, acceso a atributo de instancia o clase, elemento de vector
 Es 0 en caso contrario (constante u otro tipo de expresión */
 
@@ -176,23 +176,30 @@ void while_fin( FILE * fpasm, int etiqueta);
 
 void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, int exp_es_direccion);
 
+/*Generación de código para iniciar la declaración de una función.*/
 void declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc);
+
+/*Generación de código para el retorno de una función.*/
 void retornarFuncion(FILE * fd_s, int es_variable);
 void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros);
 void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
+/*Realiza la tarea de dado un operando escrito en la pila y sabiendo si es variable o no se deja en la pila el valor correspondiente*/
+void operandoEnPilaAArgumento(FILE* fd_asm, int es_variable);
+/*Genera código para llamar a la función nombre_funcion asumiendo que los argumentos están en la pila en el orden fijado en el material de la asignatura*/
+void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos);
 
 
 
 /******************* NUEVAS OO *********************************************/
 char * claseATabla(char * nombre_fuente_clase);
-void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia); 
-void discardPila (FILE * fd_asm);  
-void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo); 
-void limpiarPila(FILE * fd_asm, int num_argumentos); 
+void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia);
+void discardPila (FILE * fd_asm);
+void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo);
+void limpiarPila(FILE * fd_asm, int num_argumentos);
 void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo);
-// ESTA FUNCIÓN ES LA QUE SE USA DESPUÉS DE 
+// ESTA FUNCIÓN ES LA QUE SE USA DESPUÉS DE
 // - escribir_operando (para una variable global)
-// - escribirParametro 
+// - escribirParametro
 // - escribirVariableLocal
 void asignarDestinoEnPila(FILE* fpasm, int es_variable);
 

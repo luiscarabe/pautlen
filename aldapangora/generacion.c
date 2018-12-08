@@ -56,13 +56,13 @@ void escribir_segmento_codigo(FILE* fpasm){
    return;
 }
 
-/* 
+/*
    En este punto se debe escribir, al menos, la etiqueta main y la sentencia que guarda el puntero de pila en su variable (se recomienda usar __esp).
 */
 void escribir_inicio_main(FILE* fpasm){
    fprintf(fpasm, "main:\n");
    fprintf(fpasm, "\tmov dword [__esp], esp\n");
-   return;   
+   return;
 }
 
 /*
@@ -78,7 +78,7 @@ void escribir_fin(FILE* fpasm){
 
    fprintf(fpasm, "\tdivisor_zero:\n");
    /*Imprimimos el mensaje de error por división por cero*/
-   fprintf(fpasm, "\tpush dword msg_error_div_zero\n"); 
+   fprintf(fpasm, "\tpush dword msg_error_div_zero\n");
    fprintf(fpasm, "\tcall print_string\n");
    fprintf(fpasm, "\tadd esp, 4\n"); /*Equilibramos la pila*/
    fprintf(fpasm, "\tcall print_endofline\n");/*Imprimimos salto de línea*/
@@ -86,7 +86,7 @@ void escribir_fin(FILE* fpasm){
    fprintf(fpasm, "fin:\n");
    fprintf(fpasm, "\tmov dword esp, [__esp]\n"); /*Restauramos puntero de la pila*/
    fprintf(fpasm, "\tret\n");
-   return; 
+   return;
 }
 
 /*
@@ -103,18 +103,18 @@ void escribir_operando(FILE* fpasm, char* nombre, int es_variable){
 }
 
 /*
-Genera el código para asignar valor a la variable de nombre nombre. 
+Genera el código para asignar valor a la variable de nombre nombre.
 Se toma el valor de la cima de la pila.
 El último argumento es el que indica si lo que hay en la cima de la pila es una referencia (1) o ya un valor explícito (0).
 */
 void asignar(FILE* fpasm, char* nombre, int es_variable){
    if(es_variable){ /* En caso de ser una referencia...*/
-      fprintf(fpasm, "\tpop dword ecx\n"); /*... extraemos la direccion en ecx*/ 
+      fprintf(fpasm, "\tpop dword ecx\n"); /*... extraemos la direccion en ecx*/
       fprintf(fpasm, "\tmov dword eax, [ecx]\n"); /* Guardamos lo que contiene esa posición de memoria en eax*/
       fprintf(fpasm, "\tmov dword [_%s], eax\n", nombre); /* Por último, guardamos el dato en su correspondiente posición de memoria*/
    }
    else
-      fprintf(fpasm, "\tpop dword [_%s]\n", nombre); /*En caso de ser valor explícito, al extraer de pila, lo podemos hacer directamente en su correspondiente posición de memoria*/ 
+      fprintf(fpasm, "\tpop dword [_%s]\n", nombre); /*En caso de ser valor explícito, al extraer de pila, lo podemos hacer directamente en su correspondiente posición de memoria*/
    return;
 }
 
@@ -125,8 +125,8 @@ void asignar(FILE* fpasm, char* nombre, int es_variable){
    Se realiza la operación
    Se guarda el resultado en la pila
    Los dos últimos argumentos indican respectivamente si lo que hay en la pila es una referencia a un valor o un valor explícito.
-   Deben tenerse en cuenta las peculiaridades de cada operación. En este sentido sí hay que mencionar explícitamente que, en el caso de la división, 
-   se debe controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de error controlado (restaurando el puntero de pila en ese caso y 
+   Deben tenerse en cuenta las peculiaridades de cada operación. En este sentido sí hay que mencionar explícitamente que, en el caso de la división,
+   se debe controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de error controlado (restaurando el puntero de pila en ese caso y
    comprobando en el retorno que no se produce “Segmentation Fault”)
 */
 
@@ -134,11 +134,11 @@ void asignar(FILE* fpasm, char* nombre, int es_variable){
 /* Funcion auxiliar que se encarga de escribir las instrucciones que:
    Asignan a un registro (pasado como argumento) el contenido del nivel mas alto de la pila.
    Si es una variable (se indica como argumento) se carga directamente el valor de la misma en el
-   registro (NO su direccion!).  Si no se trata de una variable,  se toma el valor del elemento 
+   registro (NO su direccion!).  Si no se trata de una variable,  se toma el valor del elemento
    directamente. Se utiliza edx como registro auxiliar.*/
 
 void cargarDePila(FILE* fpasm, int es_variable, char* registro){
-   
+
    if(es_variable){
       fprintf(fpasm, "\tpop dword edx\n"); /*Extraemos la dirección de la pila*/
       fprintf(fpasm, "\tmov dword %s, [edx]\n", registro); /*Guardamos el contenido de esa dirección de memoria en el registro correspondiente*/
@@ -147,24 +147,24 @@ void cargarDePila(FILE* fpasm, int es_variable, char* registro){
       fprintf(fpasm,"\tpop dword %s\n", registro); /*Si es un valor explícito, guardamos directamente en el registro*/
    }
 
-   return;  
+   return;
 }
 
 void sumar(FILE* fpasm, int es_variable_1, int es_variable_2){
-/* A la hora de llamar a cualquiera de estas funciones los argumentos se 
+/* A la hora de llamar a cualquiera de estas funciones los argumentos se
    escriben en la pila de izquierda a derecha. Esto es, si por ejemplo
    la operacion es x + y, primero se inserta x en la pila y luego y.
    De esta manera, es necesario extraer y primero. Consecuentemente:
-   es_variable_2: Se corresponde con el elemento que esta mas alto en la pila, 
+   es_variable_2: Se corresponde con el elemento que esta mas alto en la pila,
                   el segundo operando (y).
-   es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
+   es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
                   el primer operando (x) */
 
    /*Cargamos los operandos en los registros eax y ebx*/
 
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
-   
+
    fprintf(fpasm,"\tadd eax, ebx\n"); /*Operamos*/
    fprintf(fpasm, "\tpush dword eax\n");/*Guardamos el resultado*/
 
@@ -172,20 +172,20 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2){
 }
 
 void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
-/* A la hora de llamar a cualquiera de estas funciones los argumentos se 
+/* A la hora de llamar a cualquiera de estas funciones los argumentos se
 escriben en la pila de izquierda a derecha. Esto es, si por ejemplo
 la operacion es x - y, primero se inserta x en la pila y luego y.
 De esta manera, es necesario extraer y primero. Consecuentemente:
-es_variable_2: Se corresponde con el elemento que esta mas alto en la pila, 
+es_variable_2: Se corresponde con el elemento que esta mas alto en la pila,
                el segundo operando (y).
-es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
+es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
                el primer operando (x) */
 
    /*Cargamos los operandos en los registros eax y ebx*/
 
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
-   
+
    fprintf(fpasm,"\tsub eax, ebx\n");/*Operamos*/
    fprintf(fpasm, "\tpush dword eax\n");/*Guardamos el resultado*/
 
@@ -193,13 +193,13 @@ es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
 }
 
 void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2){
-/* A la hora de llamar a cualquiera de estas funciones los argumentos se 
+/* A la hora de llamar a cualquiera de estas funciones los argumentos se
 escriben en la pila de izquierda a derecha. Esto es, si por ejemplo
 la operacion es x + y, primero se inserta x en la pila y luego y.
 De esta manera, es necesario extraer y primero. Consecuentemente:
-es_variable_2: Se corresponde con el elemento que esta mas alto en la pila, 
+es_variable_2: Se corresponde con el elemento que esta mas alto en la pila,
                el segundo operando (y).
-es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
+es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
                el primer operando (x) */
 
    /*Cargamos los operandos en los registros eax y ecx*/
@@ -214,13 +214,13 @@ es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
 }
 
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2){
-/* A la hora de llamar a cualquiera de estas funciones los argumentos se 
+/* A la hora de llamar a cualquiera de estas funciones los argumentos se
 escriben en la pila de izquierda a derecha. Esto es, si por ejemplo
 la operacion es x + y, primero se inserta x en la pila y luego y.
 De esta manera, es necesario extraer y primero. Consecuentemente:
-es_variable_2: Se corresponde con el elemento que esta mas alto en la pila, 
+es_variable_2: Se corresponde con el elemento que esta mas alto en la pila,
                el segundo operando (y).
-es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
+es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
                el primer operando (x) */
 
    /*Cargamos los operandos en los registros eax y ecx*/
@@ -242,13 +242,13 @@ es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
 }
 
 void o(FILE* fpasm, int es_variable_1, int es_variable_2){
-/* A la hora de llamar a cualquiera de estas funciones los argumentos se 
+/* A la hora de llamar a cualquiera de estas funciones los argumentos se
 escriben en la pila de izquierda a derecha. Esto es, si por ejemplo
 la operacion es x + y, primero se inserta x en la pila y luego y.
 De esta manera, es necesario extraer y primero. Consecuentemente:
-es_variable_2: Se corresponde con el elemento que esta mas alto en la pila, 
+es_variable_2: Se corresponde con el elemento que esta mas alto en la pila,
                el segundo operando (y).
-es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
+es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
                el primer operando (x) */
 
    /*Cargamos los operandos en los registros eax y ebx*/
@@ -263,13 +263,13 @@ es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
 }
 
 void y(FILE* fpasm, int es_variable_1, int es_variable_2){
-/* A la hora de llamar a cualquiera de estas funciones los argumentos se 
+/* A la hora de llamar a cualquiera de estas funciones los argumentos se
 escriben en la pila de izquierda a derecha. Esto es, si por ejemplo
 la operacion es x + y, primero se inserta x en la pila y luego y.
 De esta manera, es necesario extraer y primero. Consecuentemente:
-es_variable_2: Se corresponde con el elemento que esta mas alto en la pila, 
+es_variable_2: Se corresponde con el elemento que esta mas alto en la pila,
                el segundo operando (y).
-es_variable_1: Se corresponde con el elemento que esta por debajo en la pila, 
+es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
                el primer operando (x) */
 
    /*Cargamos los operandos en los registros eax y ebx*/
@@ -284,7 +284,7 @@ es_variable_1: Se corresponde con el elemento que esta por debajo en la pila,
 }
 
 /*
-   Función aritmética de cambio de signo. 
+   Función aritmética de cambio de signo.
    Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya que sólo usa un operando.
 */
 void cambiar_signo(FILE* fpasm, int es_variable){
@@ -302,7 +302,7 @@ void cambiar_signo(FILE* fpasm, int es_variable){
 /*
    Función monádica lógica de negación. No hay un código de operación de la ALU que realice esta operación por lo que se debe codificar un algoritmo que,
     si encuentra en la cima de la pila un 0 deja en la cima un 1 y al contrario.
-   El último argumento es el valor de etiqueta que corresponde (sin lugar a dudas, la implementación del algoritmo requerirá etiquetas). 
+   El último argumento es el valor de etiqueta que corresponde (sin lugar a dudas, la implementación del algoritmo requerirá etiquetas).
    Véase en los ejemplos de programa principal como puede gestionarse el número de etiquetas cuantos_no.
 */
 void no(FILE* fpasm, int es_variable, int cuantos_no){
@@ -333,10 +333,10 @@ void no(FILE* fpasm, int es_variable, int cuantos_no){
 }
 
 /* FUNCIONES COMPARATIVAS */
-/* 
-   Todas estas funciones reciben como argumento si los elementos a comparar son o no variables. 
+/*
+   Todas estas funciones reciben como argumento si los elementos a comparar son o no variables.
    El resultado de las operaciones, que siempre será un booleano (“1” si se cumple la comparación
-   y “0” si no se cumple), se deja en la pila como en el resto de operaciones. Se deben usar 
+   y “0” si no se cumple), se deja en la pila como en el resto de operaciones. Se deben usar
    etiquetas para poder gestionar los saltos necesarios para implementar las comparaciones.
 */
 
@@ -348,12 +348,12 @@ void logicadeSalto(FILE* fpasm, char* tipo_salto, int etiqueta){
 
    /* El resultado de la comparacion es falso*/
    fprintf(fpasm, "\tmov dword eax, 0\n");
-   fprintf(fpasm, "\tjmp near branchend_%d\n", etiqueta); 
+   fprintf(fpasm, "\tjmp near branchend_%d\n", etiqueta);
 
    /* El resultado de la comparacion es true*/
    fprintf(fpasm,"branch_%d:\n",etiqueta);
    fprintf(fpasm, "\tmov dword eax, 1\n");
-   
+
    /* Escribimos el resultado en la pila*/
    fprintf(fpasm, "branchend_%d:\n", etiqueta);
    fprintf(fpasm, "\tpush dword eax\n");
@@ -365,7 +365,7 @@ void logicadeSalto(FILE* fpasm, char* tipo_salto, int etiqueta){
 void igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 
    /*Cargamos los registros a comparar en eax y ebx*/
-      
+
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
 
@@ -380,7 +380,7 @@ void igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 void distinto(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 
    /*Cargamos los registros a comparar en eax y ebx*/
-   
+
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
 
@@ -394,7 +394,7 @@ void distinto(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 void menor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 
    /*Cargamos los registros a comparar en eax y ebx*/
-   
+
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
 
@@ -408,7 +408,7 @@ void menor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta
 void mayor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 
    /*Cargamos los registros a comparar en eax y ebx*/
-   
+
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
 
@@ -423,7 +423,7 @@ void mayor_igual(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta
 void menor(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 
    /*Cargamos los registros a comparar en eax y ebx*/
-      
+
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
 
@@ -437,7 +437,7 @@ void menor(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 void mayor(FILE* fpasm, int es_variable_1, int es_variable_2, int etiqueta){
 
    /*Cargamos los registros a comparar en eax y ebx*/
-   
+
    cargarDePila(fpasm, es_variable_2, "ebx");
    cargarDePila(fpasm, es_variable_1, "eax");
 
@@ -459,7 +459,7 @@ void leer(FILE* fpasm, char* nombre, int tipo){
    if( tipo == BOOLEANO ){ /*Leemos un booleano*/
       fprintf(fpasm, "\tcall scan_boolean\n");
    } else if( tipo == ENTERO){ /*Leemos un entero*/
-      fprintf(fpasm, "\tcall scan_int\n"); 
+      fprintf(fpasm, "\tcall scan_int\n");
    }
 
    fprintf(fpasm, "\tadd esp, 4\n"); /* Equilibramos el puntero de la pila*/
@@ -477,7 +477,7 @@ void escribir(FILE* fpasm, int es_variable, int tipo){
    } else if( tipo == ENTERO){ /*Imprimimos entero*/
       fprintf(fpasm, "\tcall print_int\n");
    }
-   
+
    fprintf(fpasm, "\tadd esp, 4\n"); /* Equilibramos el puntero de la pila*/
    fprintf(fpasm, "\tcall print_endofline\n"); /*Imprimimos un salto de línea*/
    return;
@@ -486,7 +486,7 @@ void escribir(FILE* fpasm, int es_variable, int tipo){
 
 
 /* Generación de código para el inicio de una estructura if-then
-exp_es_variable 
+exp_es_variable
 Es 1 si la expresión de la condición es algo asimilable a una variable (identificador, acceso a atributo de instancia o clase, elemento de vector
 Es 0 en caso contrario (constante u otro tipo de expresión) */
 
@@ -496,12 +496,12 @@ void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta){
    Si es dirección ($3.es_direccion == 1) ... mov eax, [eax] */
    // Recuerdo: cargarDePila ya hace la distincion si es variable o no.
    cargarDePila(fpasm, exp_es_variable, "eax");
-   
+
    /*Comparamos con 0,  cmp eax, 0
    Hacemos el salto al final de la rama then en este caso,
    je near fin_then%numetiqueta%>
 
-   Si el resultado que había en la pila es un 0 es que no se cumple la condición. 
+   Si el resultado que había en la pila es un 0 es que no se cumple la condición.
    Saltamos directamente al final de la rama if-then. (No hay else)
    */
    fprintf(fpasm, "\tcmp eax, 0\n");
@@ -512,7 +512,7 @@ void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta){
 
 /* Generación de código para el fin de una estructura if-then */
 void ifthen_fin(FILE * fpasm, int etiqueta){
-  
+
    /* Escribes la etiqueta para poder saltar el bloque */
    fprintf(fpasm, "fin_then%d:\n", etiqueta);
    return;
@@ -526,17 +526,17 @@ void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta){
    Si es dirección ($3.es_direccion == 1) ... mov eax, [eax] */
    // Recuerdo: cargarDePila ya hace la distincion si es variable o no.
    cargarDePila(fpasm, exp_es_variable, "eax");
-   
+
    /*Comparamos con 0,  cmp eax, 0
    Hacemos el salto al final de la rama then en este caso,
    je near fin_then%numetiqueta%>
 
-   Si el resultado que había en la pila es un 0 es que no se cumple la condición. 
+   Si el resultado que había en la pila es un 0 es que no se cumple la condición.
    Saltamos directamente al final de la rama if-then. (No hay else)
    */
    fprintf(fpasm, "\tcmp eax, 0\n");
    fprintf(fpasm, "\tje near fin_then%d\n", etiqueta);
-   return;  
+   return;
 }
 
 
@@ -546,7 +546,7 @@ void ifthenelse_fin_then( FILE * fpasm, int etiqueta){
    /* Si vienes ejecutando las instrucciones del bloque if, saltas al final
    (no quieres ejecutar else)*/
    fprintf(fpasm, "\tjmp near fin_ifelse%d\n", etiqueta);
-   
+
    /* Escribes la etiqueta para poder saltar el bloque */
    fprintf(fpasm, "fin_then%d:\n", etiqueta);
    return;
@@ -573,22 +573,73 @@ void while_fin( FILE * fpasm, int etiqueta);
 
 void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, int exp_es_direccion);
 
-void declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc);
-void retornarFuncion(FILE * fd_s, int es_variable);
-void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros);
-void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
+/*Generación de código para iniciar la declaración de una función.*/
 
+void declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc){
+  fprintf(fd_s, "_%s", nombre_funcion);
+  fprintf(fd_s, "mov ebp, esp");
+  fprintf(fd_s, "sub esp, %d", 4 * num_var_loc);
+}
+
+/*Generación de código para el retorno de una función.*/
+
+void retornarFuncion(FILE * fd_s, int es_variable){
+  /* El retorno se hará mediante eax*/
+  fprintf(fd_s, "pop dword eax");
+  if(es_variable){ /*Si es una dirección, sacamos su valor*/
+    fprintf(fd_s, "mov eax, [eax]");
+  }
+  fprintf(fd_s, "mov dword esp, ebp");
+  fprintf(fd_s, "pop dword ebp");
+  fprintf(fd_s, "ret");
+
+}
+
+void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros){
+  /* Cogemos la dirección donde está nuestro parámetro*/
+  fprintf(fpasm, "lea eax, [ebp+%d]", 4+4*(num_total_parametros-pos_parametro));
+  /*Guardamos en la pila*/
+  fprintf(fpasm, "push eax");
+
+}
+
+void escribirVariableLocal(FILE* fpasm, int posicion_variable_local){
+  /*[ebp -
+<4*posición de la variable en declaración>
+]*/
+  /* Cogemos la dirección donde está nuestra variable local*/
+  fprintf(fpasm, "lea eax, [ebp-%d]", 4*(posicion_variable_local));
+  /*Guardamos en la pila*/
+  fprintf(fpasm, "push eax");
+}
+
+/*Realiza la tarea de dado un operando escrito en la pila y sabiendo si es variable o no se deja en la pila el valor correspondiente*/
+void operandoEnPilaAArgumento(FILE* fd_asm, int es_variable){
+  cargarDePila(fd_asm, es_variable, "eax");
+  fprintf(fd_asm, "push eax");
+}
+
+/*Genera código para llamar a la función nombre_funcion asumiendo que los argumentos están en la pila en el orden fijado en el material de la asignatura*/
+void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos){
+  fprintf(fd_asm, "call _%s", nombre_funcion);
+  limpiarPila(fd_asm, num_argumentos);
+  /*Guardamos el resultado de la función en la pila*/
+  fprintf(fd_asm, "push dword eax");
+}
 
 
 /******************* NUEVAS OO *********************************************/
 char * claseATabla(char * nombre_fuente_clase);
-void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia); 
-void discardPila (FILE * fd_asm);  
-void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo); 
-void limpiarPila(FILE * fd_asm, int num_argumentos); 
+void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia);
+void discardPila (FILE * fd_asm);
+void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo);
+void limpiarPila(FILE * fd_asm, int num_argumentos){
+  /*Restauramos la pila*/
+  fprintf(fd_asm, "add esp, %d", 4*num_argumentos);
+}
 void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo);
-// ESTA FUNCIÓN ES LA QUE SE USA DESPUÉS DE 
+// ESTA FUNCIÓN ES LA QUE SE USA DESPUÉS DE
 // - escribir_operando (para una variable global)
-// - escribirParametro 
+// - escribirParametro
 // - escribirVariableLocal
 void asignarDestinoEnPila(FILE* fpasm, int es_variable);
