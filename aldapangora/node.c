@@ -520,6 +520,22 @@ void imprimirTablaFunc(Node *n){
 	imprimirTabla(n->func_scope);
 }
 
+void imprimirTablasNode(FILE * fout, Node *node){
+	if (!node || !fout) return;
+
+	if (node->func_scope){
+		fprintf(fout, "\n\n=================== %s =================\n", getNameFunc(node));
+		imprimirTablaConFormato(fout, node->func_scope);
+		fprintf(fout, "\n========================================\n");
+	}
+	
+
+	fprintf(fout, "\n\n=================== %s =================\n", getName(node));
+	imprimirTablaConFormato(fout, node->primary_scope);
+	fprintf(fout, "\n=====================END TABLE==========\n");
+	return;
+}
+
 TablaSimbolos *getPrimaryScope(Node *node){
 	if (!node) return NULL;
 	return node->primary_scope;

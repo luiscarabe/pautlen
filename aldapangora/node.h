@@ -71,6 +71,8 @@ int insertarTablaNodo(Node *node,
 void imprimirTablaPpal(Node *n);
 void imprimirTablaFunc(Node *n);
 
+void imprimirTablasNode(FILE * fout, Node *n);
+
 
 TablaSimbolos *getPrimaryScope(Node *node);
 TablaSimbolos *getFuncScope(Node *node);

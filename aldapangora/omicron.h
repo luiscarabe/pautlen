@@ -52,7 +52,7 @@
 #define TOK_ERROR -1
 
 
-/* De aquí para abajo es cosecha propia*/
+/* De aqí para abajo es cosecha propia*/
 #define TOK_FLECHA -567
 
 #define TRUE 1
@@ -69,3 +69,4 @@ typedef struct {
 
 
 #endif
+

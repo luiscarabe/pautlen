@@ -317,7 +317,7 @@ int iniciarTablaSimbolosClases(Graph** t, char * nombre){
 
 int abrirClase(Graph* t, char* id_clase){
 	Node *node;
-	char *name;
+	char *name, *name2;
 
 	if (!t || !id_clase) return 0;
 
@@ -330,22 +330,44 @@ int abrirClase(Graph* t, char* id_clase){
 		return 0;
 	}
 
+	name2 = (char *) malloc(sizeof(char) * (strlen(id_clase) + 1)*2);
+	if (!name2){
+		deleteNode(node);
+		return 0;
+	}
+
 	if (strcpy(name, "main_") < 0){
 		deleteNode(node);
 		free(name);
+		free(name2);
 		return 0;
 	}
 
 	if (!strcat(name, id_clase)){
 		deleteNode(node);
 		free(name);
+		free(name2);
+		return 0;
+	}
+
+	if (strcpy(name2, id_clase) < 0){
+		deleteNode(node);
+		free(name),
+		free(name2);
+		return 0;
+	}
+
+	if (!strcat(strcat(name2, "_"), id_clase)){
+		deleteNode(node);
+		free(name);
+		free(name2);
 		return 0;
 	}
 
 	insertarTablaNodo(t->main, name, CLASE, 0, OBJETO, 
 		0, 0, 0, 0, 0, 0, 0, 0, 0, NULL);
 
-	insertarTablaNodo(node, id_clase, CLASE, 0, OBJETO, 
+	insertarTablaNodo(node, name2, CLASE, 0, OBJETO, 
 		0, 0, 0, 0, 0, 0, 0, 0, 0, NULL);
 
 	free(name);
@@ -777,6 +799,7 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 	if (!ret){
 		ret = buscarSimbolo(t->main, nombre_id);
 		if (!ret){
+			printf("HE AQUI EL POBLEMA");
 			return ERR;
 		}
 		strncpy(nombre_ambito_encontrado, "main", 5*sizeof(char));
@@ -790,6 +813,7 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 	
 	*e = ret;
 
+	printf("nombre ambito encontradooo %s", nombre_ambito_encontrado);
 	return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, ret);
 }
 
@@ -871,7 +895,7 @@ int buscarIdCualificadoInstancia(	Graph *g,
 	}
 
 	// Mira la clase a la que pertenece la instancia
-	index_clase = - HT_itemGetClass(*e);
+	index_clase = - HT_itemGetType(*e);
 	if (index_clase < 0){
 		//printf("%s no es una instancia de clase\n", nombre_instancia_cualifica);
 		return ERR;
@@ -968,6 +992,25 @@ void imprimirTablasHash(Graph *g){
 		imprimirTablaFunc(g->nodes[i]);
 		printf("\n\n");
 	}
+}
+
+
+void imprimirTablaTrasActualizacion(FILE * fout, Graph *g, char * name){
+	int i;
+	if (!fout || !g || !name) return;
+
+	if(!nameCompare(g->main, name)){
+			imprimirTablasNode(fout, g->main);
+			return;
+		}
+
+	for (int i = 0; i < g->n ; i++){
+		if(!nameCompare(g->nodes[i], name)){
+			imprimirTablasNode(fout, g->nodes[i]);
+			return;
+		}
+	}
+
 }
 
 // Devuelve lo mismo que el strcmp

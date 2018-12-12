@@ -97,6 +97,7 @@ int buscarIdCualificadoInstancia(	Graph *g,
 
 // Para debuggear - usar con precaucion
 void imprimirTablasHash(Graph *g);
+void imprimirTablaTrasActualizacion(FILE * fout, Graph *g, char * name);
 
 // void graph_enrouteParentsLastNode(Graph * g);
 
