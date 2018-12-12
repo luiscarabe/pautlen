@@ -582,8 +582,22 @@ void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
 
 /******************* NUEVAS OO *********************************************/
 char * claseATabla(char * nombre_fuente_clase);
-void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia); 
-void discardPila (FILE * fd_asm);  
+
+void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia){
+
+   fprintf(fd_asm, "push dword %d\n", numero_atributos_instancia*4);
+   fprintf(fd_asm, "call malloc\n");
+   fprintf(fd_asm, "add esp, 4\n");
+   fprintf(fd_asm, "mov dword [eax], %s\n", nombre_fuente_clase);
+   fprintf(fd_asm, "push eax\n");
+}
+
+void discardPila (FILE * fd_asm){
+
+   fprintf(stderr, "call free\n");
+   fprintf(stderr, "add esp, 4\n");
+}
+
 void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo); 
 void limpiarPila(FILE * fd_asm, int num_argumentos); 
 void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo);
