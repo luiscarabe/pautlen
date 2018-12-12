@@ -156,7 +156,7 @@ AA_a2 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO
 
 Comando: buscar id_no_cualificado a1 AA : Encontrado en AA
 Comando: buscar id_no_cualificado v1 AA : Encontrado en main
-Comando: buscar id_no_cualificado pmA1 AA : No encontrado
+Comando: buscar id_no_cualificado pmA1 AA : Encontrado en mA1@1
 Comando: cerrar_ambito_tsc AA 
 Comando: cerrar_clase AA 
 Comando: abrir_clase_hereda BB 
