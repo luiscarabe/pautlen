@@ -635,7 +635,7 @@ void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributo
    fprintf(fd_asm, "push dword %d\n", numero_atributos_instancia*4);
    fprintf(fd_asm, "call malloc\n");
    fprintf(fd_asm, "add esp, 4\n");
-   fprintf(fd_asm, "mov dword [eax], %s\n", nombre_fuente_clase);
+   fprintf(fd_asm, "mov dword [eax], _ms%s\n", nombre_fuente_clase);
    fprintf(fd_asm, "push eax\n");
 }
 
@@ -650,8 +650,17 @@ void limpiarPila(FILE * fd_asm, int num_argumentos){
   fprintf(fd_asm, "add esp, %d", 4*num_argumentos);
 }
 
-void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo); 
-void limpiarPila(FILE * fd_asm, int num_argumentos); 
+void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo){
+   fprintf(fd_asm, "pop dword ebx\n");
+   fprintf(fd_asm, "mov dword ebx, [ebx]\n");
+   fprintf(fd_asm, "mov ebx, [ebx]\n");
+   fprintf(fd_asm, "mov dword ecx, [_offset_%s]\n", nombre_metodo);
+   fprintf(fd_asm, "lea ecx, [ebx+ecx]\n");
+   fprintf(fd_asm, "mov ecx, [ecx]\n");
+   // ....
+   fprintf(fd_asm, "call ecx\n");
+
+}
 
 void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo);
 
