@@ -564,31 +564,3 @@ void ifthenelse_fin( FILE * fpasm, int etiqueta){
 
 
 
-/* Esta no creo que sirva para nada. Fdo:Emilio*/
-void if_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
-
-void while_inicio(FILE * fpasm, int etiqueta);
-void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
-void while_fin( FILE * fpasm, int etiqueta);
-
-void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, int exp_es_direccion);
-
-void declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc);
-void retornarFuncion(FILE * fd_s, int es_variable);
-void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros);
-void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
-
-
-
-/******************* NUEVAS OO *********************************************/
-char * claseATabla(char * nombre_fuente_clase);
-void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia); 
-void discardPila (FILE * fd_asm);  
-void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo); 
-void limpiarPila(FILE * fd_asm, int num_argumentos); 
-void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo);
-// ESTA FUNCIÓN ES LA QUE SE USA DESPUÉS DE 
-// - escribir_operando (para una variable global)
-// - escribirParametro 
-// - escribirVariableLocal
-void asignarDestinoEnPila(FILE* fpasm, int es_variable);

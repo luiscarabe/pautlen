@@ -182,11 +182,10 @@ void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros)
 void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
 
 
-
 /******************* NUEVAS OO *********************************************/
 char * claseATabla(char * nombre_fuente_clase);
-void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia); 
-void discardPila (FILE * fd_asm);  
+void instance_of(FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia); 
+void discardPila(FILE * fd_asm);  
 void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo); 
 void limpiarPila(FILE * fd_asm, int num_argumentos); 
 void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo);
