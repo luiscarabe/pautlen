@@ -271,15 +271,23 @@ funciones: funcion funciones {fprintf(compilador_log, ";R:\tfunciones: funcion f
 		 | /*lambda*/ {fprintf(compilador_log, ";R:\tfunciones: \n");};
 
 
-funcion: fn_declaration sentencias '}'  {fprintf(compilador_log, ";R:\tfuncion: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");};
+funcion: fn_declaration sentencias '}'
+				{
+					//void retornarFuncion(FILE * fd_s, int es_variable);
+					fprintf(compilador_log, ";R:\tfuncion: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");
+					// Cerrar ambito
+				};
 
 
-fn_declaration: fn_complete_name '{' declaraciones_funcion;
+fn_declaration: fn_complete_name '{' declaraciones_funcion
+								{
+									//declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc);
+								};
 
 
 fn_complete_name: fn_name '(' parametros_funcion ')'
 									{
-
+										// Abrir ambito
 									};
 
 fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR
@@ -315,7 +323,15 @@ resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion {fprint
 
 parametro_funcion: tipo idpf
 									{
-
+										/*Comprobamos que el identificador no existe ya
+										if(){
+											VAMOS A VER, COMO COMPRUEBO QUE NO EXISTE YA SI AUN NO HE
+											ABIERTO EL AMBITO?? LO MIRO EN EL ARRAY??
+										}*/
+										array_tipo_parametros[pos_parametro_actual] = $1.tipo;
+										array_nombre_parametros[pos_parametro_actual] = $2.lexema;
+										num_parametro_actual++;
+										pos_parametro_actual++;
 										fprintf(compilador_log, ";R:\tparametro_funcion: tipo TOK_IDENTIFICADOR\n");
 									}
 				 | clase_objeto idpf {fprintf(compilador_log, ";R:\tparametro_funcion: clase_objeto TOK_IDENTIFICADOR\n");};
