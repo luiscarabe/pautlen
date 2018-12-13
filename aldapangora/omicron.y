@@ -34,8 +34,14 @@
 	int tamanio_vector_actual;
 	int num_variable_local_actual;
 	int pos_variable_local_actual;
-	int num_param;
-	int pos_param;
+	int num_parametro_actual;
+	int pos_parametro_actual;
+	int tipo_retorno_actual;
+
+	/*Array para almacenar tipos de parametros función*/
+	int array_tipo_parametros[255];
+	/* Array para almacenar nombres de parametros función*/
+	char array_nombre_parametros[255][MAX_LONG_ID+1];
 
 	/* Locales */
 	int yyerror (const char *s);
@@ -203,11 +209,13 @@ clase_escalar: tipo
 tipo: TOK_INT
 		{
 			fprintf(compilador_log, ";R:\ttipo: TOK_INT\n");
+			$$.tipo = INT;
 			tipo_actual = INT;
 	    }
 	| TOK_BOOLEAN
 		{
 			fprintf(compilador_log, ";R:\ttipo: TOK_BOOLEAN\n");
+			$$.tipo = BOOLEAN;
 			tipo_actual = BOOLEAN;
 		};
 
@@ -269,14 +277,32 @@ funcion: fn_declaration sentencias '}'  {fprintf(compilador_log, ";R:\tfuncion: 
 fn_declaration: fn_complete_name '{' declaraciones_funcion;
 
 
-fn_complete_name: fn_name '(' parametros_funcion ')';
+fn_complete_name: fn_name '(' parametros_funcion ')'
+									{
 
-fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR;
+									};
+
+fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR
+				{
+					num_parametro_actual = 0;
+					pos_parametro_actual = 0;
+					num_variable_local_actual = 0;
+					pos_variable_local_actual = 0;
+					$$.lexema = $4.lexema;
+					tipo_retorno_actual = $3.tipo;
+				};
 
 
-tipo_retorno: TOK_NONE {fprintf(compilador_log, ";R:\ttipo_retorno: TOK_NONE\n");}
-			| tipo {fprintf(compilador_log, ";R:\ttipo_retorno: tipo\n");}
-			| clase_objeto {fprintf(compilador_log, ";R:\ttipo_retorno: clase_objeto\n");};
+tipo_retorno: TOK_NONE
+							{
+								$$.tipo = 0;
+								fprintf(compilador_log, ";R:\ttipo_retorno: TOK_NONE\n");}
+			| tipo
+							{	$$.tipo = $1.tipo;
+								fprintf(compilador_log, ";R:\ttipo_retorno: tipo\n");}
+			| clase_objeto
+							{	/* TODO propagar TIPO*/
+								fprintf(compilador_log, ";R:\ttipo_retorno: clase_objeto\n");};
 
 
 parametros_funcion: parametro_funcion resto_parametros_funcion {fprintf(compilador_log, ";R:\tparametros_funcion: parametro_funcion resto_parametros_funcion\n");}
@@ -287,10 +313,17 @@ resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion {fprint
 						| /*lambda*/ {fprintf(compilador_log, ";R:\tresto_parametros_funcion: \n");};
 
 
-parametro_funcion: tipo idpf {fprintf(compilador_log, ";R:\tparametro_funcion: tipo TOK_IDENTIFICADOR\n");}
+parametro_funcion: tipo idpf
+									{
+
+										fprintf(compilador_log, ";R:\tparametro_funcion: tipo TOK_IDENTIFICADOR\n");
+									}
 				 | clase_objeto idpf {fprintf(compilador_log, ";R:\tparametro_funcion: clase_objeto TOK_IDENTIFICADOR\n");};
 
-idpf: TOK_IDENTIFICADOR;
+idpf: TOK_IDENTIFICADOR
+			{
+				$$.lexema = $1.lexema;
+			};
 
 
 declaraciones_funcion: declaraciones {fprintf(compilador_log, ";R:\tdeclaraciones_funcion: declaraciones\n");}
