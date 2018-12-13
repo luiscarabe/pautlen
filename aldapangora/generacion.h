@@ -189,7 +189,9 @@ void operandoEnPilaAArgumento(FILE* fd_asm, int es_variable);
 void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos);
 
 
+
 /******************* NUEVAS OO *********************************************/
+
 char * claseATabla(char * nombre_fuente_clase);
 
 void instance_of(FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia); 

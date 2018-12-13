@@ -401,7 +401,7 @@ if_exp: TOK_IF '(' exp ')' '{'
 
 
 
-bucle: TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(compilador_log, ";R:\tdbucle: TOK_WHILE '(' exp ')' '{' sentencias '}'\n");};
+bucle: TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(compilador_log, ";R:\tbucle: TOK_WHILE '(' exp ')' '{' sentencias '}'\n");};
 
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR
@@ -815,5 +815,6 @@ int yyerror (const char *s)
 	if(error_flag == 0){
     	fprintf(stderr, "****Error sintactico en [lin %d, col %d]\n", row, col);
     }
+    error_flag = 0;
     return 0;
 }
