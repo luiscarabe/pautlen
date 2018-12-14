@@ -139,6 +139,8 @@
 %type <atributos> if_exp
 %type <atributos> if_exp_sentencias
 %type <atributos> bucle
+%type <atributos> while_exp
+%type <atributos> while_ini
 %type <atributos> lectura
 %type <atributos> escritura
 %type <atributos> retorno_funcion
@@ -425,9 +427,11 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 elemento_vector: TOK_IDENTIFICADOR '[' exp ']' {fprintf(compilador_log, ";R:\telemento_vector: TOK_IDENTIFICADOR '[' exp ']'\n");};
 
 
-condicional: if_exp_sentencias
+condicional: if_exp sentencias '}' 
 			{
-			  //TODO: Si no nos dan alternativa esto hay que arreglarlo, no parece muy complicado
+
+				$$.etiqueta = $1.etiqueta;
+			 	ifthen_fin(fout, $$.etiqueta);
 
 			}
 		   | if_exp_sentencias TOK_ELSE '{' sentencias '}'
@@ -465,13 +469,42 @@ if_exp: TOK_IF '(' exp ')' '{'
 					vinculada con esta estructura como atributo de alguno de los no terminales  */
 
 					$$.etiqueta = etiqueta++;
+
+					/* Da igual llamar a ifthenelse inicio o iftheninicio. hacne lo mismo */
 					ifthenelse_inicio(fout, $3.direcciones, $$.etiqueta);
 				};
 
 
 
-bucle: TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(compilador_log, ";R:\tbucle: TOK_WHILE '(' exp ')' '{' sentencias '}'\n");};
+bucle: while_exp '{' sentencias '}' {
 
+		$$.etiqueta = $1.etiqueta;
+
+		while_fin(fout, $$.etiqueta);
+
+	};
+
+
+while_exp:  while_ini '(' exp ')' {
+
+				/* Si el tipo de la expresión $3.tipo no es BOOLEAN  salir con Error */
+				if($3.tipo != BOOLEAN){
+					fprintf(stderr, "****Error semantico en [lin %d, col %d]. Condición de bucle no booleana.\n", row, col);
+					return ERR;
+				}
+
+				$$.etiqueta = $1.etiqueta;
+
+				while_exp_pila(fout, $3.direcciones, $$.etiqueta);
+}
+
+while_ini: TOK_WHILE {
+
+	$$.etiqueta = etiqueta++;
+
+	/* Da igual llamar a ifthenelse inicio o iftheninicio. hance lo mismo */
+	while_inicio(fout, $$.etiqueta);
+}
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR
 		{

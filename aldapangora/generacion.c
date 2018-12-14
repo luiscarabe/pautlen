@@ -519,23 +519,12 @@ void ifthen_fin(FILE * fpasm, int etiqueta){
 }
 
 
-
 void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta){
-   /* Realizaremos la comprobación del if-then-else
-   Sacamos su valor de la pila, ej. pop eax
-   Si es dirección ($3.es_direccion == 1) ... mov eax, [eax] */
-   // Recuerdo: cargarDePila ya hace la distincion si es variable o no.
-   cargarDePila(fpasm, exp_es_variable, "eax");
+   
 
-   /*Comparamos con 0,  cmp eax, 0
-   Hacemos el salto al final de la rama then en este caso,
-   je near fin_then%numetiqueta%>
-
-   Si el resultado que había en la pila es un 0 es que no se cumple la condición.
-   Saltamos directamente al final de la rama if-then. (No hay else)
-   */
-   fprintf(fpasm, "\tcmp eax, 0\n");
-   fprintf(fpasm, "\tje near fin_then%d\n", etiqueta);
+   /* El comienzo es el mismo tanto para if-then como para if-then-else
+      En caso de que no se cumpla la condición se salta al final del bloque then*/
+   ifthen_inicio(fpasm, exp_es_variable, etiqueta);
    return;
 }
 
@@ -545,7 +534,7 @@ void ifthenelse_fin_then( FILE * fpasm, int etiqueta){
 
    /* Si vienes ejecutando las instrucciones del bloque if, saltas al final
    (no quieres ejecutar else)*/
-   fprintf(fpasm, "\tjmp near fin_ifelse%d\n", etiqueta);
+   fprintf(fpasm, "\tjmp near fin_else%d\n", etiqueta);
 
    /* Escribes la etiqueta para poder saltar el bloque */
    fprintf(fpasm, "fin_then%d:\n", etiqueta);
@@ -558,7 +547,7 @@ void ifthenelse_fin_then( FILE * fpasm, int etiqueta){
 void ifthenelse_fin( FILE * fpasm, int etiqueta){
 
    /* Escritura del fin del else, (se salta aqui desde el final del bloque if) */
-   fprintf(fpasm, "fin_ifelse%d:\n", etiqueta);
+   fprintf(fpasm, "fin_else%d:\n", etiqueta);
    return;
 }
 
@@ -582,9 +571,8 @@ void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta){
 
 void while_fin( FILE * fpasm, int etiqueta){
 
-
-   fprintf(fpasm, "jmp near inicio_while%d\n", etiqueta);
-   fprintf(fpasm, "fin_while%d", etiqueta);
+   fprintf(fpasm, "\tjmp near inicio_while%d\n", etiqueta);
+   fprintf(fpasm, "fin_while%d:\n", etiqueta);
    return;
 }
 
