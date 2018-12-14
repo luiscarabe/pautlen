@@ -74,9 +74,17 @@ En el final del programa se debe:
 */
 void escribir_fin(FILE* fpasm){
 
-   fprintf(fpasm, "\tjmp fin\n"); /*Saltamos el error de divisor 0*/
+   fprintf(fpasm, "\tjmp near fin\n"); /*Saltamos el error de divisor 0*/
 
-   fprintf(fpasm, "\tdivisor_zero:\n");
+   fprintf(fpasm, "index_error:\n");
+   /*Imprimimos el mensaje de error por división por cero*/
+   fprintf(fpasm, "\tpush dword msg_error_indice_vector\n");
+   fprintf(fpasm, "\tcall print_string\n");
+   fprintf(fpasm, "\tadd esp, 4\n"); /*Equilibramos la pila*/
+   fprintf(fpasm, "\tcall print_endofline\n");/*Imprimimos salto de línea*/
+   fprintf(fpasm, "\tjmp near fin");
+
+   fprintf(fpasm, "divisor_zero:\n");
    /*Imprimimos el mensaje de error por división por cero*/
    fprintf(fpasm, "\tpush dword msg_error_div_zero\n");
    fprintf(fpasm, "\tcall print_string\n");
@@ -576,7 +584,48 @@ void while_fin( FILE * fpasm, int etiqueta){
    return;
 }
 
-void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, int exp_es_direccion);
+
+/* COMENTARIO MUY IMPORTANTE */
+/* Escribe LA DIRECCION de un elemento vectorial en la cima de la pila*/
+void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, int exp_es_direccion){
+
+   /* PASO 1: Codigo para comprobar si el indice esta fuera de rango. En ese caso se imprime error y se finaliza el programa"*/
+   
+   /* Cargamos el valor del indice */
+   cargarDePila(fpasm, exp_es_direccion, "eax");
+   fprintf(fpasm, "\tcmp eax 0\n");
+   fprintf(fpasm, "\tjl near index_error\n");
+   fprintf(fpasm, "\tcmp eax %d\n", tam_max-1);
+   fprintf(fpasm, "\tjg near index_error\n");
+
+   /* En este punto el indice es correcto */
+
+   /* PASO 2: Gestion de la asignacion propiamente dicha. Hay que dejar en la cima de la pila la direccion del elem. indexado */
+
+   fprintf(fpasm, "\tmov dword edx _%s", nombre_vector);
+   fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
+   fprintf(fpasm, "\tpush dword eax\n");
+
+   return;
+}
+
+/* Vale para general el codigo de expresiones de la forma:
+   v[i] = exp */
+/* Asume que exp esta en la cima de la pila, y que la direccion del elemento del vector está en segunda posicion de la pila*/
+void asignar_a_elemento_vector(FILE * fpasm, int exp_es_direccion){
+
+
+   /* Cargar en eax la parte derecha de la asignación */
+   cargarDePila(fpasm, exp_es_direccion, "eax");
+   /* Cargar en edx la parte izquierda de la asignación */
+   /* Estamos asumiendo que en pila esta justo el valor que queremos (no es necesario acceder a otra posicion de memoria),
+      entonces, asignamos manualmente el valor 0 a es_direccion */
+   cargarDePila(fpasm, 0, "edx");
+
+   /* Hacer la asignación efectiva */
+   fprintf(fpasm, "\tmov dword [edx] , eax\n");
+   return;
+}
 
 /*Generación de código para iniciar la declaración de una función.*/
 

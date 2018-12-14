@@ -175,6 +175,8 @@ void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
 void while_fin( FILE * fpasm, int etiqueta);
 
 void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, int exp_es_direccion);
+void asignar_a_elemento_vector(FILE * fpasm, int exp_es_direccion);
+
 
 /*Generación de código para iniciar la declaración de una función.*/
 void declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc);

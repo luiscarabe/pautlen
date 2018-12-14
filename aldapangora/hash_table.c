@@ -1054,3 +1054,9 @@ int HT_itemGetType(HT_item *e){
 	if (!e) return -1;
 	return e->value->tipo;
 }
+
+
+int HT_itemGetTamanio(HT_item *e){
+	if (!e) return -1;
+	return e->value->tamanio;
+}

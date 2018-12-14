@@ -177,7 +177,7 @@ inicioTabla:
 	}
 
 declaraciones:  declaracion {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion\n");}
-			 | declaracion declaraciones {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion declaraciones\n");};
+			 |  declaracion declaraciones {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion declaraciones\n");};
 
 
 declaracion: modificadores_acceso clase identificadores ';'
@@ -240,6 +240,7 @@ clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
 						fprintf(stderr, "Error, tamaño de vector no válido. Linea %d columna %d", row, col);
 						return ERR;
 					}
+
 				};
 
 
@@ -401,30 +402,73 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 				sprintf(nombre, "%s", $1.lexema);
 				if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);
-						return ERR;}
+					return ERR;}
 	    		else if (HT_itemGetCategory(e) == FUNCION){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede asignar una funcion\n", row, col);
-						return ERR;
+					return ERR;
 					}
 	    		else if (HT_itemGetClass(e) == VECTOR){
-	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simboo es vector\n", row, col);
-						return ERR;
+	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simbolo es vector\n", row, col);
+					return ERR;
 	    		}
 	    		else if(HT_itemGetType(e) != $3.tipo){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Asignacion de tipos incompatibles\n", row, col);
-						return ERR;
+					return ERR;
 	    		}
 
 	    		asignar(fout, $1.lexema, $3.direcciones);
 
 			}
-		  | elemento_vector '=' exp {fprintf(compilador_log, ";R:\tasignacion: elemento_vector '=' exp\n");}
+		  | elemento_vector '=' exp
+		    {
+		    	if ($1.tipo != $3.tipo){
+					fprintf(stderr, "****Error semantico en [lin %d, col %d]. Asignacion de tipos incompatibles\n", row, col);
+					return ERR;
+				}
+
+				asignar_a_elemento_vector(fout, $3.direcciones);
+
+		    }
 		  | elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
 		  | TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\tasignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
 		  | identificador_clase '.' TOK_IDENTIFICADOR '=' exp {fprintf(compilador_log, ";R:\tasignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' exp\n");};
 
 
-elemento_vector: TOK_IDENTIFICADOR '[' exp ']' {fprintf(compilador_log, ";R:\telemento_vector: TOK_IDENTIFICADOR '[' exp ']'\n");};
+elemento_vector: TOK_IDENTIFICADOR '[' exp ']' 
+		{
+
+
+			char nombre[100];
+			char nombre_ambito_encontrado [100];
+			HT_item* e;
+			sprintf(nombre, "%s", $1.lexema);
+			if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
+    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Vector no declarado\n", row, col);
+				return ERR;}
+    		else if (HT_itemGetCategory(e) == FUNCION){
+    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Indexacion vectorial sobre funcion\n", row, col);
+				return ERR;
+			}
+    		else if (HT_itemGetClass(e) == ESCALAR){
+    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Indexacion vectorial sobre escalar\n", row, col);
+				return ERR;
+    		}
+    		else if (HT_itemGetClass(e) != VECTOR){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. Indexacion vectorial sobre algo que no es un vector\n", row, col);
+				return ERR;    			
+    		}
+
+			if($3.tipo != INT){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. Para indexar un vector se debe usar un INT \n", row, col);
+				return ERR;
+			}
+
+			$$.tipo = HT_itemGetType(e);
+			$$.direcciones = 1;
+
+			escribir_elemento_vector(fout, $1.lexema, HT_itemGetTamanio(e), $3.direcciones);
+
+		};
 
 
 condicional: if_exp sentencias '}' 
@@ -690,7 +734,11 @@ exp: exp '+' exp
 			$$.tipo = $2.tipo;
 			$$.direcciones = $2.direcciones;
 		}
-   | elemento_vector {fprintf(compilador_log, ";R:\texp: elemento_vector\n");}
+   | elemento_vector 
+   		{
+
+
+   		}	
    | TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
    | identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
    | identificador_clase '.' TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR\n");};

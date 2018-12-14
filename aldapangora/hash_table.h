@@ -80,6 +80,7 @@ int HT_itemGetAccess(HT_item *e);
 int HT_itemGetCategory(HT_item *e);
 int HT_itemGetClass(HT_item *e);
 int HT_itemGetType(HT_item *e);
+int HT_itemGetTamanio(HT_item *e);
 
 
 

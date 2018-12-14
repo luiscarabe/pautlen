@@ -47,7 +47,7 @@ int main(int argc, char** argv){
   ret = yyparse();
 
   if(ret != 0){
-    return 1;
+    fprintf(stderr, "****Error gramatical\n");
   }
 
 
