@@ -43,7 +43,7 @@
 	/* Array para almacenar nombres de parametros función*/
 	char array_nombre_parametros[255][MAX_LONG_ID+1];
 
-	char* nombre_ambito_actual[255]
+	char nombre_ambito_actual[255];
 
 	/*Variables auxiliares para codigo*/
 	int i; /*Bucles*/
@@ -311,7 +311,7 @@ funcion: fn_declaration sentencias '}'
 				{
 					/*Cerramos ámbito*/
 					tablaSimbolosClasesCerrarAmbitoEnMain(tabla_simbolos);
-					nombre_ambito_actual = "main";
+					strcpy(nombre_ambito_actual,"main");
 				};
 
 
@@ -651,7 +651,7 @@ escritura: TOK_PRINTF exp
 
 retorno_funcion: TOK_RETURN exp
 								{
-									retornarFuncion(FOUT, $2.direcciones);
+									retornarFuncion(fout, $2.direcciones);
 									fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN exp\n");
 								}
 			   | TOK_RETURN TOK_NONE {fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN TOK_NONE\n");};
