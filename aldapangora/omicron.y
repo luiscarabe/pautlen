@@ -43,6 +43,7 @@
 	/* Array para almacenar nombres de parametros función*/
 	char array_nombre_parametros[255][MAX_LONG_ID+1];
 
+	char* nombre_ambito_actual[255]
 
 	/*Variables auxiliares para codigo*/
 	int i; /*Bucles*/
@@ -253,28 +254,52 @@ identificador: TOK_IDENTIFICADOR
 					HT_item *e;
 					char nombre [100];
 					int aux;
+					if (strcmp(nombre_ambito_actual, "main") == 0){
+						/*TODO, conseguir el nombre del ambito*/
+						sprintf(nombre, "main_%s", $1.lexema);
+						if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
+							fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
+							return ERR;
+						}
 
-					/*TODO, conseguir el nombre del ambito*/
-					sprintf(nombre, "main_%s", $1.lexema);
-					if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
-						fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
-						return ERR;
+
+						/*TODO llamada correcta funcion*/
+						aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
+							nombre,         clase_actual,
+							tipo_actual,	  0,
+							0,      		  0,
+							0,              tamanio_vector_actual,
+							ACCESO_TODOS,        MIEMBRO_NO_UNICO,
+							0,              0,
+							NULL);
+
+							/*Insertamos en segmento .bss*/
+
+							declarar_variable(fout, $1.lexema,  tipo_actual,  tamanio_vector_actual);
+					}
+					/* Estamos dentro de una función*/
+					else{
+						sprintf(nombre, "%s_%s",nombre_ambito_actual, $1.lexema);
+
+						/*La diap 75 de omicron dice que use esta*/
+						if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
+							fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
+							return ERR;
+						}
+
+						/*TODO llamada correcta funcion SEGUN LA P4, ES EN TABLA SIMBOLOS MAIN*/
+						aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
+							nombre,         clase_actual,
+							tipo_actual,	  0,
+							0,      		  0,
+							0,              tamanio_vector_actual,
+							ACCESO_TODOS,        MIEMBRO_NO_UNICO,
+							0,              0,
+							NULL);
 					}
 
+					/*Deberia pushear algo en la pila? escribir variable??? TODO*/
 
-					/*TODO llamada correcta funcion*/
-					aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
-											  nombre,         clase_actual,
-											  tipo_actual,	  0,
-											  0,      		  0,
-											  0,              tamanio_vector_actual,
-											  ACCESO_TODOS,        MIEMBRO_NO_UNICO,
-											  0,              0,
-											  NULL);
-
-					/*Insertamos en segmento .bss*/
-
-					declarar_variable(fout, $1.lexema,  tipo_actual,  tamanio_vector_actual);
 
 				}
 
@@ -284,21 +309,68 @@ funciones: funcion funciones {fprintf(compilador_log, ";R:\tfunciones: funcion f
 
 funcion: fn_declaration sentencias '}'
 				{
-					//void retornarFuncion(FILE * fd_s, int es_variable);
-					fprintf(compilador_log, ";R:\tfuncion: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");
-					// Cerrar ambito
+					/*Cerramos ámbito*/
+					tablaSimbolosClasesCerrarAmbitoEnMain(tabla_simbolos);
+					nombre_ambito_actual = "main";
 				};
 
 
 fn_declaration: fn_complete_name '{' declaraciones_funcion
 								{
-									//declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc);
+									declararFuncion(fout, $1.lexema, num_variable_local_actual);
 								};
 
 
 fn_complete_name: fn_name '(' parametros_funcion ')'
 									{
-										
+										strcpy($$.lexema,$1.lexema);
+										char auxNombreFuncion[100];
+										HT_item *e;
+										int i;
+										sprintf(nombre_funcion, "main_%s_", $1.lexema);
+										/*Añadimos los parametros al nombre de la funcion*/
+										for (i = 0 ; i < num_parametro_actual ; i++ ){
+											sprintf(auxNombreFuncion, "@%d", array_tipo_parametros[i]);
+											strcat(nombre_funcion, auxNombreFuncion);
+										}
+										/*Guardamos el ámbito*/
+										sprintf(nombre_ambito_actual, "%s", strtok(nombre_funcion, "main"));
+										if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre_funcion, &e, "main") == ERR){
+											tablaSimbolosClasesAbrirAmbitoEnMain(tabla_simbolos,
+																											nombre_funcion,
+																											FUNCION,
+																											NINGUNO,
+																											tipo_retorno_actual,
+																											0,
+																											0,
+																											num_parametro_actual,
+																											array_tipo_parametros);
+											/*Ahora declaramos todos los parametros*/
+											for(i = 0 ; i < num_parametro_actual ; i++){
+												sprintf(nombre_funcion, "%s_%s", nombre_ambito_actual,array_nombre_parametros[i]);
+												if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre_funcion, &e, "main") == ERR){
+													insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
+																				nombre_funcion,         ESCALAR,
+																				array_tipo_parametros[i],	  0,
+																				0,      		  0,
+																				0,              tamanio_vector_actual,
+																				ACCESO_TODOS,        MIEMBRO_NO_UNICO,
+																				0,              0,
+																				NULL);
+												}
+												else{
+													fprintf(stderr, "Parámetro de la función no válido. Linea %d columna %d\n", row, col);
+													return ERR;
+												}
+
+											}
+										}
+										else{
+											fprintf(stderr, "Ya existe esta función. Linea %d columna %d\n", row, col);
+											return ERR;
+										}
+
+
 										//tablaSimbolosClasesAbrirAmbitoEnMain(tabla_clases, nombre_ambito, FUNCION, NINGUNO, tipo_basico, 0, 0, 0, NULL);
 
 									};
@@ -336,11 +408,6 @@ resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion {fprint
 
 parametro_funcion: tipo idpf
 									{
-										/*Comprobamos que el identificador no existe ya
-										if(){
-											VAMOS A VER, COMO COMPRUEBO QUE NO EXISTE YA SI AUN NO HE
-											ABIERTO EL AMBITO?? LO MIRO EN EL ARRAY??
-										}*/
 
 										for(i=0; i < num_parametro_actual; i++){
 
@@ -471,7 +538,7 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
 		};
 
 
-condicional: if_exp sentencias '}' 
+condicional: if_exp sentencias '}'
 			{
 
 				$$.etiqueta = $1.etiqueta;
@@ -582,7 +649,11 @@ escritura: TOK_PRINTF exp
 		};
 
 
-retorno_funcion: TOK_RETURN exp {fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN exp\n");}
+retorno_funcion: TOK_RETURN exp
+								{
+									retornarFuncion(FOUT, $2.direcciones);
+									fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN exp\n");
+								}
 			   | TOK_RETURN TOK_NONE {fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN TOK_NONE\n");};
 
 
@@ -697,7 +768,7 @@ exp: exp '+' exp
 		}
    | TOK_IDENTIFICADOR
    		{
-			//TODO conseguir nombre con ambito bien
+			//TODO conseguir nombre con ambito bien CREO QUE SI ESDTAMOS EN METODO, ESTO VALE TAMBIEN
 			char nombre[100];
 			char nombre_ambito_encontrado[100];
 			HT_item* e = NULL;
