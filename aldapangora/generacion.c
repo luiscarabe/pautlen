@@ -563,12 +563,30 @@ void ifthenelse_fin( FILE * fpasm, int etiqueta){
 }
 
 
-/* Esta no creo que sirva para nada. Fdo:Emilio*/
-void if_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
+void while_inicio(FILE * fpasm, int etiqueta){
+   /*1. Escribimos la etiqueta */
 
-void while_inicio(FILE * fpasm, int etiqueta);
-void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
-void while_fin( FILE * fpasm, int etiqueta);
+   fprintf(fpasm, "inicio_while%d:\n", etiqueta);
+
+   return;
+}
+
+void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta){
+
+   cargarDePila(fpasm, exp_es_variable, "eax");
+   fprintf(fpasm, "\tcmp eax, 0\n");
+   fprintf(fpasm, "\tje near fin_while%d\n", etiqueta);
+   
+   return;
+}
+
+void while_fin( FILE * fpasm, int etiqueta){
+
+
+   fprintf(fpasm, "jmp near inicio_while%d\n", etiqueta);
+   fprintf(fpasm, "fin_while%d", etiqueta);
+   return;
+}
 
 void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, int exp_es_direccion);
 

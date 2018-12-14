@@ -43,6 +43,14 @@
 	/* Array para almacenar nombres de parametros función*/
 	char array_nombre_parametros[255][MAX_LONG_ID+1];
 
+
+	/*Variables auxiliares para codigo*/
+	int i; /*Bucles*/
+	char nombre_parametro[MAX_LONG_ID + 3];
+	char nombre_funcion[255];
+
+
+
 	/* Locales */
 	int yyerror (const char *s);
 
@@ -287,7 +295,9 @@ fn_declaration: fn_complete_name '{' declaraciones_funcion
 
 fn_complete_name: fn_name '(' parametros_funcion ')'
 									{
-										// Abrir ambito
+										
+										//tablaSimbolosClasesAbrirAmbitoEnMain(tabla_clases, nombre_ambito, FUNCION, NINGUNO, tipo_basico, 0, 0, 0, NULL);
+
 									};
 
 fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR
@@ -296,7 +306,7 @@ fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR
 					pos_parametro_actual = 0;
 					num_variable_local_actual = 0;
 					pos_variable_local_actual = 0;
-					$$.lexema = $4.lexema;
+					strcpy($$.lexema,$4.lexema);
 					tipo_retorno_actual = $3.tipo;
 				};
 
@@ -328,17 +338,27 @@ parametro_funcion: tipo idpf
 											VAMOS A VER, COMO COMPRUEBO QUE NO EXISTE YA SI AUN NO HE
 											ABIERTO EL AMBITO?? LO MIRO EN EL ARRAY??
 										}*/
+
+										for(i=0; i < num_parametro_actual; i++){
+
+											if(strcmp($2.lexema, array_nombre_parametros[i]) == 0){
+	    										fprintf(stderr, "**** Error semantico en [lin %d, col %d]. La funcion tiene dos parametros con el mismo nombre\n", row, col);
+												return ERR;
+											}
+										}
+
 										array_tipo_parametros[pos_parametro_actual] = $1.tipo;
-										array_nombre_parametros[pos_parametro_actual] = $2.lexema;
+										strcpy(array_nombre_parametros[pos_parametro_actual],$2.lexema);
 										num_parametro_actual++;
 										pos_parametro_actual++;
 										fprintf(compilador_log, ";R:\tparametro_funcion: tipo TOK_IDENTIFICADOR\n");
 									}
+				 /* Creo que esta regla ya no hace falta*/
 				 | clase_objeto idpf {fprintf(compilador_log, ";R:\tparametro_funcion: clase_objeto TOK_IDENTIFICADOR\n");};
 
 idpf: TOK_IDENTIFICADOR
 			{
-				$$.lexema = $1.lexema;
+				strcpy($$.lexema,$1.lexema);
 			};
 
 
