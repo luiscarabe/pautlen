@@ -74,9 +74,17 @@ En el final del programa se debe:
 */
 void escribir_fin(FILE* fpasm){
 
-   fprintf(fpasm, "\tjmp fin\n"); /*Saltamos el error de divisor 0*/
+   fprintf(fpasm, "\tjmp near fin\n"); /*Saltamos el error de divisor 0*/
 
-   fprintf(fpasm, "\tdivisor_zero:\n");
+   fprintf(fpasm, "index_error:\n");
+   /*Imprimimos el mensaje de error por división por cero*/
+   fprintf(fpasm, "\tpush dword msg_error_indice_vector\n");
+   fprintf(fpasm, "\tcall print_string\n");
+   fprintf(fpasm, "\tadd esp, 4\n"); /*Equilibramos la pila*/
+   fprintf(fpasm, "\tcall print_endofline\n");/*Imprimimos salto de línea*/
+   fprintf(fpasm, "\tjmp near fin");
+
+   fprintf(fpasm, "divisor_zero:\n");
    /*Imprimimos el mensaje de error por división por cero*/
    fprintf(fpasm, "\tpush dword msg_error_div_zero\n");
    fprintf(fpasm, "\tcall print_string\n");
@@ -519,23 +527,12 @@ void ifthen_fin(FILE * fpasm, int etiqueta){
 }
 
 
-
 void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta){
-   /* Realizaremos la comprobación del if-then-else
-   Sacamos su valor de la pila, ej. pop eax
-   Si es dirección ($3.es_direccion == 1) ... mov eax, [eax] */
-   // Recuerdo: cargarDePila ya hace la distincion si es variable o no.
-   cargarDePila(fpasm, exp_es_variable, "eax");
+   
 
-   /*Comparamos con 0,  cmp eax, 0
-   Hacemos el salto al final de la rama then en este caso,
-   je near fin_then%numetiqueta%>
-
-   Si el resultado que había en la pila es un 0 es que no se cumple la condición.
-   Saltamos directamente al final de la rama if-then. (No hay else)
-   */
-   fprintf(fpasm, "\tcmp eax, 0\n");
-   fprintf(fpasm, "\tje near fin_then%d\n", etiqueta);
+   /* El comienzo es el mismo tanto para if-then como para if-then-else
+      En caso de que no se cumpla la condición se salta al final del bloque then*/
+   ifthen_inicio(fpasm, exp_es_variable, etiqueta);
    return;
 }
 
@@ -545,7 +542,7 @@ void ifthenelse_fin_then( FILE * fpasm, int etiqueta){
 
    /* Si vienes ejecutando las instrucciones del bloque if, saltas al final
    (no quieres ejecutar else)*/
-   fprintf(fpasm, "\tjmp near fin_ifelse%d\n", etiqueta);
+   fprintf(fpasm, "\tjmp near fin_else%d\n", etiqueta);
 
    /* Escribes la etiqueta para poder saltar el bloque */
    fprintf(fpasm, "fin_then%d:\n", etiqueta);
@@ -558,19 +555,77 @@ void ifthenelse_fin_then( FILE * fpasm, int etiqueta){
 void ifthenelse_fin( FILE * fpasm, int etiqueta){
 
    /* Escritura del fin del else, (se salta aqui desde el final del bloque if) */
-   fprintf(fpasm, "fin_ifelse%d:\n", etiqueta);
+   fprintf(fpasm, "fin_else%d:\n", etiqueta);
    return;
 }
 
 
-/* Esta no creo que sirva para nada. Fdo:Emilio*/
-void if_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
+void while_inicio(FILE * fpasm, int etiqueta){
+   /*1. Escribimos la etiqueta */
 
-void while_inicio(FILE * fpasm, int etiqueta);
-void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
-void while_fin( FILE * fpasm, int etiqueta);
+   fprintf(fpasm, "inicio_while%d:\n", etiqueta);
 
-void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, int exp_es_direccion);
+   return;
+}
+
+void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta){
+
+   cargarDePila(fpasm, exp_es_variable, "eax");
+   fprintf(fpasm, "\tcmp eax, 0\n");
+   fprintf(fpasm, "\tje near fin_while%d\n", etiqueta);
+   
+   return;
+}
+
+void while_fin( FILE * fpasm, int etiqueta){
+
+   fprintf(fpasm, "\tjmp near inicio_while%d\n", etiqueta);
+   fprintf(fpasm, "fin_while%d:\n", etiqueta);
+   return;
+}
+
+
+/* COMENTARIO MUY IMPORTANTE */
+/* Escribe LA DIRECCION de un elemento vectorial en la cima de la pila*/
+void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, int exp_es_direccion){
+
+   /* PASO 1: Codigo para comprobar si el indice esta fuera de rango. En ese caso se imprime error y se finaliza el programa"*/
+   
+   /* Cargamos el valor del indice */
+   cargarDePila(fpasm, exp_es_direccion, "eax");
+   fprintf(fpasm, "\tcmp eax 0\n");
+   fprintf(fpasm, "\tjl near index_error\n");
+   fprintf(fpasm, "\tcmp eax %d\n", tam_max-1);
+   fprintf(fpasm, "\tjg near index_error\n");
+
+   /* En este punto el indice es correcto */
+
+   /* PASO 2: Gestion de la asignacion propiamente dicha. Hay que dejar en la cima de la pila la direccion del elem. indexado */
+
+   fprintf(fpasm, "\tmov dword edx _%s", nombre_vector);
+   fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
+   fprintf(fpasm, "\tpush dword eax\n");
+
+   return;
+}
+
+/* Vale para general el codigo de expresiones de la forma:
+   v[i] = exp */
+/* Asume que exp esta en la cima de la pila, y que la direccion del elemento del vector está en segunda posicion de la pila*/
+void asignar_a_elemento_vector(FILE * fpasm, int exp_es_direccion){
+
+
+   /* Cargar en eax la parte derecha de la asignación */
+   cargarDePila(fpasm, exp_es_direccion, "eax");
+   /* Cargar en edx la parte izquierda de la asignación */
+   /* Estamos asumiendo que en pila esta justo el valor que queremos (no es necesario acceder a otra posicion de memoria),
+      entonces, asignamos manualmente el valor 0 a es_direccion */
+   cargarDePila(fpasm, 0, "edx");
+
+   /* Hacer la asignación efectiva */
+   fprintf(fpasm, "\tmov dword [edx] , eax\n");
+   return;
+}
 
 /*Generación de código para iniciar la declaración de una función.*/
 
@@ -635,7 +690,8 @@ void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributo
    fprintf(fd_asm, "\tpush dword %d\n", (numero_atributos_instancia+1)*4);
    fprintf(fd_asm, "\tcall malloc\n");
    fprintf(fd_asm, "\tadd esp, 4\n");
-   fprintf(fd_asm, "\tmov dword [eax], _%s\n", nombre_fuente_clase);
+   // Si falla quitar ms (fantasma)
+   fprintf(fd_asm, "\tmov dword [eax], _ms%s\n", nombre_fuente_clase);
    fprintf(fd_asm, "\tpush eax\n");
 }
 

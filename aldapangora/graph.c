@@ -799,7 +799,6 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 	if (!ret){
 		ret = buscarSimbolo(t->main, nombre_id);
 		if (!ret){
-			printf("HE AQUI EL POBLEMA");
 			return ERR;
 		}
 		strncpy(nombre_ambito_encontrado, "main", 5*sizeof(char));
@@ -813,7 +812,6 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 	
 	*e = ret;
 
-	printf("nombre ambito encontradooo %s", nombre_ambito_encontrado);
 	return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, ret);
 }
 

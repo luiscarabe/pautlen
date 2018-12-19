@@ -198,6 +198,7 @@ true 		{	col += yyleng;
 
 					fprintf(stderr, "ERROR IDENTIFICADOR DEMASIADO LARGO: Linea %d y columna %d\n", row, col);
 					col += yyleng;
+					error_flag = 1;
 					return TOK_ERROR;
 				}
 

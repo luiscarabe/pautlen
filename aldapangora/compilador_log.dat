@@ -6,58 +6,28 @@
 ;R:	clase_escalar: tipo
 ;R:	clase: clase_escalar
 ;D:	x1
-;D:	,
-;D:	x2
-;D:	;
-;R:	identificadores: TOK_IDENTIFICADOR
-;R:	identificadores: TOK_IDENTIFICADOR ',' identificadores
-;R:	declaracion: modificadores_acceso clase identificadores ';'
-;D:	boolean
-;R:	modificadores_acceso: 
-;R:	tipo: TOK_BOOLEAN
-;R:	clase_escalar: tipo
-;R:	clase: clase_escalar
-;D:	y1
 ;D:	;
 ;R:	identificadores: TOK_IDENTIFICADOR
 ;R:	declaracion: modificadores_acceso clase identificadores ';'
 ;D:	scanf
 ;R:	declaraciones: declaracion
-;R:	declaraciones: declaracion declaraciones
 ;R:	funciones: 
 ;D:	x1
 ;D:	;
 ;R:	lectura: TOK_SCANF TOK_IDENTIFICADOR
 ;R:	sentencia_simple: lectura
 ;R:	sentencia: sentencia_simple ';'
-;D:	scanf
-;D:	x2
-;D:	;
-;R:	lectura: TOK_SCANF TOK_IDENTIFICADOR
-;R:	sentencia_simple: lectura
-;R:	sentencia: sentencia_simple ';'
-;D:	printf
-;D:	3
-;D:	+
-;D:	x1
-;D:	+
-;D:	x2
-;D:	;
-;R:	escritura: TOK_PRINTF exp
-;R:	sentencia_simple: escritura
-;R:	sentencia: sentencia_simple ';'
-;D:	y1
-;D:	=
+;D:	while
+;D:	(
 ;D:	(
 ;D:	x1
-;D:	==
-;D:	x2
+;D:	<
+;D:	10
 ;D:	)
-;D:	;
-;R:	sentencia_simple: asignacion
-;R:	sentencia: sentencia_simple ';'
+;D:	)
+;D:	{
 ;D:	printf
-;D:	y1
+;D:	x1
 ;D:	;
 ;R:	escritura: TOK_PRINTF exp
 ;R:	sentencia_simple: escritura
@@ -67,35 +37,35 @@
 ;D:	(
 ;D:	x1
 ;D:	==
-;D:	x2
+;D:	2
 ;D:	)
 ;D:	)
 ;D:	{
 ;D:	printf
+;D:	202
+;D:	;
+;R:	escritura: TOK_PRINTF exp
+;R:	sentencia_simple: escritura
+;R:	sentencia: sentencia_simple ';'
+;D:	}
+;R:	sentencias: sentencia
+;D:	x1
+;R:	bloque: condicional
+;R:	sentencia: bloque
+;D:	=
+;D:	x1
+;D:	+
 ;D:	1
 ;D:	;
-;R:	escritura: TOK_PRINTF exp
-;R:	sentencia_simple: escritura
+;R:	sentencia_simple: asignacion
 ;R:	sentencia: sentencia_simple ';'
 ;D:	}
 ;R:	sentencias: sentencia
-;D:	else
-;D:	{
-;D:	printf
-;D:	0
-;D:	;
-;R:	escritura: TOK_PRINTF exp
-;R:	sentencia_simple: escritura
-;R:	sentencia: sentencia_simple ';'
-;D:	}
-;R:	sentencias: sentencia
-;R:	bloque: condicional
+;R:	sentencias: sentencia sentencias
+;R:	sentencias: sentencia sentencias
+;R:	bloque: bucle
 ;R:	sentencia: bloque
 ;D:	}
 ;R:	sentencias: sentencia
-;R:	sentencias: sentencia sentencias
-;R:	sentencias: sentencia sentencias
-;R:	sentencias: sentencia sentencias
-;R:	sentencias: sentencia sentencias
 ;R:	sentencias: sentencia sentencias
 ;R:	programa: TOK_MAIN '{' declaraciones funciones sentencias '}'

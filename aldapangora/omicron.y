@@ -34,8 +34,23 @@
 	int tamanio_vector_actual;
 	int num_variable_local_actual;
 	int pos_variable_local_actual;
-	int num_param;
-	int pos_param;
+	int num_parametro_actual;
+	int pos_parametro_actual;
+	int tipo_retorno_actual;
+
+	/*Array para almacenar tipos de parametros función*/
+	int array_tipo_parametros[255];
+	/* Array para almacenar nombres de parametros función*/
+	char array_nombre_parametros[255][MAX_LONG_ID+1];
+
+	char nombre_ambito_actual[255];
+
+	/*Variables auxiliares para codigo*/
+	int i; /*Bucles*/
+	char nombre_parametro[MAX_LONG_ID + 3];
+	char nombre_funcion[255];
+
+
 
 	/* Locales */
 	int yyerror (const char *s);
@@ -125,6 +140,8 @@
 %type <atributos> if_exp
 %type <atributos> if_exp_sentencias
 %type <atributos> bucle
+%type <atributos> while_exp
+%type <atributos> while_ini
 %type <atributos> lectura
 %type <atributos> escritura
 %type <atributos> retorno_funcion
@@ -161,7 +178,7 @@ inicioTabla:
 	}
 
 declaraciones:  declaracion {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion\n");}
-			 | declaracion declaraciones {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion declaraciones\n");};
+			 |  declaracion declaraciones {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion declaraciones\n");};
 
 
 declaracion: modificadores_acceso clase identificadores ';'
@@ -203,11 +220,13 @@ clase_escalar: tipo
 tipo: TOK_INT
 		{
 			fprintf(compilador_log, ";R:\ttipo: TOK_INT\n");
+			$$.tipo = INT;
 			tipo_actual = INT;
 	    }
 	| TOK_BOOLEAN
 		{
 			fprintf(compilador_log, ";R:\ttipo: TOK_BOOLEAN\n");
+			$$.tipo = BOOLEAN;
 			tipo_actual = BOOLEAN;
 		};
 
@@ -222,6 +241,7 @@ clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
 						fprintf(stderr, "Error, tamaño de vector no válido. Linea %d columna %d", row, col);
 						return ERR;
 					}
+
 				};
 
 
@@ -234,28 +254,52 @@ identificador: TOK_IDENTIFICADOR
 					HT_item *e;
 					char nombre [100];
 					int aux;
+					if (strcmp(nombre_ambito_actual, "main") == 0){
+						/*TODO, conseguir el nombre del ambito*/
+						sprintf(nombre, "main_%s", $1.lexema);
+						if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
+							fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
+							return ERR;
+						}
 
-					/*TODO, conseguir el nombre del ambito*/
-					sprintf(nombre, "main_%s", $1.lexema);
-					if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
-						fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
-						return ERR;
+
+						/*TODO llamada correcta funcion*/
+						aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
+							nombre,         clase_actual,
+							tipo_actual,	  0,
+							0,      		  0,
+							0,              tamanio_vector_actual,
+							ACCESO_TODOS,        MIEMBRO_NO_UNICO,
+							0,              0,
+							NULL);
+
+							/*Insertamos en segmento .bss*/
+
+							declarar_variable(fout, $1.lexema,  tipo_actual,  tamanio_vector_actual);
+					}
+					/* Estamos dentro de una función*/
+					else{
+						sprintf(nombre, "%s_%s",nombre_ambito_actual, $1.lexema);
+
+						/*La diap 75 de omicron dice que use esta*/
+						if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
+							fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
+							return ERR;
+						}
+
+						/*TODO llamada correcta funcion SEGUN LA P4, ES EN TABLA SIMBOLOS MAIN*/
+						aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
+							nombre,         clase_actual,
+							tipo_actual,	  0,
+							0,      		  0,
+							0,              tamanio_vector_actual,
+							ACCESO_TODOS,        MIEMBRO_NO_UNICO,
+							0,              0,
+							NULL);
 					}
 
+					/*Deberia pushear algo en la pila? escribir variable??? TODO*/
 
-					/*TODO llamada correcta funcion*/
-					aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
-											  nombre,         clase_actual,
-											  tipo_actual,	  0,
-											  0,      		  0,
-											  0,              tamanio_vector_actual,
-											  ACCESO_TODOS,        MIEMBRO_NO_UNICO,
-											  0,              0,
-											  NULL);
-
-					/*Insertamos en segmento .bss*/
-
-					declarar_variable(fout, $1.lexema,  tipo_actual,  tamanio_vector_actual);
 
 				}
 
@@ -263,20 +307,95 @@ funciones: funcion funciones {fprintf(compilador_log, ";R:\tfunciones: funcion f
 		 | /*lambda*/ {fprintf(compilador_log, ";R:\tfunciones: \n");};
 
 
-funcion: fn_declaration sentencias '}'  {fprintf(compilador_log, ";R:\tfuncion: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");};
+funcion: fn_declaration sentencias '}'
+				{
+					/*Cerramos ámbito*/
+					tablaSimbolosClasesCerrarAmbitoEnMain(tabla_simbolos);
+					strcpy(nombre_ambito_actual,"main");
+				};
 
 
-fn_declaration: fn_complete_name '{' declaraciones_funcion;
+fn_declaration: fn_complete_name '{' declaraciones_funcion
+								{
+									declararFuncion(fout, $1.lexema, num_variable_local_actual);
+								};
 
 
-fn_complete_name: fn_name '(' parametros_funcion ')';
+fn_complete_name: fn_name '(' parametros_funcion ')'
+									{
+										strcpy($$.lexema,$1.lexema);
+										char auxNombreFuncion[100];
+										HT_item *e;
+										int i;
+										sprintf(nombre_funcion, "main_%s_", $1.lexema);
+										/*Añadimos los parametros al nombre de la funcion*/
+										for (i = 0 ; i < num_parametro_actual ; i++ ){
+											sprintf(auxNombreFuncion, "@%d", array_tipo_parametros[i]);
+											strcat(nombre_funcion, auxNombreFuncion);
+										}
+										/*Guardamos el ámbito*/
+										sprintf(nombre_ambito_actual, "%s", strtok(nombre_funcion, "main"));
+										if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre_funcion, &e, "main") == ERR){
+											tablaSimbolosClasesAbrirAmbitoEnMain(tabla_simbolos,
+																											nombre_funcion,
+																											FUNCION,
+																											NINGUNO,
+																											tipo_retorno_actual,
+																											0,
+																											0,
+																											num_parametro_actual,
+																											array_tipo_parametros);
+											/*Ahora declaramos todos los parametros*/
+											for(i = 0 ; i < num_parametro_actual ; i++){
+												sprintf(nombre_funcion, "%s_%s", nombre_ambito_actual,array_nombre_parametros[i]);
+												if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre_funcion, &e, "main") == ERR){
+													insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
+																				nombre_funcion,         ESCALAR,
+																				array_tipo_parametros[i],	  0,
+																				0,      		  0,
+																				0,              tamanio_vector_actual,
+																				ACCESO_TODOS,        MIEMBRO_NO_UNICO,
+																				0,              0,
+																				NULL);
+												}
+												else{
+													fprintf(stderr, "Parámetro de la función no válido. Linea %d columna %d\n", row, col);
+													return ERR;
+												}
 
-fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR;
+											}
+										}
+										else{
+											fprintf(stderr, "Ya existe esta función. Linea %d columna %d\n", row, col);
+											return ERR;
+										}
 
 
-tipo_retorno: TOK_NONE {fprintf(compilador_log, ";R:\ttipo_retorno: TOK_NONE\n");}
-			| tipo {fprintf(compilador_log, ";R:\ttipo_retorno: tipo\n");}
-			| clase_objeto {fprintf(compilador_log, ";R:\ttipo_retorno: clase_objeto\n");};
+										//tablaSimbolosClasesAbrirAmbitoEnMain(tabla_clases, nombre_ambito, FUNCION, NINGUNO, tipo_basico, 0, 0, 0, NULL);
+
+									};
+
+fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR
+				{
+					num_parametro_actual = 0;
+					pos_parametro_actual = 0;
+					num_variable_local_actual = 0;
+					pos_variable_local_actual = 0;
+					strcpy($$.lexema,$4.lexema);
+					tipo_retorno_actual = $3.tipo;
+				};
+
+
+tipo_retorno: TOK_NONE
+							{
+								$$.tipo = 0;
+								fprintf(compilador_log, ";R:\ttipo_retorno: TOK_NONE\n");}
+			| tipo
+							{	$$.tipo = $1.tipo;
+								fprintf(compilador_log, ";R:\ttipo_retorno: tipo\n");}
+			| clase_objeto
+							{	/* TODO propagar TIPO*/
+								fprintf(compilador_log, ";R:\ttipo_retorno: clase_objeto\n");};
 
 
 parametros_funcion: parametro_funcion resto_parametros_funcion {fprintf(compilador_log, ";R:\tparametros_funcion: parametro_funcion resto_parametros_funcion\n");}
@@ -287,10 +406,30 @@ resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion {fprint
 						| /*lambda*/ {fprintf(compilador_log, ";R:\tresto_parametros_funcion: \n");};
 
 
-parametro_funcion: tipo idpf {fprintf(compilador_log, ";R:\tparametro_funcion: tipo TOK_IDENTIFICADOR\n");}
+parametro_funcion: tipo idpf
+									{
+
+										for(i=0; i < num_parametro_actual; i++){
+
+											if(strcmp($2.lexema, array_nombre_parametros[i]) == 0){
+	    										fprintf(stderr, "**** Error semantico en [lin %d, col %d]. La funcion tiene dos parametros con el mismo nombre\n", row, col);
+												return ERR;
+											}
+										}
+
+										array_tipo_parametros[pos_parametro_actual] = $1.tipo;
+										strcpy(array_nombre_parametros[pos_parametro_actual],$2.lexema);
+										num_parametro_actual++;
+										pos_parametro_actual++;
+										fprintf(compilador_log, ";R:\tparametro_funcion: tipo TOK_IDENTIFICADOR\n");
+									}
+				 /* Creo que esta regla ya no hace falta*/
 				 | clase_objeto idpf {fprintf(compilador_log, ";R:\tparametro_funcion: clase_objeto TOK_IDENTIFICADOR\n");};
 
-idpf: TOK_IDENTIFICADOR;
+idpf: TOK_IDENTIFICADOR
+			{
+				strcpy($$.lexema,$1.lexema);
+			};
 
 
 declaraciones_funcion: declaraciones {fprintf(compilador_log, ";R:\tdeclaraciones_funcion: declaraciones\n");}
@@ -330,35 +469,80 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 				sprintf(nombre, "%s", $1.lexema);
 				if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);
-						return ERR;}
+					return ERR;}
 	    		else if (HT_itemGetCategory(e) == FUNCION){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede asignar una funcion\n", row, col);
-						return ERR;
+					return ERR;
 					}
 	    		else if (HT_itemGetClass(e) == VECTOR){
-	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simboo es vector\n", row, col);
-						return ERR;
+	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simbolo es vector\n", row, col);
+					return ERR;
 	    		}
 	    		else if(HT_itemGetType(e) != $3.tipo){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Asignacion de tipos incompatibles\n", row, col);
-						return ERR;
+					return ERR;
 	    		}
 
 	    		asignar(fout, $1.lexema, $3.direcciones);
 
 			}
-		  | elemento_vector '=' exp {fprintf(compilador_log, ";R:\tasignacion: elemento_vector '=' exp\n");}
+		  | elemento_vector '=' exp
+		    {
+		    	if ($1.tipo != $3.tipo){
+					fprintf(stderr, "****Error semantico en [lin %d, col %d]. Asignacion de tipos incompatibles\n", row, col);
+					return ERR;
+				}
+
+				asignar_a_elemento_vector(fout, $3.direcciones);
+
+		    }
 		  | elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
 		  | TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\tasignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
 		  | identificador_clase '.' TOK_IDENTIFICADOR '=' exp {fprintf(compilador_log, ";R:\tasignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' exp\n");};
 
 
-elemento_vector: TOK_IDENTIFICADOR '[' exp ']' {fprintf(compilador_log, ";R:\telemento_vector: TOK_IDENTIFICADOR '[' exp ']'\n");};
+elemento_vector: TOK_IDENTIFICADOR '[' exp ']' 
+		{
 
 
-condicional: if_exp_sentencias
+			char nombre[100];
+			char nombre_ambito_encontrado [100];
+			HT_item* e;
+			sprintf(nombre, "%s", $1.lexema);
+			if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
+    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Vector no declarado\n", row, col);
+				return ERR;}
+    		else if (HT_itemGetCategory(e) == FUNCION){
+    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Indexacion vectorial sobre funcion\n", row, col);
+				return ERR;
+			}
+    		else if (HT_itemGetClass(e) == ESCALAR){
+    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. Indexacion vectorial sobre escalar\n", row, col);
+				return ERR;
+    		}
+    		else if (HT_itemGetClass(e) != VECTOR){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. Indexacion vectorial sobre algo que no es un vector\n", row, col);
+				return ERR;    			
+    		}
+
+			if($3.tipo != INT){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. Para indexar un vector se debe usar un INT \n", row, col);
+				return ERR;
+			}
+
+			$$.tipo = HT_itemGetType(e);
+			$$.direcciones = 1;
+
+			escribir_elemento_vector(fout, $1.lexema, HT_itemGetTamanio(e), $3.direcciones);
+
+		};
+
+
+condicional: if_exp sentencias '}'
 			{
-			  //TODO: Si no nos dan alternativa esto hay que arreglarlo, no parece muy complicado
+
+				$$.etiqueta = $1.etiqueta;
+			 	ifthen_fin(fout, $$.etiqueta);
 
 			}
 		   | if_exp_sentencias TOK_ELSE '{' sentencias '}'
@@ -396,13 +580,42 @@ if_exp: TOK_IF '(' exp ')' '{'
 					vinculada con esta estructura como atributo de alguno de los no terminales  */
 
 					$$.etiqueta = etiqueta++;
+
+					/* Da igual llamar a ifthenelse inicio o iftheninicio. hacne lo mismo */
 					ifthenelse_inicio(fout, $3.direcciones, $$.etiqueta);
 				};
 
 
 
-bucle: TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(compilador_log, ";R:\tdbucle: TOK_WHILE '(' exp ')' '{' sentencias '}'\n");};
+bucle: while_exp '{' sentencias '}' {
 
+		$$.etiqueta = $1.etiqueta;
+
+		while_fin(fout, $$.etiqueta);
+
+	};
+
+
+while_exp:  while_ini '(' exp ')' {
+
+				/* Si el tipo de la expresión $3.tipo no es BOOLEAN  salir con Error */
+				if($3.tipo != BOOLEAN){
+					fprintf(stderr, "****Error semantico en [lin %d, col %d]. Condición de bucle no booleana.\n", row, col);
+					return ERR;
+				}
+
+				$$.etiqueta = $1.etiqueta;
+
+				while_exp_pila(fout, $3.direcciones, $$.etiqueta);
+}
+
+while_ini: TOK_WHILE {
+
+	$$.etiqueta = etiqueta++;
+
+	/* Da igual llamar a ifthenelse inicio o iftheninicio. hance lo mismo */
+	while_inicio(fout, $$.etiqueta);
+}
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR
 		{
@@ -436,7 +649,11 @@ escritura: TOK_PRINTF exp
 		};
 
 
-retorno_funcion: TOK_RETURN exp {fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN exp\n");}
+retorno_funcion: TOK_RETURN exp
+								{
+									retornarFuncion(fout, $2.direcciones);
+									fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN exp\n");
+								}
 			   | TOK_RETURN TOK_NONE {fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN TOK_NONE\n");};
 
 
@@ -551,7 +768,7 @@ exp: exp '+' exp
 		}
    | TOK_IDENTIFICADOR
    		{
-			//TODO conseguir nombre con ambito bien
+			//TODO conseguir nombre con ambito bien CREO QUE SI ESDTAMOS EN METODO, ESTO VALE TAMBIEN
 			char nombre[100];
 			char nombre_ambito_encontrado[100];
 			HT_item* e = NULL;
@@ -588,7 +805,11 @@ exp: exp '+' exp
 			$$.tipo = $2.tipo;
 			$$.direcciones = $2.direcciones;
 		}
-   | elemento_vector {fprintf(compilador_log, ";R:\texp: elemento_vector\n");}
+   | elemento_vector 
+   		{
+
+
+   		}	
    | TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
    | identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
    | identificador_clase '.' TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR\n");};
@@ -815,5 +1036,6 @@ int yyerror (const char *s)
 	if(error_flag == 0){
     	fprintf(stderr, "****Error sintactico en [lin %d, col %d]\n", row, col);
     }
+    error_flag = 0;
     return 0;
 }
