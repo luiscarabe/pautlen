@@ -36,7 +36,11 @@
 	int pos_variable_local_actual;
 	int num_parametro_actual;
 	int pos_parametro_actual;
+	int num_parametros_llamada_actual;
+
 	int tipo_retorno_actual;
+
+	int en_explist;
 
 	/*Array para almacenar tipos de parametros función*/
 	int array_tipo_parametros[255];
@@ -146,6 +150,7 @@
 %type <atributos> escritura
 %type <atributos> retorno_funcion
 %type <atributos> exp
+%type <atributos> idf_llamada_funcion
 %type <atributos> identificador_clase
 %type <atributos> lista_expresiones
 %type <atributos> resto_lista_expresiones
@@ -317,6 +322,7 @@ funcion: fn_declaration sentencias '}'
 
 fn_declaration: fn_complete_name '{' declaraciones_funcion
 								{
+									/*TODO, NOMBRE DE LA FUNCION A SECAS O NOMBRE EN PLAN MAIN_FUNCION_@TAL*/
 									declararFuncion(fout, $1.lexema, num_variable_local_actual);
 								};
 
@@ -501,7 +507,7 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 		  | identificador_clase '.' TOK_IDENTIFICADOR '=' exp {fprintf(compilador_log, ";R:\tasignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' exp\n");};
 
 
-elemento_vector: TOK_IDENTIFICADOR '[' exp ']' 
+elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
 		{
 
 
@@ -522,7 +528,7 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
     		}
     		else if (HT_itemGetClass(e) != VECTOR){
 				fprintf(stderr, "****Error semantico en [lin %d, col %d]. Indexacion vectorial sobre algo que no es un vector\n", row, col);
-				return ERR;    			
+				return ERR;
     		}
 
 			if($3.tipo != INT){
@@ -789,6 +795,10 @@ exp: exp '+' exp
     		$$.tipo = HT_itemGetType(e);
     		$$.direcciones = 1;
     		escribir_operando(fout, $1.lexema, 1);
+
+				if (en_explist == 1){
+					operandoEnPilaAArgumento(fout, 1);
+				}
     	}
    | constante
    		{
@@ -805,25 +815,77 @@ exp: exp '+' exp
 			$$.tipo = $2.tipo;
 			$$.direcciones = $2.direcciones;
 		}
-   | elemento_vector 
+   | elemento_vector
    		{
+				$$.tipo = $1.tipo;
+				$$.direcciones = $1.direcciones;
+   		}
+   | idf_llamada_funcion '(' lista_expresiones ')'
+	 		{
+				en_explist = 0;
+				HT_item* e;
+				char auxNombreFuncion[100];
+				char nombre_ambito_encontrado [100];
+				sprintf(nombre_funcion, "main_%s_", $1.lexema);
+				/*Añadimos los parametros al nombre de la funcion*/
+				for (i = 0 ; i < num_parametros_llamada_actual ; i++ ){
+					sprintf(auxNombreFuncion, "@%d", array_tipo_parametros[i]);
+					strcat(nombre_funcion, auxNombreFuncion);
+				}
+				if(buscarIdNoCualificado(tabla_simbolos, nombre_funcion, "main", &e, nombre_ambito_encontrado) == ERR){
+	    		fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se existe la función.\n", row, col);
+					return ERR;
+				}
 
+				/*Comprobamos que sea función*/
+				if (HT_itemGetCategory(e) != FUNCION){
+					fprintf(stderr, "****Error semantico en [lin %d, col %d]. No es un nombre de función.\n", row, col);
+					return ERR;
+				}
 
-   		}	
-   | TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
+				$$.tipo = HT_itemGetType(e);
+				/*Cogemos un valor, no una dirección*/
+				$$.direcciones=0;
+				/*Generamos el código NASM TODO LA LLAMAMOS POR SU NOMBRE SIMPLE O COMPUESTO?? MIRAR LA GENERACION DE FUNCIONES*/
+				llamarFuncion(fout, $1.lexema, num_parametros_llamada_actual);
+
+				fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
+			}
    | identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
    | identificador_clase '.' TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR\n");};
 
+idf_llamada_funcion : TOK_IDENTIFICADOR
+											{
+												if (en_explist ==  1){
+													fprintf(stderr, "Error en [lin %d, col %d]. No se permite llamadas a funciones dentro de los parámetros.\n", row, col);
+													return ERR;
+												}
+												en_explist = 1;
+												num_parametros_llamada_actual = 0;
+												strcpy($$.lexema, $1.lexema);
+											};
 
 identificador_clase: TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\tidentificador_clase: TOK_IDENTIFICADOR\n");}
 				   | TOK_ITSELF {fprintf(compilador_log, ";R:\tidentificador_clase: TOK_ITSELF\n");};
 
 
-lista_expresiones: exp resto_lista_expresiones {fprintf(compilador_log, ";R:\tlista_expresiones: exp resto_lista_expresiones\n");}
+lista_expresiones: exp resto_lista_expresiones
+									{
+										array_tipo_parametros[num_parametros_llamada_actual] = $1.tipo;
+
+										num_parametros_llamada_actual++;
+
+										fprintf(compilador_log, ";R:\tlista_expresiones: exp resto_lista_expresiones\n");
+									}
 				 | /*lambda*/ {fprintf(compilador_log, ";R:\tlista_expresiones: \n");};
 
 
-resto_lista_expresiones: ',' exp resto_lista_expresiones {fprintf(compilador_log, ";R:\tresto_lista_expresiones: ',' exp resto_lista_expresiones\n");}
+resto_lista_expresiones: ',' exp resto_lista_expresiones
+												{
+													array_tipo_parametros[num_parametros_llamada_actual] = $2.tipo;
+													num_parametros_llamada_actual++;
+													fprintf(compilador_log, ";R:\tresto_lista_expresiones: ',' exp resto_lista_expresiones\n");
+												}
 					   | /*lambda*/ {fprintf(compilador_log, ";R:\tresto_lista_expresiones: \n");};
 
 
