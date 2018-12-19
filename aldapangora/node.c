@@ -100,19 +100,30 @@ Node *newNodeTam(char *name, int tamanio){
 }
 
 void deleteNode(Node *node){
+	int i;
+
 	if (!node) return;
 	
-	ht_del_hash_table(node->primary_scope);
-	free(node->name);
-
-	if (node->atributos_clase) 
+	if (node->atributos_clase){
+		for (i = 0; i < node->numero_atributos_clase; i++)
+			free(node->atributos_clase[i]);
 		free(node->atributos_clase);
-	if (node->atributos_instancia)
+	}
+	if (node->atributos_instancia){
+		for (i = 0; i < node->numero_atributos_instancia; i++)
+			free(node->atributos_instancia[i]);
 		free(node->atributos_instancia);
-	if (node->metodos_sobreescribibles)
+	}
+	if (node->metodos_sobreescribibles){
+		for (i = 0; i < node->numero_metodos_sobreescribibles; i++)
+			free(node->metodos_sobreescribibles[i]);
 		free(node->metodos_sobreescribibles);
-	if (node->metodos_no_sobreescribibles)
+	}
+	if (node->metodos_no_sobreescribibles){
+		for (i = 0; i < node->numero_metodos_no_sobreescribibles; i++)
+			free(node->metodos_no_sobreescribibles[i]);
 		free(node->metodos_no_sobreescribibles);
+	}
 
 	free(node);
 }
@@ -140,6 +151,9 @@ char **getAttributes(Node *node){
 	if (!node) return NULL;
 
 	return ht_get_name_symbols(node->primary_scope);
+	ht_del_hash_table(node->primary_scope);
+	free(node->name);
+
 }
 
 int getNumAttributes(Node *node){
@@ -318,7 +332,7 @@ int insertarTablaNodo(Node *node,
 					node->metodos_sobreescribibles = (char **) realloc(node->metodos_sobreescribibles, 
 																														(node->numero_metodos_sobreescribibles + 1) * sizeof(char *));
 				if (!node->metodos_sobreescribibles) return ERR;
-				node->metodos_sobreescribibles[node->numero_metodos_sobreescribibles] = key;
+				node->metodos_sobreescribibles[node->numero_metodos_sobreescribibles] = strdup(key);
 				node->numero_metodos_sobreescribibles++;
 				break;
 			case METODO_NO_SOBREESCRIBIBLE:
@@ -328,7 +342,7 @@ int insertarTablaNodo(Node *node,
 					node->metodos_no_sobreescribibles = (char **) realloc(node->metodos_no_sobreescribibles, 
 																															 (node->numero_metodos_no_sobreescribibles + 1) * sizeof(char *));
 				if (!node->metodos_no_sobreescribibles) return ERR;
-				node->metodos_no_sobreescribibles[node->numero_metodos_no_sobreescribibles] = key;
+				node->metodos_no_sobreescribibles[node->numero_metodos_no_sobreescribibles] = strdup(key);
 				node->numero_metodos_no_sobreescribibles++;
 				break;
 			case ATRIBUTO_CLASE:
@@ -338,7 +352,7 @@ int insertarTablaNodo(Node *node,
 					node->atributos_clase = (char **) realloc(node->atributos_clase, 
 																									 (node->numero_atributos_clase + 1) * sizeof(char *));
 				if (!node->atributos_clase) return ERR;
-				node->atributos_clase[node->numero_atributos_clase] = key;
+				node->atributos_clase[node->numero_atributos_clase] = strdup(key);
 				node->numero_atributos_clase++;
 				break;
 			case ATRIBUTO_INSTANCIA:
@@ -349,7 +363,7 @@ int insertarTablaNodo(Node *node,
 																											 (node->numero_atributos_instancia + 1) * sizeof(char *));
 				
 				if (!node->atributos_instancia) return ERR;
-				node->atributos_instancia[node->numero_atributos_instancia] = key;
+				node->atributos_instancia[node->numero_atributos_instancia] = strdup(key);
 				node->numero_atributos_instancia++;
 				break;
 		}
@@ -478,7 +492,7 @@ int abrirAmbitoFunc(Node *node,
 					node->metodos_sobreescribibles = (char **) realloc(node->metodos_sobreescribibles, 
 																														(node->numero_metodos_sobreescribibles + 1) * sizeof(char *));
 				if (!node->metodos_sobreescribibles) return ERR;
-				node->metodos_sobreescribibles[node->numero_metodos_sobreescribibles] = id_ambito;
+				node->metodos_sobreescribibles[node->numero_metodos_sobreescribibles] = strdup(id_ambito);
 				node->numero_metodos_sobreescribibles++;
 				break;
 			case METODO_NO_SOBREESCRIBIBLE:
@@ -488,7 +502,7 @@ int abrirAmbitoFunc(Node *node,
 					node->metodos_no_sobreescribibles = (char **) realloc(node->metodos_no_sobreescribibles, 
 																															 (node->numero_metodos_no_sobreescribibles + 1) * sizeof(char *));
 				if (!node->metodos_no_sobreescribibles) return ERR;
-				node->metodos_no_sobreescribibles[node->numero_metodos_no_sobreescribibles] = id_ambito;
+				node->metodos_no_sobreescribibles[node->numero_metodos_no_sobreescribibles] = strdup(id_ambito);
 				node->numero_metodos_no_sobreescribibles++;
 				break;
 	}
@@ -546,10 +560,6 @@ TablaSimbolos *getFuncScope(Node *node){
 	return node->func_scope;
 }
 
-int getNumMetodosSobreescribibles(Node *node){
-	if (!node) return -1;
-	return node->numero_metodos_sobreescribibles;
-}
 
 HT_item *buscarSimbolo(Node *node, char *nombre_id){
 	char *name;
@@ -598,7 +608,7 @@ HT_item *buscarSimboloFunc(Node *node, char *nombre_id){
 			return NULL;
 		}
 
-		e = ht_search_item(node->func_scope, nombre_id);
+		e = ht_search_item(node->func_scope, name);
 
 		return e;
 	}
@@ -635,4 +645,12 @@ char **get_metodos_no_sobreescribibles(Node *n){
 	return n->metodos_no_sobreescribibles;
 }
 
+int getNumMetodosSobreescribibles(Node *node){
+	if (!node) return -1;
+	return node->numero_metodos_sobreescribibles;
+}
 
+int getNumAtributosInstancia(Node *node){
+	if (!node) return -1;
+	return node->numero_atributos_instancia;
+}

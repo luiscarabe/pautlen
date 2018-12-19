@@ -52,7 +52,7 @@ void escribir_segmento_codigo(FILE* fpasm){
    fprintf(fpasm, "\tglobal main\n");
    /*Funciones declaradas en olib.o*/
    fprintf(fpasm, "\textern scan_int, print_int, scan_boolean, print_boolean\n");
-   fprintf(fpasm, "\textern print_endofline, print_blank, print_string\n");
+   fprintf(fpasm, "\textern print_endofline, print_blank, print_string, malloc, free\n");
    return;
 }
 
@@ -632,32 +632,57 @@ char * claseATabla(char * nombre_fuente_clase);
 
 void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia){
 
-   fprintf(fd_asm, "push dword %d\n", numero_atributos_instancia*4);
-   fprintf(fd_asm, "call malloc\n");
-   fprintf(fd_asm, "add esp, 4\n");
-   fprintf(fd_asm, "mov dword [eax], %s\n", nombre_fuente_clase);
-   fprintf(fd_asm, "push eax\n");
+   fprintf(fd_asm, "\tpush dword %d\n", (numero_atributos_instancia+1)*4);
+   fprintf(fd_asm, "\tcall malloc\n");
+   fprintf(fd_asm, "\tadd esp, 4\n");
+   fprintf(fd_asm, "\tmov dword [eax], _%s\n", nombre_fuente_clase);
+   fprintf(fd_asm, "\tpush eax\n");
 }
 
 void discardPila (FILE * fd_asm){
 
-   fprintf(stderr, "call free\n");
-   fprintf(stderr, "add esp, 4\n");
+   fprintf(fd_asm, "\tcall free\n");
+   fprintf(fd_asm, "\tadd esp, 4\n");
 }
 
 void limpiarPila(FILE * fd_asm, int num_argumentos){
   /*Restauramos la pila*/
-  fprintf(fd_asm, "add esp, %d", 4*num_argumentos);
+  fprintf(fd_asm, "\tadd esp, %d", 4*num_argumentos);
 }
 
-void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo); 
-void limpiarPila(FILE * fd_asm, int num_argumentos); 
+void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo){
 
-void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo);
+	fprintf(fd_asm, "\tpop ebx\n");
+   fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
+   fprintf(fd_asm, "\tmov dword ecx, [_offset_%s]\n", nombre_metodo);
+   fprintf(fd_asm, "\tlea ecx, [ebx + ecx]\n");
+   fprintf(fd_asm, "\tmov dword ecx, [ecx]\n");
+   fprintf(fd_asm, "\tcall ecx\n");
+
+}
+
+void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo){
+
+   fprintf(fd_asm, "\tpop ebx\n");
+   fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
+   fprintf(fd_asm, "\tmov dword ecx, [_offset_%s]\n", nombre_atributo);
+   fprintf(fd_asm, "\tlea ecx, [ebx+ecx]\n");
+   fprintf(fd_asm, "\tpush ecx\n");
+
+}
 
 
 // ESTA FUNCIÓN ES LA QUE SE USA DESPUÉS DE
 // - escribir_operando (para una variable global)
 // - escribirParametro
 // - escribirVariableLocal
-void asignarDestinoEnPila(FILE* fpasm, int es_variable);
+void asignarDestinoEnPila(FILE* fd_asm, int es_variable){
+	// Primero la direccion
+	fprintf(fd_asm, "\tpop dword eax\n");
+	// Valor que hay que escribir
+	fprintf(fd_asm, "\tpop dword ebx\n");
+	
+	if (es_variable)
+		fprintf(fd_asm, "\tmov ebx, [ebx]\n"); 
+	fprintf(fd_asm, "\tmov [eax], ebx\n");
+}
