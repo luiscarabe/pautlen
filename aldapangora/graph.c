@@ -1057,8 +1057,11 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 	int **posiciones_rellenas;
 	int i, j, k, l, pos;
 	int num_metodos_sobre_acumulado;
+	int num_atributos_instancia_acum;
 	int num_metodos_sobre;
+	int num_atributos_instancia;
 	char **metodos_sobre;
+	char ** atributos_instancia;
 
 	if (!g || !f) return ERR;
 
@@ -1086,6 +1089,17 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 		for (j = 0; j < num_metodos_sobre; j++){
 			fprintf(f, "\t_offset_ms%s dd %d\n", metodos_sobre[j], num_metodos_sobre_acumulado*4);
 			num_metodos_sobre_acumulado++;
+		}
+	}
+
+	num_atributos_instancia_acum = 0;
+	for (i = 0; i < g->n; i++){
+		num_atributos_instancia = getNumAtributosInstancia(g->nodes[i]);
+		atributos_instancia = get_atributos_instancia(g->nodes[i]);
+
+		for (j = 0; j < num_atributos_instancia; j++){
+			fprintf(f, "\t_offset_ai%s dd %d\n", atributos_instancia[j], num_atributos_instancia_acum+4);
+			num_atributos_instancia_acum += 4;
 		}
 	}
 

@@ -1,7 +1,7 @@
 CC = gcc
 CCFLAGS = -Wall -g
 
-all:  omicron
+all:  omicron prueba_TS
 
 
 # OO
@@ -38,6 +38,9 @@ lex.yy.o: lex.yy.c
 
 omicron: omicron.c hash_table.o node.o graph.o generacion.o y.tab.c lex.yy.c y.tab.o lex.yy.o
 	$(CC) $(CCFLAGS) -o $@  $< lex.yy.o y.tab.o generacion.o graph.o node.o hash_table.o -lm
+
+prueba_TS: prueba_TS.c hash_table.o node.o graph.o 
+	$(CC) $(CCFLAGS) -o $@  $^ -lm
 
 clean:
 	rm -f hash_table.o node.o graph.o
