@@ -82,7 +82,7 @@ void escribir_fin(FILE* fpasm){
    fprintf(fpasm, "\tcall print_string\n");
    fprintf(fpasm, "\tadd esp, 4\n"); /*Equilibramos la pila*/
    fprintf(fpasm, "\tcall print_endofline\n");/*Imprimimos salto de línea*/
-   fprintf(fpasm, "\tjmp near fin");
+   fprintf(fpasm, "\tjmp near fin\n");
 
    fprintf(fpasm, "divisor_zero:\n");
    /*Imprimimos el mensaje de error por división por cero*/
@@ -528,7 +528,7 @@ void ifthen_fin(FILE * fpasm, int etiqueta){
 
 
 void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta){
-   
+
 
    /* El comienzo es el mismo tanto para if-then como para if-then-else
       En caso de que no se cumpla la condición se salta al final del bloque then*/
@@ -573,7 +573,7 @@ void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta){
    cargarDePila(fpasm, exp_es_variable, "eax");
    fprintf(fpasm, "\tcmp eax, 0\n");
    fprintf(fpasm, "\tje near fin_while%d\n", etiqueta);
-   
+
    return;
 }
 
@@ -590,7 +590,7 @@ void while_fin( FILE * fpasm, int etiqueta){
 void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, int exp_es_direccion){
 
    /* PASO 1: Codigo para comprobar si el indice esta fuera de rango. En ese caso se imprime error y se finaliza el programa"*/
-   
+
    /* Cargamos el valor del indice */
    cargarDePila(fpasm, exp_es_direccion, "eax");
    fprintf(fpasm, "\tcmp eax 0\n");
@@ -602,7 +602,7 @@ void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, in
 
    /* PASO 2: Gestion de la asignacion propiamente dicha. Hay que dejar en la cima de la pila la direccion del elem. indexado */
 
-   fprintf(fpasm, "\tmov dword edx _%s", nombre_vector);
+   fprintf(fpasm, "\tmov dword edx _%s\n", nombre_vector);
    fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
    fprintf(fpasm, "\tpush dword eax\n");
 
@@ -630,30 +630,30 @@ void asignar_a_elemento_vector(FILE * fpasm, int exp_es_direccion){
 /*Generación de código para iniciar la declaración de una función.*/
 
 void declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc){
-  fprintf(fd_s, "_%s", nombre_funcion);
-  fprintf(fd_s, "mov ebp, esp");
-  fprintf(fd_s, "sub esp, %d", 4 * num_var_loc);
+  fprintf(fd_s, "_%s:\n", nombre_funcion);
+  fprintf(fd_s, "\tmov ebp, esp\n");
+  fprintf(fd_s, "\tsub esp, %d\n", 4 * num_var_loc);
 }
 
 /*Generación de código para el retorno de una función.*/
 
 void retornarFuncion(FILE * fd_s, int es_variable){
   /* El retorno se hará mediante eax*/
-  fprintf(fd_s, "pop dword eax");
+  fprintf(fd_s, "\tpop dword eax\n");
   if(es_variable){ /*Si es una dirección, sacamos su valor*/
-    fprintf(fd_s, "mov eax, [eax]");
+    fprintf(fd_s, "\tmov eax, [eax]\n");
   }
-  fprintf(fd_s, "mov dword esp, ebp");
-  fprintf(fd_s, "pop dword ebp");
-  fprintf(fd_s, "ret");
+  fprintf(fd_s, "\tmov dword esp, ebp\n");
+  fprintf(fd_s, "\tpop dword ebp\n");
+  fprintf(fd_s, "\tret\n");
 
 }
 
 void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros){
   /* Cogemos la dirección donde está nuestro parámetro*/
-  fprintf(fpasm, "lea eax, [ebp+%d]", 4+4*(num_total_parametros-pos_parametro));
+  fprintf(fpasm, "\tlea eax, [ebp+%d]\n", 4+4*(num_total_parametros-pos_parametro));
   /*Guardamos en la pila*/
-  fprintf(fpasm, "push eax");
+  fprintf(fpasm, "\tpush eax\n");
 
 }
 
@@ -662,23 +662,23 @@ void escribirVariableLocal(FILE* fpasm, int posicion_variable_local){
 <4*posición de la variable en declaración>
 ]*/
   /* Cogemos la dirección donde está nuestra variable local*/
-  fprintf(fpasm, "lea eax, [ebp-%d]", 4*(posicion_variable_local));
+  fprintf(fpasm, "\tlea eax, [ebp-%d]\n", 4*(posicion_variable_local));
   /*Guardamos en la pila*/
-  fprintf(fpasm, "push eax");
+  fprintf(fpasm, "\tpush eax\n");
 }
 
 /*Realiza la tarea de dado un operando escrito en la pila y sabiendo si es variable o no se deja en la pila el valor correspondiente*/
 void operandoEnPilaAArgumento(FILE* fd_asm, int es_variable){
   cargarDePila(fd_asm, es_variable, "eax");
-  fprintf(fd_asm, "push eax");
+  fprintf(fd_asm, "\tpush eax\n");
 }
 
 /*Genera código para llamar a la función nombre_funcion asumiendo que los argumentos están en la pila en el orden fijado en el material de la asignatura*/
 void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos){
-  fprintf(fd_asm, "call _%s", nombre_funcion);
+  fprintf(fd_asm, "\tcall _%s\n", nombre_funcion);
   limpiarPila(fd_asm, num_argumentos);
   /*Guardamos el resultado de la función en la pila*/
-  fprintf(fd_asm, "push dword eax");
+  fprintf(fd_asm, "\tpush dword eax\n");
 }
 
 
@@ -703,7 +703,7 @@ void discardPila (FILE * fd_asm){
 
 void limpiarPila(FILE * fd_asm, int num_argumentos){
   /*Restauramos la pila*/
-  fprintf(fd_asm, "\tadd esp, %d", 4*num_argumentos);
+  fprintf(fd_asm, "\tadd esp, %d\n", 4*num_argumentos);
 }
 
 void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo){
@@ -737,8 +737,8 @@ void asignarDestinoEnPila(FILE* fd_asm, int es_variable){
 	fprintf(fd_asm, "\tpop dword eax\n");
 	// Valor que hay que escribir
 	fprintf(fd_asm, "\tpop dword ebx\n");
-	
+
 	if (es_variable)
-		fprintf(fd_asm, "\tmov ebx, [ebx]\n"); 
+		fprintf(fd_asm, "\tmov ebx, [ebx]\n");
 	fprintf(fd_asm, "\tmov [eax], ebx\n");
 }
