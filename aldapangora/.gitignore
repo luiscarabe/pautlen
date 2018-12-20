@@ -16,3 +16,5 @@ prueba_TS
 test?
 test?.asm
 test?.o
+
+!olib.o
