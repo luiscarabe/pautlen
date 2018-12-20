@@ -329,16 +329,17 @@ fn_declaration: fn_complete_name '{' declaraciones_funcion
 
 fn_complete_name: fn_name '(' parametros_funcion ')'
 									{
-										strcpy($$.lexema,$1.lexema);
 										char auxNombreFuncion[100];
 										HT_item *e;
 										int i;
-										sprintf(nombre_funcion, "main_%s_", $1.lexema);
+										sprintf(nombre_funcion, "main_%s", $1.lexema);
 										/*Añadimos los parametros al nombre de la funcion*/
 										for (i = 0 ; i < num_parametro_actual ; i++ ){
 											sprintf(auxNombreFuncion, "@%d", array_tipo_parametros[i]);
 											strcat(nombre_funcion, auxNombreFuncion);
 										}
+										/*El nombre del lexema será el completo*/
+										strcpy($$.lexema,nombre_funcion);
 										/*Guardamos el ámbito*/
 										sprintf(nombre_ambito_actual, "%s", strtok(nombre_funcion, "main"));
 										if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre_funcion, &e, "main") == ERR){
@@ -826,7 +827,7 @@ exp: exp '+' exp
 				HT_item* e;
 				char auxNombreFuncion[100];
 				char nombre_ambito_encontrado [100];
-				sprintf(nombre_funcion, "main_%s_", $1.lexema);
+				sprintf(nombre_funcion, "main_%s", $1.lexema);
 				/*Añadimos los parametros al nombre de la funcion*/
 				for (i = 0 ; i < num_parametros_llamada_actual ; i++ ){
 					sprintf(auxNombreFuncion, "@%d", array_tipo_parametros[i]);
@@ -847,7 +848,7 @@ exp: exp '+' exp
 				/*Cogemos un valor, no una dirección*/
 				$$.direcciones=0;
 				/*Generamos el código NASM TODO LA LLAMAMOS POR SU NOMBRE SIMPLE O COMPUESTO?? MIRAR LA GENERACION DE FUNCIONES*/
-				llamarFuncion(fout, $1.lexema, num_parametros_llamada_actual);
+				llamarFuncion(fout, nombre_funcion, num_parametros_llamada_actual);
 
 				fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
 			}
