@@ -180,6 +180,7 @@ programa: inicioTabla TOK_MAIN '{' escritura_cabeceras_datos  declaraciones  fun
 inicioTabla:
 	{
 		iniciarTablaSimbolosClases(&tabla_simbolos, "Tablasimbolos");
+		strcpy(nombre_ambito_actual, "main");
 	}
 
 declaraciones:  declaracion {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion\n");}
@@ -261,6 +262,7 @@ identificador: TOK_IDENTIFICADOR
 					int aux;
 					if (strcmp(nombre_ambito_actual, "main") == 0){
 						/*TODO, conseguir el nombre del ambito*/
+
 						sprintf(nombre, "main_%s", $1.lexema);
 						if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
 							fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);

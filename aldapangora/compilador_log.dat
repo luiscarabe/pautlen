@@ -5,67 +5,54 @@
 ;R:	tipo: TOK_INT
 ;R:	clase_escalar: tipo
 ;R:	clase: clase_escalar
-;D:	x1
+;D:	v1
+;D:	,
+;D:	v2
+;D:	,
+;D:	v3
+;D:	;
+;R:	identificadores: TOK_IDENTIFICADOR
+;R:	identificadores: TOK_IDENTIFICADOR ',' identificadores
+;R:	identificadores: TOK_IDENTIFICADOR ',' identificadores
+;R:	declaracion: modificadores_acceso clase identificadores ';'
+;D:	boolean
+;R:	modificadores_acceso: 
+;R:	tipo: TOK_BOOLEAN
+;R:	clase_escalar: tipo
+;R:	clase: clase_escalar
+;D:	v4
 ;D:	;
 ;R:	identificadores: TOK_IDENTIFICADOR
 ;R:	declaracion: modificadores_acceso clase identificadores ';'
-;D:	scanf
+;D:	function
 ;R:	declaraciones: declaracion
-;R:	funciones: 
-;D:	x1
-;D:	;
-;R:	lectura: TOK_SCANF TOK_IDENTIFICADOR
-;R:	sentencia_simple: lectura
-;R:	sentencia: sentencia_simple ';'
-;D:	while
+;R:	declaraciones: declaracion declaraciones
+;D:	int
+;R:	modificadores_acceso: 
+;R:	tipo: TOK_INT
+;R:	tipo_retorno: tipo
+;D:	f1
 ;D:	(
-;D:	(
-;D:	x1
-;D:	<
-;D:	10
+;D:	boolean
+;R:	tipo: TOK_BOOLEAN
+;D:	pf1
+;R:	parametro_funcion: tipo TOK_IDENTIFICADOR
 ;D:	)
-;D:	)
+;R:	resto_parametros_funcion: 
+;R:	parametros_funcion: parametro_funcion resto_parametros_funcion
 ;D:	{
-;D:	printf
-;D:	x1
+;D:	int
+;R:	modificadores_acceso: 
+;R:	tipo: TOK_INT
+;R:	clase_escalar: tipo
+;R:	clase: clase_escalar
+;D:	vl1
 ;D:	;
-;R:	escritura: TOK_PRINTF exp
-;R:	sentencia_simple: escritura
-;R:	sentencia: sentencia_simple ';'
-;D:	if
-;D:	(
-;D:	(
-;D:	x1
-;D:	==
-;D:	2
-;D:	)
-;D:	)
-;D:	{
-;D:	printf
-;D:	202
-;D:	;
-;R:	escritura: TOK_PRINTF exp
-;R:	sentencia_simple: escritura
-;R:	sentencia: sentencia_simple ';'
-;D:	}
-;R:	sentencias: sentencia
-;D:	x1
-;R:	bloque: condicional
-;R:	sentencia: bloque
+;R:	identificadores: TOK_IDENTIFICADOR
+;R:	declaracion: modificadores_acceso clase identificadores ';'
+;D:	vl1
+;R:	declaraciones: declaracion
+;R:	declaraciones_funcion: declaraciones
 ;D:	=
-;D:	x1
-;D:	+
 ;D:	1
 ;D:	;
-;R:	sentencia_simple: asignacion
-;R:	sentencia: sentencia_simple ';'
-;D:	}
-;R:	sentencias: sentencia
-;R:	sentencias: sentencia sentencias
-;R:	sentencias: sentencia sentencias
-;R:	bloque: bucle
-;R:	sentencia: bloque
-;D:	}
-;R:	sentencias: sentencia
-;R:	sentencias: sentencia sentencias
-;R:	programa: TOK_MAIN '{' declaraciones funciones sentencias '}'
