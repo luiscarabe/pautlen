@@ -994,7 +994,6 @@ void imprimirTablasHash(Graph *g){
 
 
 void imprimirTablaTrasActualizacion(FILE * fout, Graph *g, char * name){
-	int i;
 	if (!fout || !g || !name) return;
 
 	if(!nameCompare(g->main, name)){
@@ -1058,10 +1057,13 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 	int i, j, k, l, pos;
 	int num_metodos_sobre_acumulado;
 	int num_atributos_instancia_acum;
+	int num_atributos_clase_acum;
 	int num_metodos_sobre;
 	int num_atributos_instancia;
+	int num_atributos_clase;
 	char **metodos_sobre;
 	char ** atributos_instancia;
+	char ** atributos_clase;
 
 	if (!g || !f) return ERR;
 
@@ -1102,6 +1104,7 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 			num_atributos_instancia_acum += 4;
 		}
 	}
+
 
 	fprintf(f, "\nsegment .bss\n");
 	for (i = 0, k = 0, num_metodos_sobre_acumulado = 0; i < g->n; i++){
@@ -1148,6 +1151,8 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 			}
 		}
 
+
+		
 		// Sobreescrituras de la clase
 		// Metodos sobreescribibles propios
 		printf("\tMetodos propios\n");
@@ -1173,6 +1178,17 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 				posiciones_rellenas[i][k+1] = -1;
 
 				num_metodos_sobre_acumulado++;
+			}
+		}
+
+		num_atributos_instancia_acum = 0;
+		for (i = 0; i < g->n; i++){
+			num_atributos_clase = getNumAtributosClase(g->nodes[i]);
+			atributos_clase = get_atributos_clase(g->nodes[i]);
+
+			for (j = 0; j < num_atributos_clase; j++){
+				fprintf(f, "\t_%s resd dd 1\n", atributos_clase[j]);
+				num_atributos_clase_acum += 4;
 			}
 		}
 

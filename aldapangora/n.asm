@@ -4,6 +4,7 @@ segment .data
 
 segment .bss
 	_msAA resd 1
+	_AA_a1 resd dd 1
 
 _create_ms_table:
 	mov dword [_msAA], _msAA_mA1@1

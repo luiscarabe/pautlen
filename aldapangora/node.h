@@ -88,6 +88,7 @@ char **get_metodos_no_sobreescribibles(Node *n);
 
 int getNumMetodosSobreescribibles(Node *node);
 int getNumAtributosInstancia(Node *node);
+int getNumAtributosClase(Node *node);
 
 
 #endif

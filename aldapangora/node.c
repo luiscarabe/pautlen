@@ -654,3 +654,8 @@ int getNumAtributosInstancia(Node *node){
 	if (!node) return -1;
 	return node->numero_atributos_instancia;
 }
+
+int getNumAtributosClase(Node *node){
+	if (!node) return -1;
+	return node->numero_atributos_clase;
+}
