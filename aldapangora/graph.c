@@ -13,7 +13,7 @@
 #define min(x, y) ((((x) < (y)) || (y) == 0) ? (x) : (y))
 
 typedef struct _Graph {
-	char *name; 
+	char *name;
 	int n; // number of nodes
 	int allocated; // number of potential nodes with memory already allocated
 	Node **nodes; // nodes of the graph
@@ -22,9 +22,9 @@ typedef struct _Graph {
 	Node *main;
 } Graph;
 
-int modificar_insertar(TablaSimbolos *ht, 
-											 TablaSimbolos *main, 
-											 char *id_clase, 
+int modificar_insertar(TablaSimbolos *ht,
+											 TablaSimbolos *main,
+											 char *id_clase,
 											 int x,
 											 int (*f)(TablaSimbolos *ts, const char *key, int incr, int (*g)(int *a, int b)));
 int compararNombresSinPrefijo(char *n1, char *n2);
@@ -72,7 +72,7 @@ int reallocate(Graph *graph) {
 
 	// Adding rows to the matrix
 	graph->amatrix = (char **) realloc(graph->amatrix, (graph->allocated + NREALLOC) * sizeof(char *));
-	for (i = 0; i < graph->allocated; i++){ 
+	for (i = 0; i < graph->allocated; i++){
 		// ...and columns to the existing rows
 		graph->amatrix[i] = (char *) realloc(graph->amatrix[i], (graph->allocated + NREALLOC) * sizeof(char));
 		for (j = graph->allocated; j < graph->allocated + NREALLOC; j++){
@@ -172,16 +172,16 @@ void addParent(Graph *graph, int child, int parent){
 
 	if (!graph) return;
 	if (child < 0 || parent < 0 || child >= graph->n || parent >= graph->n) return;
-	
+
 	// Child-Parent relation
 	graph->amatrix[parent][child] = 1;
 
-	// Update the ancestors of parent 
+	// Update the ancestors of parent
 	for (i = 0; i < graph->allocated; i++)
 		if (graph->amatrix[child][i] && parent != i)
 			graph->amatrix[parent][i] = min((graph->amatrix[child][i] + 1), graph->amatrix[parent][i]);
-	
-	// Update the sucessors of child 
+
+	// Update the sucessors of child
 	for (i = 0; i < graph->allocated; i++)
 		if (graph->amatrix[i][parent] && i != child)
 			graph->amatrix[i][child] = min((graph->amatrix[i][parent] + 1), graph->amatrix[i][child]);
@@ -194,11 +194,11 @@ void deleteGraph(Graph *graph){
 
 	if (!graph) return;
 
-	for (i = 0; i < graph->n; i++) 
+	for (i = 0; i < graph->n; i++)
 		deleteNode(graph->nodes[i]);
 	free(graph->nodes);
 
-	for (i = 0; i < graph->allocated; i++) 
+	for (i = 0; i < graph->allocated; i++)
 		free(graph->amatrix[i]);
 	free(graph->amatrix);
 
@@ -265,7 +265,7 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 
 	for (i = 0; i < grafo->n; i++){
 		fprintf(f, "\t%s [label=\"{%s|" , getName(grafo->nodes[i]), getName(grafo->nodes[i]));
-		
+
 		args = getAttributes(grafo->nodes[i]);
 		num_attributes = getNumAttributes(grafo->nodes[i]);
 		for (j = 0; j < num_attributes; j++)
@@ -293,11 +293,11 @@ Graph * tablaSimbolosClasesToDot(Graph * grafo){
 			fprintf(f, "\t %sN%d -> %sN%d\n", getName(grafo->nodes[i]), i, getName(grafo->nodes[i+1]), i+1);
 
 	fprintf(f, "}\n");
-	
-	fclose(f);	
+
+	fclose(f);
 	free(file_name);
 
-	return grafo;	
+	return grafo;
 }
 
 int iniciarTablaSimbolosClases(Graph** t, char * nombre){
@@ -364,10 +364,10 @@ int abrirClase(Graph* t, char* id_clase){
 		return 0;
 	}
 
-	insertarTablaNodo(t->main, name, CLASE, 0, OBJETO, 
+	insertarTablaNodo(t->main, name, CLASE, 0, OBJETO,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, NULL);
 
-	insertarTablaNodo(node, name2, CLASE, 0, OBJETO, 
+	insertarTablaNodo(node, name2, CLASE, 0, OBJETO,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, NULL);
 
 	free(name);
@@ -443,9 +443,9 @@ int cerrarClase(Graph* t,
 	return 0;
 }
 
-int modificar_insertar(TablaSimbolos *ht, 
-											 TablaSimbolos *main, 
-											 char *id_clase, 
+int modificar_insertar(TablaSimbolos *ht,
+											 TablaSimbolos *main,
+											 char *id_clase,
 											 int x,
 											 int (*f)(TablaSimbolos *ts, const char *key, int incr, int (*g)(int *a, int b))){
 	char *name_main;
@@ -478,20 +478,20 @@ int modificar_insertar(TablaSimbolos *ht,
 	return 0;
 }
 
-int insertarTablaSimbolosAmbitosMain(Graph *grafo, 
+int insertarTablaSimbolosAmbitosMain(Graph *grafo,
 		int categoria,
 		char* id,                        int clase,
-		int tipo,												 int direcciones,                    
-		int numero_parametros,                 
+		int tipo,												 int direcciones,
+		int numero_parametros,
 		int posicion_variable_local,     int posicion_parametro,
-		int tamanio,                                
-		int tipo_acceso,                 int tipo_miembro, 
+		int tamanio,
+		int tipo_acceso,                 int tipo_miembro,
 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
 		int * tipo_args){
 
 	if (!grafo || !id) return ERR;
 
-	return insertarTablaNodo(grafo->main, 
+	return insertarTablaNodo(grafo->main,
 								id,
 								categoria,
 								tipo,
@@ -509,14 +509,14 @@ int insertarTablaSimbolosAmbitosMain(Graph *grafo,
 
 }
 
-int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase, 
+int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase,
 		int categoria,
 		char* id,                        int clase,
-		int tipo,												 int direcciones,                    
-		int numero_parametros,                 
+		int tipo,												 int direcciones,
+		int numero_parametros,
 		int posicion_variable_local,     int posicion_parametro,
-		int tamanio,                                
-		int tipo_acceso,                 int tipo_miembro, 
+		int tamanio,
+		int tipo_acceso,                 int tipo_miembro,
 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
 		int * tipo_args){
 
@@ -527,7 +527,7 @@ int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase,
 	index_clase = indexOf(grafo, id_clase);
 	if (index_clase == ERR) return ERR;
 
-	return insertarTablaNodo(grafo->nodes[index_clase], 
+	return insertarTablaNodo(grafo->nodes[index_clase],
 								id,
 								categoria,
 								tipo,
@@ -548,17 +548,17 @@ int insertarTablaSimbolosAmbitos(Graph *grafo, char *id_clase,
 
 int insertarTablaSimbolosMain(Graph * grafo, int categoria,
 		char* id,                        int clase,
-		int tipo,						 int direcciones,                    
-		int numero_parametros,        
+		int tipo,						 int direcciones,
+		int numero_parametros,
 		int posicion_variable_local,     int posicion_parametro,
-		int tamanio,      
-		int tipo_acceso,                 int tipo_miembro, 
+		int tamanio,
+		int tipo_acceso,                 int tipo_miembro,
 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
 		int * tipo_args){
 
 	if (!grafo || !id) return -1;
 
-	return insertarTablaNodo(grafo->main, 
+	return insertarTablaNodo(grafo->main,
 								id,
 								categoria,
 								tipo,
@@ -576,14 +576,14 @@ int insertarTablaSimbolosMain(Graph * grafo, int categoria,
 }
 
 
-int insertarTablaSimbolosClases(Graph * grafo, 
+int insertarTablaSimbolosClases(Graph * grafo,
 		char * id_clase,                 int categoria,
 		char* id,                        int clase,
-		int tipo,												 int direcciones,                    
-		int numero_parametros,        
+		int tipo,												 int direcciones,
+		int numero_parametros,
 		int posicion_variable_local,     int posicion_parametro,
-		int tamanio,      
-		int tipo_acceso,                 int tipo_miembro, 
+		int tamanio,
+		int tipo_acceso,                 int tipo_miembro,
 		int posicion_atributo_instancia, int posicion_metodo_sobreescribible,
 		int * tipo_args){
 
@@ -595,7 +595,7 @@ int insertarTablaSimbolosClases(Graph * grafo,
 	if (index_clase == ERR) return ERR;
 
 
-	return insertarTablaNodo(grafo->nodes[index_clase], 
+	return insertarTablaNodo(grafo->nodes[index_clase],
 								id,
 								categoria,
 								tipo,
@@ -613,34 +613,34 @@ int insertarTablaSimbolosClases(Graph * grafo,
 
 }
 
-int tablaSimbolosClasesAbrirAmbitoEnMain(Graph * grafo, 
-																char* id_ambito, 
-																int categoria_ambito, 
-																int acceso_metodo, 
-																int tipo_metodo, 
-																int posicion_metodo_sobre, 
+int tablaSimbolosClasesAbrirAmbitoEnMain(Graph * grafo,
+																char* id_ambito,
+																int categoria_ambito,
+																int acceso_metodo,
+																int tipo_metodo,
+																int posicion_metodo_sobre,
 																int tamanio,
 																int numero_parametros,
 																int *tipo_args){
 	if (!grafo || !id_ambito) return ERR;
 
 	return abrirAmbitoFunc(grafo->main,
-							id_ambito, 
-							categoria_ambito, 
-							acceso_metodo, 
-							tipo_metodo, 
-							posicion_metodo_sobre, 
+							id_ambito,
+							categoria_ambito,
+							acceso_metodo,
+							tipo_metodo,
+							posicion_metodo_sobre,
 							tamanio,
 							numero_parametros,
 							tipo_args);
 }
-int tablaSimbolosClasesAbrirAmbitoEnClase(	Graph * grafo, 
+int tablaSimbolosClasesAbrirAmbitoEnClase(	Graph * grafo,
 											char * id_clase,
-											char* id_ambito, 
-											int categoria_ambito, 
-											int acceso_metodo, 
-											int tipo_metodo, 
-											int posicion_metodo_sobre, 
+											char* id_ambito,
+											int categoria_ambito,
+											int acceso_metodo,
+											int tipo_metodo,
+											int posicion_metodo_sobre,
 											int tamanio,
 											int numero_parametros,
 											int *tipo_args){
@@ -653,11 +653,11 @@ int tablaSimbolosClasesAbrirAmbitoEnClase(	Graph * grafo,
 	if (clase == ERR) return ERR;
 
 	return abrirAmbitoFunc(grafo->nodes[clase],
-							id_ambito, 
-							categoria_ambito, 
-							acceso_metodo, 
-							tipo_metodo, 
-							posicion_metodo_sobre, 
+							id_ambito,
+							categoria_ambito,
+							acceso_metodo,
+							tipo_metodo,
+							posicion_metodo_sobre,
 							tamanio,
 							numero_parametros,
 							tipo_args);
@@ -699,7 +699,7 @@ int esDescendiente(Graph *g, char *descendiente, char *antecesor){
 		return OK;
 	else
 		return ERR;
-	
+
 
 }
 
@@ -809,7 +809,7 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 		strncpy(nombre_ambito_encontrado, getNameFunc(t->main), len*sizeof(char));
 		nombre_ambito_encontrado[len] = '\0';
 	}
-	
+
 	*e = ret;
 
 	return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, ret);
@@ -1012,7 +1012,7 @@ void imprimirTablaTrasActualizacion(FILE * fout, Graph *g, char * name){
 
 // Devuelve lo mismo que el strcmp
 int compararNombresSinPrefijo(char *n1, char *n2){
-	char *n1_copia, *n2_copia;	
+	char *n1_copia, *n2_copia;
 	char *tok1, *tok2;
 	int ret;
 
@@ -1039,7 +1039,7 @@ int compararNombresSinPrefijo(char *n1, char *n2){
 
 	tok1 = strtok(n2_copia, "_");
 	tok1 = strtok(NULL, "_");
-	
+
 	tok2 = strtok(n1_copia, "_");
 	tok2 = strtok(NULL, "_");
 
@@ -1152,7 +1152,7 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 		}
 
 
-		
+
 		// Sobreescrituras de la clase
 		// Metodos sobreescribibles propios
 		printf("\tMetodos propios\n");
@@ -1221,6 +1221,6 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 		}
 	}
 	fprintf(f, "\tret\n");
-	
+
 	return 0;
 }

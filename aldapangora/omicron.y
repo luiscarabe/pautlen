@@ -291,6 +291,8 @@ identificador: TOK_IDENTIFICADOR
 					/* Estamos dentro de una función*/
 					else{
 						sprintf(nombre, "%s_%s",nombre_ambito_actual, $1.lexema);
+						//sprintf(nombre, "main_%s", $1.lexema);
+						fprintf(stdout, " A VER QUE INSERTAMOS %s\n", nombre);
 
 						/*La diap 75 de omicron dice que use esta*/
 						if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
@@ -347,7 +349,7 @@ fn_complete_name: fn_name '(' parametros_funcion ')'
 										/*El nombre del lexema será el completo*/
 										strcpy($$.lexema,nombre_funcion);
 										/*Guardamos el ámbito*/
-										sprintf(nombre_ambito_actual, "%s", strtok(nombre_funcion, "main"));
+										sprintf(nombre_ambito_actual, "%s", strtok(nombre_funcion, "main_"));
 										if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre_funcion, &e, "main") == ERR){
 											tablaSimbolosClasesAbrirAmbitoEnMain(tabla_simbolos,
 																											nombre_funcion,
@@ -358,6 +360,8 @@ fn_complete_name: fn_name '(' parametros_funcion ')'
 																											0,
 																											num_parametro_actual,
 																											array_tipo_parametros);
+
+											fprintf(stdout, " a ver llocu como estamos insertando la funcion %s \n", nombre_funcion);
 											/*Ahora declaramos todos los parametros*/
 											for(i = 0 ; i < num_parametro_actual ; i++){
 												sprintf(nombre_funcion, "%s_%s", nombre_ambito_actual,array_nombre_parametros[i]);
@@ -479,6 +483,8 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 				char nombre[100];
 				char nombre_ambito_encontrado [100];
 				HT_item* e;
+				//sprintf(nombre, "%s_%s",nombre_ambito_actual, $1.lexema);
+				//imprimirTablasHash(tabla_simbolos);
 				sprintf(nombre, "%s", $1.lexema);
 
 				fprintf(stdout, " A VER QUE BUSCAMOS %s\n", nombre);
@@ -636,7 +642,7 @@ while_ini: TOK_WHILE {
 lectura: TOK_SCANF TOK_IDENTIFICADOR
 		{
 			fprintf(compilador_log, ";R:\tlectura: TOK_SCANF TOK_IDENTIFICADOR\n");
-			//TODO nombre ambito
+			//TODO nombre ambitollocu
 			char nombre[100];
 			char nombre_ambito_encontrado [100];
 			HT_item* e;
@@ -836,14 +842,15 @@ exp: exp '+' exp
 				HT_item* e;
 				char auxNombreFuncion[100];
 				char nombre_ambito_encontrado [100];
-				sprintf(nombre_funcion, "main_%s", $1.lexema);
+				sprintf(nombre_funcion, "%s", $1.lexema);
 				/*Añadimos los parametros al nombre de la funcion*/
 				for (i = 0 ; i < num_parametros_llamada_actual ; i++ ){
 					sprintf(auxNombreFuncion, "@%d", array_tipo_parametros[i]);
 					strcat(nombre_funcion, auxNombreFuncion);
 				}
+				fprintf (stdout, " a ver llocu que funcion buscamos %s\n", nombre_funcion);
 				if(buscarIdNoCualificado(tabla_simbolos, nombre_funcion, "main", &e, nombre_ambito_encontrado) == ERR){
-	    		fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se existe la función.\n", row, col);
+	    		fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra la función.\n", row, col);
 					return ERR;
 				}
 
