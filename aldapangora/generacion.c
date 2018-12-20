@@ -25,7 +25,7 @@ void escribir_cabecera_bss(FILE* fpasm){
 */
 void escribir_subseccion_data(FILE* fpasm){
    fprintf(fpasm, "segment .data\n");
-   fprintf(fpasm, "\tmsg_error_indice_vector\tdb \"Indice de vector fuera de rango\", 0\n");
+   fprintf(fpasm, "\tmsg_error_indice_vector\tdb \"ERROR: Indice de vector fuera de rango\", 0\n");
    fprintf(fpasm, "\tmsg_error_div_zero\tdb \"ERROR: Division por 0\", 0\n"); /*Mensaje de error (división por 0)*/
    return;
 }
@@ -593,16 +593,16 @@ void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, in
 
    /* Cargamos el valor del indice */
    cargarDePila(fpasm, exp_es_direccion, "eax");
-   fprintf(fpasm, "\tcmp eax 0\n");
+   fprintf(fpasm, "\tcmp eax, 0\n");
    fprintf(fpasm, "\tjl near index_error\n");
-   fprintf(fpasm, "\tcmp eax %d\n", tam_max-1);
+   fprintf(fpasm, "\tcmp eax, %d\n", tam_max-1);
    fprintf(fpasm, "\tjg near index_error\n");
 
    /* En este punto el indice es correcto */
 
    /* PASO 2: Gestion de la asignacion propiamente dicha. Hay que dejar en la cima de la pila la direccion del elem. indexado */
 
-   fprintf(fpasm, "\tmov dword edx _%s\n", nombre_vector);
+   fprintf(fpasm, "\tmov dword edx, _%s\n", nombre_vector);
    fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
    fprintf(fpasm, "\tpush dword eax\n");
 

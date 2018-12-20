@@ -635,7 +635,6 @@ while_ini: TOK_WHILE {
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR
 		{
-			fprintf(compilador_log, ";R:\tlectura: TOK_SCANF TOK_IDENTIFICADOR\n");
 			//TODO nombre ambito
 			char nombre[100];
 			char nombre_ambito_encontrado [100];
@@ -655,7 +654,28 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
 			}
 			leer(fout, $2.lexema, HT_itemGetType(e));
 		}
-	   | TOK_SCANF elemento_vector {fprintf(compilador_log, ";R:\tlectura: TOK_SCANF elemento_vector\n");};
+	   | TOK_SCANF elemento_vector 
+	   {
+			//TODO nombre ambito
+			char nombre[100];
+			char nombre_ambito_encontrado [100];
+			HT_item* e;
+			sprintf(nombre, "%s", $2.lexema);
+			if(buscarIdNoCualificado(tabla_simbolos, nombre,"main", &e, nombre_ambito_encontrado) == ERR){
+					 fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo para scanf.\n", row, col);
+				 	 return ERR;
+			}
+			else if(HT_itemGetCategory(e) != VARIABLE){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede aplicar scanf a algo que no sea una variable.\n", row, col);
+				return ERR;
+			}
+			else if(HT_itemGetClass(e) != VECTOR){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede aplicar scanf a una variable no escalar.\n", row, col);
+				return ERR;
+			}
+			leer(fout, $2.lexema, HT_itemGetType(e));
+
+	   };
 
 
 escritura: TOK_PRINTF exp

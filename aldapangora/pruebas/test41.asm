@@ -1,5 +1,5 @@
 segment .data
-	msg_error_indice_vector	db "Indice de vector fuera de rango", 0
+	msg_error_indice_vector	db "ERROR: Indice de vector fuera de rango", 0
 	msg_error_div_zero	db "ERROR: Division por 0", 0
 segment .bss
 	__esp resd 1
