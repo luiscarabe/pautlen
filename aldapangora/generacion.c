@@ -593,16 +593,16 @@ void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, in
 
    /* Cargamos el valor del indice */
    cargarDePila(fpasm, exp_es_direccion, "eax");
-   fprintf(fpasm, "\tcmp eax 0\n");
+   fprintf(fpasm, "\tcmp eax, 0\n");
    fprintf(fpasm, "\tjl near index_error\n");
-   fprintf(fpasm, "\tcmp eax %d\n", tam_max-1);
+   fprintf(fpasm, "\tcmp eax, %d\n", tam_max-1);
    fprintf(fpasm, "\tjg near index_error\n");
 
    /* En este punto el indice es correcto */
 
    /* PASO 2: Gestion de la asignacion propiamente dicha. Hay que dejar en la cima de la pila la direccion del elem. indexado */
 
-   fprintf(fpasm, "\tmov dword edx _%s\n", nombre_vector);
+   fprintf(fpasm, "\tmov dword edx, _%s\n", nombre_vector);
    fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
    fprintf(fpasm, "\tpush dword eax\n");
 
@@ -713,6 +713,7 @@ void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * n
    fprintf(fd_asm, "\tmov dword ecx, [_offset_%s]\n", nombre_metodo);
    fprintf(fd_asm, "\tlea ecx, [ebx + ecx]\n");
    fprintf(fd_asm, "\tmov dword ecx, [ecx]\n");
+   fprintf(fd_asm, "\tmov dword ecx, [ecx]\n");
    fprintf(fd_asm, "\tcall ecx\n");
 
 }
@@ -723,7 +724,7 @@ void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo){
    fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
    fprintf(fd_asm, "\tmov dword ecx, [_offset_%s]\n", nombre_atributo);
    fprintf(fd_asm, "\tlea ecx, [ebx+ecx]\n");
-   fprintf(fd_asm, "\tpush ecx\n");
+   fprintf(fd_asm, "\tpush dword ecx\n");
 
 }
 
@@ -733,12 +734,16 @@ void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo){
 // - escribirParametro
 // - escribirVariableLocal
 void asignarDestinoEnPila(FILE* fd_asm, int es_variable){
+//void cargarDePila(FILE* fpasm, int es_variable, char* registro){
+
+   fprintf(fd_asm, "\t; asignarDestinoEnPila(%d)\n", es_variable);
+
 	// Primero la direccion
 	fprintf(fd_asm, "\tpop dword eax\n");
 	// Valor que hay que escribir
 	fprintf(fd_asm, "\tpop dword ebx\n");
 
 	if (es_variable)
-		fprintf(fd_asm, "\tmov ebx, [ebx]\n");
-	fprintf(fd_asm, "\tmov [eax], ebx\n");
+		fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
+	fprintf(fd_asm, "\tmov dword [eax], ebx\n");
 }

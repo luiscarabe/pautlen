@@ -1,4 +1,5 @@
 segment .data
+	global  _msA1, _msA2,  _msB1, _msB2, _msC1, _msC2, _msD1, _msD2, _BmsA1, _CmsA1, _CmsA2, _no_defined_method, _mnsA1, _mnsB1, _mnsC1, _mnsD1, _set_offsets, _create_ms_table, _offset_msA1, _offset_msA2, _offset_msB1, _offset_msB2, _offset_msC1, _offset_msC2, _offset_msD1,     _offset_msD2, _offset_aiA1, _offset_aiA2, _offset_aiB1, _offset_aiB2, _offset_aiC1, _offset_aiC2, _offset_aiD1, _offset_aiD2, _msA, _msB, _msC, _msD, _acA1, _acB1, _acC1, _acD1
 	_offset_msA1 dd 0
 	_offset_msA2 dd 4
 	_offset_msB1 dd 8
@@ -32,7 +33,7 @@ segment .bss
   _acC1 resd 1
   _acD1 resd 1
 
-
+segment .txt
 _create_ms_table:
   mov dword [_msA], _msA1        
   mov dword [_msA+4], _msA2        
@@ -55,3 +56,38 @@ _create_ms_table:
   mov dword [_msD+24], _msD1        
   mov dword [_msD+28], _msD2        
   ret
+
+_msA1:
+	ret
+_msA2:
+	ret
+_msB1:
+	ret
+_msB2:
+	ret
+_msC1:
+	ret
+_msC2:
+	ret
+_msD1:
+	ret
+_msD2:
+	ret
+_BmsA1:
+	ret
+_CmsA1:
+	ret
+_CmsA2:
+	ret
+_no_defined_method:
+	ret
+_mnsA1:
+	ret
+_mnsB1:
+	ret
+_mnsC1:
+	ret
+_mnsD1:
+	ret
+	_set_offsets: 
+	ret
