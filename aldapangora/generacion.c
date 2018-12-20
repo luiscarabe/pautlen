@@ -25,7 +25,7 @@ void escribir_cabecera_bss(FILE* fpasm){
 */
 void escribir_subseccion_data(FILE* fpasm){
    fprintf(fpasm, "segment .data\n");
-   fprintf(fpasm, "\tmsg_error_indice_vector\tdb \"Indice de vector fuera de rango\", 0\n");
+   fprintf(fpasm, "\tmsg_error_indice_vector\tdb \"ERROR: Indice de vector fuera de rango\", 0\n");
    fprintf(fpasm, "\tmsg_error_div_zero\tdb \"ERROR: Division por 0\", 0\n"); /*Mensaje de error (división por 0)*/
    return;
 }

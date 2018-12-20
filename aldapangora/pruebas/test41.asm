@@ -1,5 +1,5 @@
 segment .data
-	msg_error_indice_vector	db "Indice de vector fuera de rango", 0
+	msg_error_indice_vector	db "ERROR: Indice de vector fuera de rango", 0
 	msg_error_div_zero	db "ERROR: Division por 0", 0
 segment .bss
 	__esp resd 1
@@ -9,7 +9,7 @@ segment .bss
 segment .txt
 	global main
 	extern scan_int, print_int, scan_boolean, print_boolean
-	extern print_endofline, print_blank, print_string
+	extern print_endofline, print_blank, print_string, malloc, free
 main:
 	mov dword [__esp], esp
 	push dword _x1
@@ -102,8 +102,14 @@ branchend_4:
 	call print_endofline
 fin_then4:
 fin_then2:
-	jmp fin
-	divisor_zero:
+	jmp near fin
+index_error:
+	push dword msg_error_indice_vector
+	call print_string
+	add esp, 4
+	call print_endofline
+	jmp near fin
+divisor_zero:
 	push dword msg_error_div_zero
 	call print_string
 	add esp, 4

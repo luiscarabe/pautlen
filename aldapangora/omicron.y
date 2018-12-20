@@ -163,6 +163,7 @@
 %type <atributos> inicioTabla
 %type <atributos> escritura_cabeceras_datos
 %type <atributos> escritura_main
+%type <atributos> escritura_segmento_texto
 
 %left '+' '-' TOK_OR
 %left '*' '/' TOK_AND
@@ -174,12 +175,13 @@
 
 %% /*Seccion de reglas*/
 
-programa: inicioTabla TOK_MAIN '{' escritura_cabeceras_datos  declaraciones  funciones escritura_main sentencias '}' escritura_fin { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}
-		| inicioTabla TOK_MAIN '{' escritura_cabeceras_datos funciones escritura_main sentencias '}' { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");} ;
+programa: inicioTabla TOK_MAIN '{' escritura_cabeceras_datos  declaraciones escritura_segmento_texto  funciones escritura_main sentencias '}' escritura_fin { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}
+		| inicioTabla TOK_MAIN '{' escritura_cabeceras_datos escritura_segmento_texto funciones escritura_main sentencias '}' { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");} ;
 
 inicioTabla:
 	{
 		iniciarTablaSimbolosClases(&tabla_simbolos, "Tablasimbolos");
+		strcpy(nombre_ambito_actual, "main");
 	}
 
 declaraciones:  declaracion {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion\n");}
@@ -261,6 +263,7 @@ identificador: TOK_IDENTIFICADOR
 					int aux;
 					if (strcmp(nombre_ambito_actual, "main") == 0){
 						/*TODO, conseguir el nombre del ambito*/
+
 						sprintf(nombre, "main_%s", $1.lexema);
 						if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
 							fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
@@ -269,6 +272,9 @@ identificador: TOK_IDENTIFICADOR
 
 
 						/*TODO llamada correcta funcion*/
+
+						fprintf(stdout, " A VER QUE INSERTAMOS %s\n", nombre);
+
 						aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
 							nombre,         clase_actual,
 							tipo_actual,	  0,
@@ -285,6 +291,8 @@ identificador: TOK_IDENTIFICADOR
 					/* Estamos dentro de una función*/
 					else{
 						sprintf(nombre, "%s_%s",nombre_ambito_actual, $1.lexema);
+						//sprintf(nombre, "main_%s", $1.lexema);
+						fprintf(stdout, " A VER QUE INSERTAMOS %s\n", nombre);
 
 						/*La diap 75 de omicron dice que use esta*/
 						if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
@@ -341,7 +349,7 @@ fn_complete_name: fn_name '(' parametros_funcion ')'
 										/*El nombre del lexema será el completo*/
 										strcpy($$.lexema,nombre_funcion);
 										/*Guardamos el ámbito*/
-										sprintf(nombre_ambito_actual, "%s", strtok(nombre_funcion, "main"));
+										sprintf(nombre_ambito_actual, "%s", strtok(nombre_funcion, "main_"));
 										if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre_funcion, &e, "main") == ERR){
 											tablaSimbolosClasesAbrirAmbitoEnMain(tabla_simbolos,
 																											nombre_funcion,
@@ -352,6 +360,8 @@ fn_complete_name: fn_name '(' parametros_funcion ')'
 																											0,
 																											num_parametro_actual,
 																											array_tipo_parametros);
+
+											fprintf(stdout, " a ver llocu como estamos insertando la funcion %s \n", nombre_funcion);
 											/*Ahora declaramos todos los parametros*/
 											for(i = 0 ; i < num_parametro_actual ; i++){
 												sprintf(nombre_funcion, "%s_%s", nombre_ambito_actual,array_nombre_parametros[i]);
@@ -473,7 +483,12 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 				char nombre[100];
 				char nombre_ambito_encontrado [100];
 				HT_item* e;
+				//sprintf(nombre, "%s_%s",nombre_ambito_actual, $1.lexema);
+				//imprimirTablasHash(tabla_simbolos);
 				sprintf(nombre, "%s", $1.lexema);
+
+				fprintf(stdout, " A VER QUE BUSCAMOS %s\n", nombre);
+
 				if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);
 					return ERR;}
@@ -626,8 +641,12 @@ while_ini: TOK_WHILE {
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR
 		{
+<<<<<<< HEAD
 			fprintf(compilador_log, ";R:\tlectura: TOK_SCANF TOK_IDENTIFICADOR\n");
+			//TODO nombre ambitollocu
+=======
 			//TODO nombre ambito
+>>>>>>> 2d1825bccb24b6c08dc991467df56f77bfd2b468
 			char nombre[100];
 			char nombre_ambito_encontrado [100];
 			HT_item* e;
@@ -646,7 +665,28 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
 			}
 			leer(fout, $2.lexema, HT_itemGetType(e));
 		}
-	   | TOK_SCANF elemento_vector {fprintf(compilador_log, ";R:\tlectura: TOK_SCANF elemento_vector\n");};
+	   | TOK_SCANF elemento_vector 
+	   {
+			//TODO nombre ambito
+			char nombre[100];
+			char nombre_ambito_encontrado [100];
+			HT_item* e;
+			sprintf(nombre, "%s", $2.lexema);
+			if(buscarIdNoCualificado(tabla_simbolos, nombre,"main", &e, nombre_ambito_encontrado) == ERR){
+					 fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo para scanf.\n", row, col);
+				 	 return ERR;
+			}
+			else if(HT_itemGetCategory(e) != VARIABLE){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede aplicar scanf a algo que no sea una variable.\n", row, col);
+				return ERR;
+			}
+			else if(HT_itemGetClass(e) != VECTOR){
+				fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede aplicar scanf a una variable no escalar.\n", row, col);
+				return ERR;
+			}
+			leer(fout, $2.lexema, HT_itemGetType(e));
+
+	   };
 
 
 escritura: TOK_PRINTF exp
@@ -827,14 +867,15 @@ exp: exp '+' exp
 				HT_item* e;
 				char auxNombreFuncion[100];
 				char nombre_ambito_encontrado [100];
-				sprintf(nombre_funcion, "main_%s", $1.lexema);
+				sprintf(nombre_funcion, "%s", $1.lexema);
 				/*Añadimos los parametros al nombre de la funcion*/
 				for (i = 0 ; i < num_parametros_llamada_actual ; i++ ){
 					sprintf(auxNombreFuncion, "@%d", array_tipo_parametros[i]);
 					strcat(nombre_funcion, auxNombreFuncion);
 				}
+				fprintf (stdout, " a ver llocu que funcion buscamos %s\n", nombre_funcion);
 				if(buscarIdNoCualificado(tabla_simbolos, nombre_funcion, "main", &e, nombre_ambito_encontrado) == ERR){
-	    		fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se existe la función.\n", row, col);
+	    		fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra la función.\n", row, col);
 					return ERR;
 				}
 
@@ -1081,8 +1122,12 @@ escritura_cabeceras_datos: /*lambda*/
 
 escritura_main: /*lambda*/
 	{
-  		escribir_segmento_codigo(fout);
 		escribir_inicio_main(fout);
+	};
+
+escritura_segmento_texto: /*lambda*/
+	{
+		escribir_segmento_codigo(fout);
 	};
 
 escritura_fin: /*lambda*/
