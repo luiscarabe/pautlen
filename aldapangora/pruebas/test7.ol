@@ -3,6 +3,7 @@ main
 
     int v1, v2, v3;
     boolean v4;
+    
     function int f1 (boolean pf1)
     {
         int vl1;
@@ -26,5 +27,5 @@ main
 
 
     printf v2;
-    printf v4;     
+    printf v4;
 }

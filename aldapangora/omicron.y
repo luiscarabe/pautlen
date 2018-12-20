@@ -163,6 +163,7 @@
 %type <atributos> inicioTabla
 %type <atributos> escritura_cabeceras_datos
 %type <atributos> escritura_main
+%type <atributos> escritura_segmento_texto
 
 %left '+' '-' TOK_OR
 %left '*' '/' TOK_AND
@@ -174,8 +175,8 @@
 
 %% /*Seccion de reglas*/
 
-programa: inicioTabla TOK_MAIN '{' escritura_cabeceras_datos  declaraciones  funciones escritura_main sentencias '}' escritura_fin { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}
-		| inicioTabla TOK_MAIN '{' escritura_cabeceras_datos funciones escritura_main sentencias '}' { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");} ;
+programa: inicioTabla TOK_MAIN '{' escritura_cabeceras_datos  declaraciones escritura_segmento_texto  funciones escritura_main sentencias '}' escritura_fin { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}
+		| inicioTabla TOK_MAIN '{' escritura_cabeceras_datos escritura_segmento_texto funciones escritura_main sentencias '}' { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");} ;
 
 inicioTabla:
 	{
@@ -271,6 +272,9 @@ identificador: TOK_IDENTIFICADOR
 
 
 						/*TODO llamada correcta funcion*/
+
+						fprintf(stdout, " A VER QUE INSERTAMOS %s\n", nombre);
+
 						aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
 							nombre,         clase_actual,
 							tipo_actual,	  0,
@@ -476,6 +480,9 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 				char nombre_ambito_encontrado [100];
 				HT_item* e;
 				sprintf(nombre, "%s", $1.lexema);
+
+				fprintf(stdout, " A VER QUE BUSCAMOS %s\n", nombre);
+
 				if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);
 					return ERR;}
@@ -1083,8 +1090,12 @@ escritura_cabeceras_datos: /*lambda*/
 
 escritura_main: /*lambda*/
 	{
-  		escribir_segmento_codigo(fout);
 		escribir_inicio_main(fout);
+	};
+
+escritura_segmento_texto: /*lambda*/
+	{
+		escribir_segmento_codigo(fout);
 	};
 
 escritura_fin: /*lambda*/
