@@ -10,7 +10,11 @@ y.output
 y.tab.c
 y.tab.h
 
+main_generacion_omicron
+ej
 prueba_TS
 test?
 test?.asm
 test?.o
+
+!olib.o

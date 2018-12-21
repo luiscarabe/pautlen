@@ -715,6 +715,7 @@ void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * n
    fprintf(fd_asm, "\tmov dword ecx, [_offset_%s]\n", nombre_metodo);
    fprintf(fd_asm, "\tlea ecx, [ebx + ecx]\n");
    fprintf(fd_asm, "\tmov dword ecx, [ecx]\n");
+   fprintf(fd_asm, "\tmov dword ecx, [ecx]\n");
    fprintf(fd_asm, "\tcall ecx\n");
 
 }
@@ -725,7 +726,7 @@ void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo){
    fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
    fprintf(fd_asm, "\tmov dword ecx, [_offset_%s]\n", nombre_atributo);
    fprintf(fd_asm, "\tlea ecx, [ebx+ecx]\n");
-   fprintf(fd_asm, "\tpush ecx\n");
+   fprintf(fd_asm, "\tpush dword ecx\n");
 
 }
 
@@ -735,12 +736,16 @@ void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo){
 // - escribirParametro
 // - escribirVariableLocal
 void asignarDestinoEnPila(FILE* fd_asm, int es_variable){
+//void cargarDePila(FILE* fpasm, int es_variable, char* registro){
+
+   fprintf(fd_asm, "\t; asignarDestinoEnPila(%d)\n", es_variable);
+
 	// Primero la direccion
 	fprintf(fd_asm, "\tpop dword eax\n");
 	// Valor que hay que escribir
 	fprintf(fd_asm, "\tpop dword ebx\n");
 
 	if (es_variable)
-		fprintf(fd_asm, "\tmov ebx, [ebx]\n");
-	fprintf(fd_asm, "\tmov [eax], ebx\n");
+		fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
+	fprintf(fd_asm, "\tmov dword [eax], ebx\n");
 }

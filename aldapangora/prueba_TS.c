@@ -178,7 +178,7 @@ void gestion_cerrar_tsc(){
 	FILE *f = fopen("n.asm", "w+");
 
 	tablaSimbolosClasesToDot(tabla_clases);
-	tablaSimbolosClasesANasm(tabla_clases, f);
+	//tablaSimbolosClasesANasm(tabla_clases, f);
 	imprimirTablasHash(tabla_clases);
 	deleteGraph(tabla_clases);
 	fclose(f);
@@ -429,10 +429,7 @@ void gestion_abrir_ambito_tsc(){
 	tipo_miembro = atoi(aux);
 	free(aux);
 
-	if (tipo_miembro == MIEMBRO_UNICO)
-		tablaSimbolosClasesAbrirAmbitoEnClase(tabla_clases, nombre_clase, nombre_ambito, METODO_NO_SOBREESCRIBIBLE, NINGUNO, tipo_basico, 0, 0, 0, NULL);
-	else
-		tablaSimbolosClasesAbrirAmbitoEnClase(tabla_clases, nombre_clase, nombre_ambito, METODO_SOBREESCRIBIBLE, NINGUNO, tipo_basico, 0, 0, 0, NULL);
+	tablaSimbolosClasesAbrirAmbitoEnClase(tabla_clases, nombre_clase, nombre_ambito, categoria, tipo_acceso, tipo_basico, 0, 0, 0, NULL);
 
 	imprimirTablaTrasActualizacion(fout, tabla_clases, nombre_clase);
 	free(nombre_clase);
@@ -501,10 +498,9 @@ void gestion_buscar(){
 
 		leer_siguiente(&nombre_id);
 
-		if (buscarIdNoCualificado(tabla_clases, nombre_id,
-													"main", &e, name) == OK){
+		if (buscarParaDeclararMain(tabla_clases, nombre_id, &e, name) == OK){
 			printf("TOK_DECLARAR_MAIN ERR\n");
-			fprintf(fout, ": Existe id: no se puede declarar");
+			fprintf(fout, ": Encontrado en %s: No se puede declarar", name);
 		}else{
 			printf("TOK_DECLARAR_MAIN OK\n");
 			fprintf(fout, ": No encontrado: se puede declarar");
@@ -520,7 +516,7 @@ void gestion_buscar(){
 
 		if (buscarParaDeclararMiembroClase(tabla_clases, nombre_miembro, nombre_clase_desde, &e, name) == OK){
 			printf("TOK_DECLARAR_MIEMBRO_CLASE ERR\n");
-			fprintf(fout, ": Existe id: no se puede declarar");
+		fprintf(fout, ": Encontrado en %s: No se puede declarar", name);
 		}else{
 			printf("TOK_DECLARAR_MIEMBRO_CLASE OK\n");
 			fprintf(fout, ": No encontrado: se puede declarar");
@@ -535,7 +531,7 @@ void gestion_buscar(){
 
 		if (buscarParaDeclararMiembroInstancia(tabla_clases, nombre_miembro, nombre_clase_desde, &e, name) == OK){
 			printf("TOK_DECLARAR_MIEMBRO_INSTANCIA ERR\n");
-			fprintf(fout, ": Existe id: no se puede declarar");
+		fprintf(fout, ": Encontrado en %s: No se puede declarar", name);
 		}else{
 			printf("TOK_DECLARAR_MIEMBRO_INSTANCIA OK\n");
 			fprintf(fout, ": No encontrado: se puede declarar");
@@ -549,10 +545,10 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_clase);
 		leer_siguiente(&nombre_id);
 
-		if (buscarParaDeclararIdLocalEnMetodo(tabla_clases, nombre_id,
-													nombre_clase, &e, name) == OK){
+		if (buscarParaDeclararIdLocalEnMetodo(tabla_clases, nombre_clase,
+																			nombre_id, &e, name) == OK){
 			printf("TOK_DECLARAR_ID_LOCAL_METODO ERR\n");
-			fprintf(fout, ": Existe id: no se puede declarar");
+		fprintf(fout, ": Encontrado en %s: No se puede declarar", name);
 		}else{
 			printf("TOK_DECLARAR_ID_LOCAL_METODO OK\n");
 			fprintf(fout, ": No encontrado: se puede declarar");
@@ -569,7 +565,7 @@ void gestion_buscar(){
 		if (buscarIdNoCualificado(tabla_clases, nombre_id,
 													nombre_clase, &e, name) == OK){
 			printf("TOK_JERARQUIA OK\n");
-			fprintf(fout, ": Existe id: no se puede declarar");
+		fprintf(fout, ": Encontrado en %s: No se puede declarar", name);
 		}else{
 			printf("TOK_JERARQUIA ERR\n");
 			fprintf(fout, ": No encontrado: se puede declarar");

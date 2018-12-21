@@ -782,6 +782,46 @@ int buscarIdEnJerarquiaDesdeClase(Graph *g, char * nombre_id, char * nombre_clas
 
 }
 
+int buscarParaDeclararMain(Graph *t,
+													char * nombre_id,
+													HT_item ** e,
+													char * nombre_ambito_encontrado){
+	HT_item *ret;
+	int len;
+	char *copia, *tok;
+
+	if (!t || !nombre_id || !e){
+		return ERR;
+	}
+
+	copia = strdup(nombre_id);
+
+	tok = strtok(copia, "_");
+	tok = strtok(NULL, "_");
+
+	ret = buscarSimboloFunc(t->main, tok);
+	if (!ret){
+		ret = buscarSimbolo(t->main, tok);
+		if (!ret){
+			free(copia);
+			return ERR;
+		}
+
+		strncpy(nombre_ambito_encontrado, "main", 5*sizeof(char));
+		nombre_ambito_encontrado[4] = '\0';
+	}
+	else{
+		len = strlen(getNameFunc(t->main));
+		strncpy(nombre_ambito_encontrado, getNameFunc(t->main), len*sizeof(char));
+		nombre_ambito_encontrado[len] = '\0';
+	}
+	
+	*e = ret;
+	free(copia);
+	return OK;
+}
+
+
 int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde, HT_item ** e, char * nombre_ambito_encontrado){
 	HT_item *ret;
 	int len;
@@ -819,9 +859,15 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 int buscarParaDeclararMiembroClase(Graph *t, char * nombre_id, char * nombre_clase_desde, HT_item ** e, char * nombre_ambito_encontrado){
 	int index, len;
 	HT_item * result;
+	char *copia, *tok;
 
 	if (!t || !nombre_id || !nombre_clase_desde || !e)
 		return ERR;
+
+	copia = strdup(nombre_id);
+
+	tok = strtok(copia, "_");
+	tok = strtok(NULL, "_");
 
 	//segun las transparencias esto solo se debe buscar en la clase, NO en jerarquia
 	//if (buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_desde, e, nombre_ambito_encontrado) == OK)
@@ -831,7 +877,7 @@ int buscarParaDeclararMiembroClase(Graph *t, char * nombre_id, char * nombre_cla
 	if (index == -1) return ERR;
 
 	// No tiene sentido buscar en la función
-	result = buscarSimbolo(t->nodes[index], nombre_id);
+	result = buscarSimbolo(t->nodes[index], tok);
 	if (result){
 		len = strlen(getName(t->nodes[index]));
 		strncpy(nombre_ambito_encontrado, getName(t->nodes[index]), len*sizeof(char));
@@ -845,10 +891,17 @@ int buscarParaDeclararMiembroClase(Graph *t, char * nombre_id, char * nombre_cla
 
 int buscarParaDeclararMiembroInstancia(Graph *t, char * nombre_id, char * nombre_clase_desde, HT_item ** e, char * nombre_ambito_encontrado){
 
+	char *copia, *tok;
+
+	copia = strdup(nombre_id);
+
+	tok = strtok(copia, "_");
+	tok = strtok(NULL, "_");
+
 	if (!t || !nombre_id || !nombre_clase_desde || !e)
 		return ERR;
 
-	if (buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_desde, e, nombre_ambito_encontrado) == ERR)
+	if (buscarIdEnJerarquiaDesdeClase(t, tok, nombre_clase_desde, e, nombre_ambito_encontrado) == ERR)
 		return ERR;
 
 	return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
@@ -888,24 +941,24 @@ int buscarIdCualificadoInstancia(	Graph *g,
 
 	// Busca el nombre de la instancia
 	if (buscarIdNoCualificado(g, nombre_instancia_cualifica, nombre_clase_desde, e, nombre_ambito_encontrado) == ERR){
-		//printf("No encontrada instancia_cualifica %s\n", nombre_instancia_cualifica);
+		printf("No encontrada instancia_cualifica %s\n", nombre_instancia_cualifica);
 		return ERR;
 	}
 
 	// Mira la clase a la que pertenece la instancia
 	index_clase = - HT_itemGetType(*e);
 	if (index_clase < 0){
-		//printf("%s no es una instancia de clase\n", nombre_instancia_cualifica);
+		printf("%s no es una instancia de clase\n", nombre_instancia_cualifica);
 		return ERR;
 	}
 
 	// Mira si hay acceso a la instancia desde el ambito actual
 	if (aplicarAccesos(g, nombre_clase_desde, nombre_ambito_encontrado, *e) == ERR){
-		//printf("No hay acceso desde %s a %s\n", nombre_clase_desde, nombre_instancia_cualifica);
+		printf("No hay acceso desde %s a %s\n", nombre_clase_desde, nombre_instancia_cualifica);
 		return ERR;
 	}
 
-	// printf("Buscando %s en jerarquia desde %s\n", nombre_id, getName(g->nodes[index_clase]));
+	printf("Buscando %s en jerarquia desde %s\n", nombre_id, getName(g->nodes[index_clase]));
 
 	if (buscarIdEnJerarquiaDesdeClase(g, nombre_id, getName(g->nodes[index_clase]), e, nombre_ambito_encontrado) == ERR){
 		// printf("No encontrado %s\n", nombre_id);
@@ -947,6 +1000,7 @@ int buscarParaDeclararIdLocalEnMetodo(Graph *g,
 																			char * nombre_ambito_encontrado){
 	int index, len;
 	Node *clase;
+	char *copia, *tok;
 
 	// No tiene sentido el parámetro nombre_ambito_encontrado no?
 	// Ni el e no? --> asignacion
@@ -964,13 +1018,19 @@ int buscarParaDeclararIdLocalEnMetodo(Graph *g,
 		clase = g->nodes[index];
 	}
 
-	*e = buscarSimboloFunc(clase, nombre_id);
+	copia = strdup(nombre_id);
+
+	tok = strtok(copia, "_");
+	tok = strtok(NULL, "_");
+
+	*e = buscarSimboloFunc(clase, tok);
 	if(!*e) return ERR;
 
 	len = strlen(getNameFunc(g->nodes[index]));
 	strncpy(nombre_ambito_encontrado, getNameFunc(g->nodes[index]), len*sizeof(char));
 	nombre_ambito_encontrado[len] = '\0';
 
+	free(copia);
 	return OK;
 }
 
