@@ -83,6 +83,7 @@ _main_factorial@o2:
 	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
+	call print_endofline
 	mov dword [eax], ebx
 	lea eax, [ebp-4]
 	push eax

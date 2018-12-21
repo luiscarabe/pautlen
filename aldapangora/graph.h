@@ -78,6 +78,11 @@ int buscarParaDeclararMiembroClase(Graph *t,
 													HT_item ** e,
 													char * nombre_ambito_encontrado);
 
+int buscarParaDeclararMain(Graph *t,
+													char * nombre_id,
+													HT_item ** e,
+													char * nombre_ambito_encontrado);
+
 int buscarParaDeclararMiembroInstancia(Graph *t,
 													char * nombre_id,
 													char * nombre_clase_desde,
