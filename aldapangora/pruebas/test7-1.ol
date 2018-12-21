@@ -15,14 +15,10 @@ main
       if (pf1){
           vl1=v1+2;
           vl2 = true;
+          vl3 = false; //Errorrrr
           printf 2;
       }
-      else{
-        if (pf2){
-          printf 10;
-        }
-      }
-      printf vl2;
+      print vl2;
 
 	    return vl1;
     }
@@ -31,7 +27,7 @@ main
     v4 = true;
     v2 = f1 (v4, true);
 
-    v3 = f1 (false, true);
+    v3 = f1 (false, false);
 
 
     printf v2;
