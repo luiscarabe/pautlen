@@ -923,6 +923,9 @@ int buscarIdCualificadoClase(	Graph *g, char * nombre_clase_cualifica,
 	if (buscarIdEnJerarquiaDesdeClase(g, nombre_id, nombre_clase_cualifica, e, nombre_ambito_encontrado) == ERR)
 		return ERR;
 
+	if (HT_itemGetCategory(*e) != ATRIBUTO_CLASE && 
+			HT_itemGetCategory(*e) != METODO_NO_SOBREESCRIBIBLE) return ERR;
+
 	return aplicarAccesos(g, nombre_clase_desde, nombre_ambito_encontrado, *e);
 }
 

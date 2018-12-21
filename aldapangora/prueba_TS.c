@@ -240,8 +240,6 @@ void gestion_insertar_tsa_main(){
 	tipo_miembro = atoi(aux);
 	free(aux);
 
-	//TODO:
-
 	insertarTablaSimbolosMain(tabla_clases, categoria, nombre_id, estructura, tipo_basico, 0, 0, 0, 0, 0, tipo_acceso, tipo_miembro, 0, 0, NULL);
 	
 	imprimirTablaTrasActualizacion(fout, tabla_clases, "main");
@@ -264,7 +262,6 @@ void gestion_abrir_ambito_tsa_main(){
 	tipo_basico = atoi(aux);
 	free(aux);
 
-	//TODO
 	tablaSimbolosClasesAbrirAmbitoEnMain(tabla_clases, nombre_ambito, FUNCION, NINGUNO, tipo_basico, 0, 0, 0, NULL);
 
 	free(nombre_ambito);

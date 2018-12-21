@@ -136,7 +136,7 @@ Element * new_element(int categoria,
 
 	Element * e = NULL;
 
-	if(categoria < 0 || tipo < 0 || clase < 0 || direcciones < 0 || numero_parametros < 0
+	if(categoria < 0 || clase < 0 || direcciones < 0 || numero_parametros < 0
 		|| posicion_parametro < 0 || posicion_variable_local < 0){
 		/* If anyone of the arguments' value is less than zero return error */
 		//printf("ERROR. argumentos new element mal\n");

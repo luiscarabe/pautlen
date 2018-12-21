@@ -277,6 +277,10 @@ Comando: insertar_tsc BB BB_mibb 8 -1 5 3 2
 BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
 ***********************************************
 
+**************** Posicion 624 ******************
+BB_mibb ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
 =====================END TABLE==========
 
 Comando: cerrar_clase BB 
@@ -287,6 +291,10 @@ Comando: insertar_tsa_main main_MainMiBB 8 -1 5 3 2
 
 **************** Posicion 18 ******************
 main_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 817 ******************
+main_MainMiBB ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
 ***********************************************
 
 **************** Posicion 835 ******************
@@ -308,12 +316,20 @@ Comando: insertar_tsa_main main_MainMiBB2 8 -1 5 3 2
 main_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
 ***********************************************
 
+**************** Posicion 817 ******************
+main_MainMiBB ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
 **************** Posicion 835 ******************
 main_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
 ***********************************************
 
 **************** Posicion 842 ******************
 main_varGlob VARIABLE	POS_LOCAL: 0	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 912 ******************
+main_MainMiBB2 ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
 ***********************************************
 
 =====================END TABLE==========
@@ -324,6 +340,10 @@ Comando: buscar declarar_miembro_instancia CC CC_micc : No encontrado: se puede 
 Comando: insertar_tsc CC CC_micc 8 -2 5 3 2 
 
 =================== CC =================
+
+**************** Posicion 150 ******************
+CC_micc ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
 
 **************** Posicion 496 ******************
 CC_CC CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
@@ -337,6 +357,10 @@ Comando: buscar declarar_miembro_instancia DD DD_midd : No encontrado: se puede 
 Comando: insertar_tsc DD DD_midd 8 -3 5 3 2 
 
 =================== DD =================
+
+**************** Posicion 685 ******************
+DD_midd ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
 
 **************** Posicion 838 ******************
 DD_DD CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
@@ -353,6 +377,10 @@ Comando: insertar_tsc EE EE_miee 8 -4 5 3 2
 
 **************** Posicion 171 ******************
 EE_EE CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 211 ******************
+EE_miee ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
 ***********************************************
 
 =====================END TABLE==========
@@ -377,6 +405,10 @@ ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)
 EE_EE CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
 ***********************************************
 
+**************** Posicion 211 ******************
+EE_miee ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
 **************** Posicion 748 ******************
 EE_mE METODO_SOBREESCRIBIBLE	POS_METODO: 0	Y ACUMULADA: 0	CLASE: (null)	TIPO: ENTERO	#PAR: 0
 #LOCAL 0
@@ -389,6 +421,10 @@ Comando: buscar declarar_id_local_metodo EE mE_varLoc : No encontrado: se puede 
 Comando: insertar_tsc EE mE_varLoc 4 -4 5 3 2 
 
 =================== mE =================
+
+**************** Posicion 485 ******************
+mE_varLoc CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
 
 **************** Posicion 748 ******************
 EE_mE METODO_SOBREESCRIBIBLE	POS_METODO: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: ENTERO	#PAR: 0
@@ -403,6 +439,10 @@ ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)
 
 **************** Posicion 171 ******************
 EE_EE CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 211 ******************
+EE_miee ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
 ***********************************************
 
 **************** Posicion 748 ******************
@@ -422,9 +462,9 @@ Comando: buscar id_cualificado_instancia MainMiBB2 inspubnoexiste EE : No encont
 Comando: buscar id_cualificado_instancia MainMiBB2 inspriv EE : No encontrado
 Comando: buscar id_cualificado_instancia varLoc inspubnoexiste EE : No encontrado
 Comando: buscar id_cualificado_instancia varLoc inspriv EE : No encontrado
-Comando: buscar id_cualificado_instancia varLoc inspub EE : No encontrado
-Comando: buscar id_cualificado_instancia miee inspub EE : No encontrado
-Comando: buscar id_cualificado_instancia miee insprot EE : No encontrado
+Comando: buscar id_cualificado_instancia varLoc inspub EE : Encontrado en AA
+Comando: buscar id_cualificado_instancia miee inspub EE : Encontrado en AA
+Comando: buscar id_cualificado_instancia miee insprot EE : Encontrado en AA
 Comando: cerrar_ambito_tsc EE 
 Comando: cerrar_clase EE 
 Comando: abrir_clase_hereda FF 
@@ -435,6 +475,10 @@ Comando: insertar_tsc FF FF_miff 8 -5 5 3 2
 
 **************** Posicion 513 ******************
 FF_FF CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 746 ******************
+FF_miff ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
 ***********************************************
 
 =====================END TABLE==========
@@ -454,6 +498,10 @@ Comando: buscar declarar_id_local_metodo main f2_varLoc : No encontrado: se pued
 Comando: insertar_tsa_main f2_varLoc 4 -1 5 3 2 
 
 =================== f2 =================
+
+**************** Posicion 228 ******************
+f2_varLoc CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
 
 **************** Posicion 824 ******************
 
@@ -488,6 +536,10 @@ main_EE CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR.,
 main_FF CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
 ***********************************************
 
+**************** Posicion 817 ******************
+main_MainMiBB ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
 **************** Posicion 824 ******************
 
 ***********************************************
@@ -500,25 +552,29 @@ main_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR.,
 main_varGlob VARIABLE	POS_LOCAL: 0	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
 ***********************************************
 
+**************** Posicion 912 ******************
+main_MainMiBB2 ATRIBUTO INSTANCIA	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: OBJETO	TIPO: (null)	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
 =====================END TABLE==========
 
 Comando: buscar id_cualificado_instancia varGlob2 inspubnoexiste main : No encontrado
-Comando: buscar id_cualificado_instancia MainMiBB2 insprot main : No encontrado
-Comando: buscar id_cualificado_instancia MainMiBB2 inspub main : No encontrado
+Comando: buscar id_cualificado_instancia MainMiBB2 insprot main : Encontrado en AA
+Comando: buscar id_cualificado_instancia MainMiBB2 inspub main : Encontrado en AA
 Comando: buscar id_cualificado_instancia MainMiBB2 inspriv main : No encontrado
 Comando: buscar id_cualificado_clase BB clasepub main : Encontrado en AA
-Comando: buscar id_cualificado_clase BB inspub main : Encontrado en AA
+Comando: buscar id_cualificado_clase BB inspub main : No encontrado
 Comando: buscar id_cualificado_clase BB clasepriv main : No encontrado
 Comando: buscar id_cualificado_instancia MainMiBB2 inspubnoexiste main : No encontrado
-Comando: buscar id_cualificado_instancia varLoc insprot main : No encontrado
-Comando: buscar id_cualificado_instancia MainMiBB2 inspub main : No encontrado
+Comando: buscar id_cualificado_instancia varLoc insprot main : Encontrado en AA
+Comando: buscar id_cualificado_instancia MainMiBB2 inspub main : Encontrado en AA
 Comando: cerrar_ambito_tsa_main 
 Comando: buscar id_cualificado_clase JJ noExiste main : No encontrado
-Comando: buscar id_cualificado_instancia MainMiBB2 inspub main : No encontrado
+Comando: buscar id_cualificado_instancia MainMiBB2 inspub main : Encontrado en AA
 Comando: buscar id_cualificado_instancia MainMiBB2 inspubnoexiste main : No encontrado
 Comando: buscar id_cualificado_instancia MainMiBB2 inspriv main : No encontrado
 Comando: buscar id_cualificado_clase AA clasepub main : Encontrado en AA
-Comando: buscar id_cualificado_clase AA inspub main : Encontrado en AA
+Comando: buscar id_cualificado_clase AA inspub main : No encontrado
 Comando: buscar id_cualificado_clase AA clasepriv main : No encontrado
 Comando: buscar id_cualificado_clase AA noExiste main : No encontrado
 Comando: buscar id_cualificado_clase noExiste noExiste main : No encontrado
