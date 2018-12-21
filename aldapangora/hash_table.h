@@ -8,7 +8,7 @@ PAULEN
 
 #include <stdio.h>
 #include "omicron.h"
-
+	
 typedef struct _HT_item HT_item;
 typedef struct _TablaSimbolos TablaSimbolos;
 typedef struct _Element Element;
@@ -20,7 +20,6 @@ int next_prime(int num);
 
 
 TablaSimbolos * ht_new();
-// nueva
 TablaSimbolos* new_tabla_simbolos(int min_size);
 int ht_get_size(TablaSimbolos * ts);
 int ht_get_count(TablaSimbolos * ts);
@@ -60,11 +59,7 @@ HT_item * ht_modify_item(TablaSimbolos* ht,
 Element * ht_item_get_value(HT_item * item);
 void ht_del_hash_table(TablaSimbolos* h);
 
-// Para debuggear
-void imprimirTabla(TablaSimbolos *ht);
-void imprimirTablaConFormato(FILE * fout, TablaSimbolos *ht);
 
-// Funciones que he añadido fruto de la desorientación
 int get_num_atributos_instancia(TablaSimbolos *ht, const char *key);
 int get_num_metodos_sobreescritura(TablaSimbolos *ht, const char *key);
 int get_num_atributos_instancia_acum(TablaSimbolos *ht, const char *key);
@@ -84,5 +79,8 @@ int HT_itemGetTamanio(HT_item *e);
 int HT_itemGetPosicionVariableLocal(HT_item *e);
 int HT_itemGetPosicionParametro(HT_item *e);
 
+// Para debuggear
+void imprimirTabla(TablaSimbolos *ht);
+void imprimirTablaConFormato(FILE * fout, TablaSimbolos *ht);
 
 #endif /* HASH_TABLE_H */

@@ -1,0 +1,891 @@
+Comando: inicia_tsc declararMiembrosClase 
+Comando: inicia_tsa_main 
+Comando: abrir_ambito_ppal_main 
+Comando: abrir_clase AA 
+Comando: buscar declarar_miembro_clase AA AA_hA1 : No encontrado: se puede declarar
+Comando: insertar_tsc AA AA_hA1 7 1 1 2 1 
+
+=================== AA =================
+
+**************** Posicion 534 ******************
+AA_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 821 ******************
+AA_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_miembro_clase AA AA_sA1 : No encontrado: se puede declarar
+Comando: insertar_tsc AA AA_sA1 7 1 1 1 1 
+
+=================== AA =================
+
+**************** Posicion 243 ******************
+AA_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 534 ******************
+AA_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 821 ******************
+AA_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_miembro_clase AA AA_sA1 : Encontrado en AA: No se puede declarar
+Comando: buscar declarar_miembro_clase AA AA_xA1 : No encontrado: se puede declarar
+Comando: insertar_tsc AA AA_xA1 7 1 1 3 1 
+
+=================== AA =================
+
+**************** Posicion 19 ******************
+AA_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 243 ******************
+AA_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 534 ******************
+AA_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 821 ******************
+AA_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_miembro_clase AA AA_MA1@1 : No encontrado: se puede declarar
+Comando: abrir_ambito_tsc AA AA_MA1@1 6 1 2 1 
+
+=================== MA1@1 =================
+
+**************** Posicion 738 ******************
+
+***********************************************
+
+========================================
+
+
+=================== AA =================
+
+**************** Posicion 19 ******************
+AA_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 243 ******************
+AA_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 534 ******************
+AA_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 738 ******************
+
+***********************************************
+
+**************** Posicion 821 ******************
+AA_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo AA MA1@1_p1 : No encontrado: se puede declarar
+Comando: insertar_tsc AA MA1@1_p1 2 1 1 3 2 
+
+=================== MA1@1 =================
+
+**************** Posicion 141 ******************
+MA1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 738 ******************
+
+***********************************************
+
+========================================
+
+
+=================== AA =================
+
+**************** Posicion 19 ******************
+AA_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 243 ******************
+AA_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 534 ******************
+AA_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 738 ******************
+
+***********************************************
+
+**************** Posicion 821 ******************
+AA_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo AA MA1@1_v1 : No encontrado: se puede declarar
+Comando: insertar_tsc AA MA1@1_v1 1 1 1 3 2 
+
+=================== MA1@1 =================
+
+**************** Posicion 141 ******************
+MA1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 278 ******************
+MA1@1_v1 VARIABLE	POS_LOCAL: 0	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 738 ******************
+
+***********************************************
+
+========================================
+
+
+=================== AA =================
+
+**************** Posicion 19 ******************
+AA_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 243 ******************
+AA_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 534 ******************
+AA_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 738 ******************
+
+***********************************************
+
+**************** Posicion 821 ******************
+AA_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar id_no_cualificado p1 AA : Encontrado en MA1@1
+Comando: cerrar_ambito_tsc AA 
+Comando: buscar declarar_miembro_clase AA AA_MA1@1 : Encontrado en AA: No se puede declarar
+Comando: buscar declarar_miembro_clase AA AA_MA1@1@1 : No encontrado: se puede declarar
+Comando: abrir_ambito_tsc AA AA_MA1@1@1 6 1 2 1 
+
+=================== MA1@1@1 =================
+
+**************** Posicion 733 ******************
+
+***********************************************
+
+========================================
+
+
+=================== AA =================
+
+**************** Posicion 19 ******************
+AA_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 243 ******************
+AA_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 534 ******************
+AA_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 733 ******************
+
+***********************************************
+
+**************** Posicion 738 ******************
+
+***********************************************
+
+**************** Posicion 821 ******************
+AA_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo AA MA1@1@1_p1 : No encontrado: se puede declarar
+Comando: insertar_tsc AA MA1@1@1_p1 2 1 1 3 2 
+
+=================== MA1@1@1 =================
+
+**************** Posicion 733 ******************
+
+***********************************************
+
+**************** Posicion 776 ******************
+MA1@1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+========================================
+
+
+=================== AA =================
+
+**************** Posicion 19 ******************
+AA_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 243 ******************
+AA_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 534 ******************
+AA_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 733 ******************
+
+***********************************************
+
+**************** Posicion 738 ******************
+
+***********************************************
+
+**************** Posicion 821 ******************
+AA_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo AA MA1@1@1_p2 : No encontrado: se puede declarar
+Comando: insertar_tsc AA MA1@1@1_p2 2 1 1 3 2 
+
+=================== MA1@1@1 =================
+
+**************** Posicion 733 ******************
+
+***********************************************
+
+**************** Posicion 776 ******************
+MA1@1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 777 ******************
+MA1@1@1_p2 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+========================================
+
+
+=================== AA =================
+
+**************** Posicion 19 ******************
+AA_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 243 ******************
+AA_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 534 ******************
+AA_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 733 ******************
+
+***********************************************
+
+**************** Posicion 738 ******************
+
+***********************************************
+
+**************** Posicion 821 ******************
+AA_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo AA MA1@1@1_v1 : No encontrado: se puede declarar
+Comando: insertar_tsc AA MA1@1@1_v1 1 1 1 3 2 
+
+=================== MA1@1@1 =================
+
+**************** Posicion 733 ******************
+
+***********************************************
+
+**************** Posicion 776 ******************
+MA1@1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 777 ******************
+MA1@1@1_p2 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 913 ******************
+MA1@1@1_v1 VARIABLE	POS_LOCAL: 0	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+========================================
+
+
+=================== AA =================
+
+**************** Posicion 19 ******************
+AA_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 243 ******************
+AA_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 534 ******************
+AA_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 733 ******************
+
+***********************************************
+
+**************** Posicion 738 ******************
+
+***********************************************
+
+**************** Posicion 821 ******************
+AA_AA CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar id_no_cualificado p1 AA : Encontrado en MA1@1@1
+Comando: cerrar_ambito_tsc AA 
+Comando: cerrar_clase AA 
+Comando: abrir_clase_hereda BB 
+Comando: buscar declarar_miembro_clase BB BB_hA1 : No encontrado: se puede declarar
+Comando: insertar_tsc BB BB_hA1 7 1 1 2 1 
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_miembro_clase BB BB_sA1 : No encontrado: se puede declarar
+Comando: insertar_tsc BB BB_sA1 7 1 1 1 1 
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_miembro_clase BB BB_xA1 : No encontrado: se puede declarar
+Comando: insertar_tsc BB BB_xA1 7 1 1 3 1 
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 417 ******************
+BB_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_miembro_clase BB BB_MB1@1 : No encontrado: se puede declarar
+Comando: abrir_ambito_tsc BB BB_MB1@1 6 1 1 1 
+
+=================== MB1@1 =================
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+========================================
+
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 417 ******************
+BB_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo BB MB1@1_p1 : No encontrado: se puede declarar
+Comando: insertar_tsc BB MB1@1_p1 2 1 1 3 2 
+
+=================== MB1@1 =================
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 519 ******************
+MB1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+========================================
+
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 417 ******************
+BB_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo BB MB1@1_v1 : No encontrado: se puede declarar
+Comando: insertar_tsc BB MB1@1_v1 1 1 1 3 2 
+
+=================== MB1@1 =================
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 519 ******************
+MB1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 656 ******************
+MB1@1_v1 VARIABLE	POS_LOCAL: 0	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+========================================
+
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 417 ******************
+BB_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar id_no_cualificado p1 BB : Encontrado en MB1@1
+Comando: cerrar_ambito_tsc BB 
+Comando: buscar declarar_miembro_clase BB BB_MA1@1 : No encontrado: se puede declarar
+Comando: abrir_ambito_tsc BB BB_MA1@1 6 1 1 1 
+
+=================== MA1@1 =================
+
+**************** Posicion 667 ******************
+
+***********************************************
+
+========================================
+
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 417 ******************
+BB_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 667 ******************
+
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo BB MA1@1_p1 : No encontrado: se puede declarar
+Comando: insertar_tsc BB MA1@1_p1 2 1 1 3 2 
+
+=================== MA1@1 =================
+
+**************** Posicion 141 ******************
+MA1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 667 ******************
+
+***********************************************
+
+========================================
+
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 417 ******************
+BB_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 667 ******************
+
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo BB MA1@1_v1 : No encontrado: se puede declarar
+Comando: insertar_tsc BB MA1@1_v1 1 1 1 3 2 
+
+=================== MA1@1 =================
+
+**************** Posicion 141 ******************
+MA1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 278 ******************
+MA1@1_v1 VARIABLE	POS_LOCAL: 0	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 667 ******************
+
+***********************************************
+
+========================================
+
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 417 ******************
+BB_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 667 ******************
+
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar id_no_cualificado p1 BB : Encontrado en MA1@1
+Comando: cerrar_ambito_tsc BB 
+Comando: buscar declarar_miembro_clase BB BB_MA2@1@1 : No encontrado: se puede declarar
+Comando: abrir_ambito_tsc BB BB_MA2@1@1 6 1 3 1 
+
+=================== MA2@1@1 =================
+
+**************** Posicion 163 ******************
+
+***********************************************
+
+========================================
+
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 163 ******************
+
+***********************************************
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 417 ******************
+BB_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 667 ******************
+
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo BB MA1@1_p1 : No encontrado: se puede declarar
+Comando: insertar_tsc BB MA2@1@1_p1 2 1 1 3 2 
+
+=================== MA2@1@1 =================
+
+**************** Posicion 163 ******************
+
+***********************************************
+
+**************** Posicion 327 ******************
+MA2@1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+========================================
+
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 163 ******************
+
+***********************************************
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 417 ******************
+BB_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 667 ******************
+
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo BB MA1@1_p2 : No encontrado: se puede declarar
+Comando: insertar_tsc BB MA2@1@1_p2 2 1 1 3 2 
+
+=================== MA2@1@1 =================
+
+**************** Posicion 163 ******************
+
+***********************************************
+
+**************** Posicion 327 ******************
+MA2@1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 328 ******************
+MA2@1@1_p2 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+========================================
+
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 163 ******************
+
+***********************************************
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 417 ******************
+BB_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 667 ******************
+
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar declarar_id_local_metodo BB MA1@1_v1 : No encontrado: se puede declarar
+Comando: insertar_tsc BB MA2@1@1_v1 1 1 1 3 2 
+
+=================== MA2@1@1 =================
+
+**************** Posicion 163 ******************
+
+***********************************************
+
+**************** Posicion 327 ******************
+MA2@1@1_p1 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 328 ******************
+MA2@1@1_p2 PARAMETRO	POS_PAR: 0	POS_LOCAL: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+**************** Posicion 464 ******************
+MA2@1@1_v1 VARIABLE	POS_LOCAL: 0	POS ATR. INSTANCIA: 0	Y ACUMULADA: 0	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: NO UNICO(2)	
+***********************************************
+
+========================================
+
+
+=================== BB =================
+
+**************** Posicion 154 ******************
+BB_BB CLASE	CON 0 ATR. CLASE, 0 ATR. INSTANCIA, 0 MET. SOBR., 0 MET. NO SOBR., 0 ACUM. ATR. INS. Y 0 ACUM. MET. SOBR.	
+***********************************************
+
+**************** Posicion 163 ******************
+
+***********************************************
+
+**************** Posicion 384 ******************
+
+***********************************************
+
+**************** Posicion 417 ******************
+BB_xA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: TODOS(3)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 641 ******************
+BB_sA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: HERENCIA(1)	MIEMBRO: UNICO(1)	
+***********************************************
+
+**************** Posicion 667 ******************
+
+***********************************************
+
+**************** Posicion 932 ******************
+BB_hA1 ATRIBUTO CLASE	CLASE: ESCALAR	TIPO: ENTERO	DIR: 0	ACCESO: CLASE(2)	MIEMBRO: UNICO(1)	
+***********************************************
+
+=====================END TABLE==========
+
+Comando: buscar id_no_cualificado p1 BB : Encontrado en MA2@1@1
+Comando: cerrar_ambito_tsc BB 
+Comando: cerrar_clase BB 
+Comando: cerrar_tsa_main 
+Comando: cerrar_tsc 
