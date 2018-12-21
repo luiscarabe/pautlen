@@ -53,7 +53,7 @@
 	int i; /*Bucles*/
 	char nombre_parametro[MAX_LONG_ID + 3];
 	char nombre_funcion[255];
-
+	int param_or_variable = 0;
 
 
 	/* Locales */
@@ -293,6 +293,8 @@ identificador: TOK_IDENTIFICADOR
 						sprintf(nombre, "%s_%s",nombre_ambito_actual, $1.lexema);
 						//sprintf(nombre, "main_%s", $1.lexema);
 						fprintf(stdout, " A VER QUE INSERTAMOS %s\n", nombre);
+						/*num_variable local empieza en 1 o en 0??? TODO*/
+						num_variable_local_actual++;
 
 						/*La diap 75 de omicron dice que use esta*/
 						if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
@@ -304,7 +306,7 @@ identificador: TOK_IDENTIFICADOR
 						aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
 							nombre,         clase_actual,
 							tipo_actual,	  0,
-							0,      		  0,
+							0,      		  num_variable_local_actual,
 							0,              tamanio_vector_actual,
 							ACCESO_TODOS,        MIEMBRO_NO_UNICO,
 							0,              0,
@@ -331,7 +333,7 @@ funcion: fn_declaration sentencias '}'
 fn_declaration: fn_complete_name '{' declaraciones_funcion
 								{
 									/*TODO, NOMBRE DE LA FUNCION A SECAS O NOMBRE EN PLAN MAIN_FUNCION_@TAL*/
-									declararFuncion(fout, $1.lexema, num_variable_local_actual);
+									declararFuncion(fout, $1.lexema, num_parametro_actual);
 								};
 
 
@@ -369,8 +371,8 @@ fn_complete_name: fn_name '(' parametros_funcion ')'
 													insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
 																				nombre_funcion,         ESCALAR,
 																				array_tipo_parametros[i],	  0,
-																				0,      		  0,
-																				0,              tamanio_vector_actual,
+																				num_parametro_actual,      		  0,
+																				i,              tamanio_vector_actual,
 																				ACCESO_TODOS,        MIEMBRO_NO_UNICO,
 																				0,              0,
 																				NULL);
@@ -491,11 +493,12 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 
 				if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);
-					return ERR;}
+					return ERR;
+				}
 	    		else if (HT_itemGetCategory(e) == FUNCION){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se puede asignar una funcion\n", row, col);
 					return ERR;
-					}
+				}
 	    		else if (HT_itemGetClass(e) == VECTOR){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simbolo es vector\n", row, col);
 					return ERR;
@@ -505,7 +508,15 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 					return ERR;
 	    		}
 
-	    		asignar(fout, $1.lexema, $3.direcciones);
+	    		printf("%s\n", nombre_ambito_encontrado);
+	    		if (strcmp(nombre_ambito_encontrado, "main") == 0)
+	    			asignar(fout, $1.lexema, $3.direcciones);
+	    		else {
+
+						fprintf(stdout, " ESta es la posicion de la variable %d", HT_itemGetPosicionVariableLocal(e));
+	    			escribirVariableLocal(fout, HT_itemGetPosicionVariableLocal(e));
+						asignarDestinoEnPila(fout, $3.direcciones);
+	    		}
 
 			}
 		  | elemento_vector '=' exp
@@ -641,12 +652,6 @@ while_ini: TOK_WHILE {
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR
 		{
-<<<<<<< HEAD
-			fprintf(compilador_log, ";R:\tlectura: TOK_SCANF TOK_IDENTIFICADOR\n");
-			//TODO nombre ambitollocu
-=======
-			//TODO nombre ambito
->>>>>>> 2d1825bccb24b6c08dc991467df56f77bfd2b468
 			char nombre[100];
 			char nombre_ambito_encontrado [100];
 			HT_item* e;
@@ -665,7 +670,7 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
 			}
 			leer(fout, $2.lexema, HT_itemGetType(e));
 		}
-	   | TOK_SCANF elemento_vector 
+	   | TOK_SCANF elemento_vector
 	   {
 			//TODO nombre ambito
 			char nombre[100];
@@ -727,7 +732,7 @@ exp: exp '+' exp
 			if (($1.tipo == INT) && ($3.tipo == INT)){
 				restar(fout, $1.direcciones, $3.direcciones);
 			    /* Propaga los atributos*/
-			    $$.tipo = INT;
+			  $$.tipo = INT;
 				$$.direcciones = 0;
 			}
 		}
@@ -740,7 +745,7 @@ exp: exp '+' exp
 			if (($1.tipo == INT) && ($3.tipo == INT)){
 				dividir(fout, $1.direcciones, $3.direcciones);
 			    /* Propaga los atributos*/
-			    $$.tipo = INT;
+			  $$.tipo = INT;
 				$$.direcciones = 0;
 			}
 		}
@@ -753,7 +758,7 @@ exp: exp '+' exp
 			if (($1.tipo == INT) && ($3.tipo == INT)){
 				multiplicar(fout, $1.direcciones, $3.direcciones);
 			    /* Propaga los atributos*/
-			    $$.tipo = INT;
+			  $$.tipo = INT;
 				$$.direcciones = 0;
 			}
 		}
@@ -767,7 +772,7 @@ exp: exp '+' exp
 			if (($2.tipo == INT)){
 				cambiar_signo(fout, $2.direcciones);
 			    /* Propaga los atributos*/
-			    $$.tipo = INT;
+			  $$.tipo = INT;
 				$$.direcciones = 0;
 			}
 		}
@@ -821,25 +826,47 @@ exp: exp '+' exp
 			HT_item* e = NULL;
 			sprintf(nombre, "%s", $1.lexema);
 			if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo.\n", row, col);
+    		fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo.\n", row, col);
 				return ERR;
 			}
-    		else if (HT_itemGetCategory(e) == FUNCION){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. El simbolo en asignacion es una funcion\n", row, col);
+    	else if (HT_itemGetCategory(e) == FUNCION){
+    		fprintf(stderr, "****Error semantico en [lin %d, col %d]. El simbolo en asignacion es una funcion\n", row, col);
 				return ERR;
 			}
-    		else if (HT_itemGetClass(e) == VECTOR){
-    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simboo es vector\n", row, col);
+    	else if (HT_itemGetClass(e) == VECTOR){
+    		fprintf(stderr, "****Error semantico en [lin %d, col %d]. La clase del simbolo es vector\n", row, col);
 				return ERR;
-    		}
+    	}
 
-    		$$.tipo = HT_itemGetType(e);
-    		$$.direcciones = 1;
-    		escribir_operando(fout, $1.lexema, 1);
-
-				if (en_explist == 1){
-					operandoEnPilaAArgumento(fout, 1);
+  		$$.tipo = HT_itemGetType(e);
+  		$$.direcciones = 1;
+			param_or_variable = 1;
+			for (i = 0; i < num_parametro_actual ; i++){
+				if (strcmp(array_nombre_parametros[i], $1.lexema) == 0){
+					escribirParametro(fout, i, num_parametro_actual);
+					fprintf(stdout, "HE ESCRITO EL PARAMETRO %s\n", nombre);
+					param_or_variable = 0;
 				}
+			}
+
+			if(param_or_variable == 1){
+				/*Caso en el que asignamos una variable local*/
+				if (strcmp(nombre_ambito_encontrado, "main") == 0)
+					escribir_operando(fout, $1.lexema, 1);
+				else {
+					/* Variable de funcion*/
+					fprintf(stdout, "EN LA BUSQUEDA DE %s\n", nombre);
+					fprintf(stdout, "ESTA ES LA OTRA POSOCION %d\n", HT_itemGetPosicionVariableLocal(e));
+					escribirVariableLocal(fout, HT_itemGetPosicionVariableLocal(e));
+				}
+			}
+
+			param_or_variable = 0;
+
+			/*Caso cuando estamos reduciendo en la llamada de función*/
+			if (en_explist == 1){
+				operandoEnPilaAArgumento(fout, 1);
+			}
     	}
    | constante
    		{
@@ -887,9 +914,9 @@ exp: exp '+' exp
 
 				$$.tipo = HT_itemGetType(e);
 				/*Cogemos un valor, no una dirección*/
-				$$.direcciones=0;
+				sprintf(auxNombreFuncion, "main_%s", nombre_funcion);
 				/*Generamos el código NASM TODO LA LLAMAMOS POR SU NOMBRE SIMPLE O COMPUESTO?? MIRAR LA GENERACION DE FUNCIONES*/
-				llamarFuncion(fout, nombre_funcion, num_parametros_llamada_actual);
+				llamarFuncion(fout, auxNombreFuncion, num_parametros_llamada_actual);
 
 				fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
 			}

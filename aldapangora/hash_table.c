@@ -12,7 +12,7 @@ PAULEN
 #include "hash_table.h"
 #include "omicron.h"
 
-#define HASHSIZE 1009 // Prime number to choose 1009 
+#define HASHSIZE 1009 // Prime number to choose 1009
 #define POW 191 // Prime for the hash
 
 
@@ -50,10 +50,10 @@ struct _Element{
 	int numero_metodos_sobreescribibles;
 	int numero_metodos_no_sobreescribibles;
 	/*NINGUNO (exposed) ACCESO_CLASE (hidden) ACCESO_HERENCIA	(secret) ACCESO_TODOS (exposed) */
-	int tipo_acceso;  
+	int tipo_acceso;
 	/*MIEMBRO_UNICO (unique) MIEMBRO_NO_UNICO*/
 	int tipo_miembro;
-		
+
 	int posicion_atributo_instancia;
 	int posicion_metodo_sobreescribible;
 	int num_acumulado_atributos_instancia;
@@ -290,7 +290,7 @@ static HT_item* ht_new_item(const char* k,
 			return NULL;
 		}
 		item->key = strdup(k);
-		
+
 		item->value = new_element(categoria,
 															tipo,
 															clase,
@@ -690,15 +690,15 @@ void ht_del_hash_table(TablaSimbolos* ht) {
 	free(ht);
 }
 
-HT_item * ht_insert_item(TablaSimbolos* ht, 
-		const char* key,							int categoria,	
-		int tipo,											int clase, 
-		int direcciones, 							int numero_parametros, 
+HT_item * ht_insert_item(TablaSimbolos* ht,
+		const char* key,							int categoria,
+		int tipo,											int clase,
+		int direcciones, 							int numero_parametros,
 		int posicion_parametro,
-		int posicion_variable_local, 	int tamanio, 
-		int tipo_acceso, 							int tipo_miembro, 
-		int posicion_atributo_instancia, 
-		int posicion_metodo_sobreescribible, 
+		int posicion_variable_local, 	int tamanio,
+		int tipo_acceso, 							int tipo_miembro,
+		int posicion_atributo_instancia,
+		int posicion_metodo_sobreescribible,
 		int * tipo_args) {
 
 
@@ -775,8 +775,8 @@ int get_names_row(HT_item * item,char ** names, int *count){
 		}
 	}
 
-	
-	
+
+
 	return 0;
 }
 
@@ -913,7 +913,7 @@ void imprimirTabla(TablaSimbolos *ht){
 		if (ht->items[i]){
 			print_item(ht->items[i]);
 			printf("\n");
-			
+
 			next = ht->items[i]->next;
 			while (next){
 				print_item(next);
@@ -932,7 +932,7 @@ void imprimirTablaConFormato(FILE * fout, TablaSimbolos *ht){
 		if (ht->items[i]){
 			fprintf(fout, "\n**************** Posicion %d ******************\n", i);
 			print_item_format(fout, ht->items[i]);
-			
+
 			next = ht->items[i]->next;
 			while (next){
 				printf("\n");
@@ -1059,4 +1059,14 @@ int HT_itemGetType(HT_item *e){
 int HT_itemGetTamanio(HT_item *e){
 	if (!e) return -1;
 	return e->value->tamanio;
+}
+
+int HT_itemGetPosicionVariableLocal(HT_item *e){
+	if (!e) return -1;
+	return e->value->posicion_variable_local;
+}
+
+int HT_itemGetPosicionParametro(HT_item *e){
+	if (!e) return -1;
+	return e->value->posicion_parametro;
 }

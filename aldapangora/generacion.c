@@ -630,7 +630,9 @@ void asignar_a_elemento_vector(FILE * fpasm, int exp_es_direccion){
 /*Generación de código para iniciar la declaración de una función.*/
 
 void declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc){
+
   fprintf(fd_s, "_%s:\n", nombre_funcion);
+  fprintf(fd_s, "\tpush ebp\n");
   fprintf(fd_s, "\tmov ebp, esp\n");
   fprintf(fd_s, "\tsub esp, %d\n", 4 * num_var_loc);
 }
@@ -639,9 +641,9 @@ void declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc){
 
 void retornarFuncion(FILE * fd_s, int es_variable){
   /* El retorno se hará mediante eax*/
-  fprintf(fd_s, "\tpop dword eax\n");
+  fprintf(fd_s, "\tpop dword edx\n");
   if(es_variable){ /*Si es una dirección, sacamos su valor*/
-    fprintf(fd_s, "\tmov eax, [eax]\n");
+    fprintf(fd_s, "\tmov eax, [edx]\n");
   }
   fprintf(fd_s, "\tmov dword esp, ebp\n");
   fprintf(fd_s, "\tpop dword ebp\n");

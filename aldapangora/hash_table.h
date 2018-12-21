@@ -25,15 +25,15 @@ TablaSimbolos* new_tabla_simbolos(int min_size);
 int ht_get_size(TablaSimbolos * ts);
 int ht_get_count(TablaSimbolos * ts);
 void ht_del_hash_table(TablaSimbolos* ht);
-HT_item * ht_insert_item(TablaSimbolos* ht, 
-		const char* key,							int categoria,	
-		int tipo,											int clase, 
-		int direcciones, 							int numero_parametros, 
+HT_item * ht_insert_item(TablaSimbolos* ht,
+		const char* key,							int categoria,
+		int tipo,											int clase,
+		int direcciones, 							int numero_parametros,
 		int posicion_parametro,
-		int posicion_variable_local, 	int tamanio, 
-		int tipo_acceso, 							int tipo_miembro, 
-		int posicion_atributo_instancia, 
-		int posicion_metodo_sobreescribible, 
+		int posicion_variable_local, 	int tamanio,
+		int tipo_acceso, 							int tipo_miembro,
+		int posicion_atributo_instancia,
+		int posicion_metodo_sobreescribible,
 		int * tipo_args);
 
 char ** ht_get_name_symbols(TablaSimbolos * ts);
@@ -41,20 +41,20 @@ char ** ht_get_name_symbols(TablaSimbolos * ts);
 int print_item(HT_item * item);
 HT_item * ht_search_item(TablaSimbolos* ht, const char* key);
 
-HT_item * ht_modify_item(TablaSimbolos* ht, 
-		const char* key,							int categoria,	
-		int tipo,											int clase, 
-		int direcciones, 							int numero_parametros, 
-		int posicion_parametro, 			int numero_variables_locales, 
-		int posicion_variable_local, 	int tamanio, 
-		int numero_atributos_clase, 	int numero_atributos_instancia, 
-		int numero_metodos_sobreescribibles, 
-		int numero_metodos_no_sobreescribibles, 
-		int tipo_acceso, 							int tipo_miembro, 
-		int posicion_atributo_instancia, 
-		int posicion_metodo_sobreescribible, 
-		int num_acumulado_atributos_instancia, 
-		int num_acumulado_metodos_sobreescritura, 
+HT_item * ht_modify_item(TablaSimbolos* ht,
+		const char* key,							int categoria,
+		int tipo,											int clase,
+		int direcciones, 							int numero_parametros,
+		int posicion_parametro, 			int numero_variables_locales,
+		int posicion_variable_local, 	int tamanio,
+		int numero_atributos_clase, 	int numero_atributos_instancia,
+		int numero_metodos_sobreescribibles,
+		int numero_metodos_no_sobreescribibles,
+		int tipo_acceso, 							int tipo_miembro,
+		int posicion_atributo_instancia,
+		int posicion_metodo_sobreescribible,
+		int num_acumulado_atributos_instancia,
+		int num_acumulado_metodos_sobreescritura,
 		int * tipo_args);
 
 Element * ht_item_get_value(HT_item * item);
@@ -81,7 +81,8 @@ int HT_itemGetCategory(HT_item *e);
 int HT_itemGetClass(HT_item *e);
 int HT_itemGetType(HT_item *e);
 int HT_itemGetTamanio(HT_item *e);
-
+int HT_itemGetPosicionVariableLocal(HT_item *e);
+int HT_itemGetPosicionParametro(HT_item *e);
 
 
 #endif /* HASH_TABLE_H */
