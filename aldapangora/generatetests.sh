@@ -52,6 +52,31 @@ echo "TEST 7"
 nasm -g -o pruebas/test7.o -f elf32 pruebas/test7.asm
 gcc -Wall -g -m32 -o pruebas/test7 pruebas/test7.o pruebas/olib.o
 
+echo "TEST 7-1"
+
+./omicron pruebas/test7-1.ol pruebas/test7-1.asm
+
+echo "TEST 7-2"
+
+./omicron pruebas/test7-2.ol pruebas/test7-2.asm
+nasm -g -o pruebas/test7-2.o -f elf32 pruebas/test7-2.asm
+gcc -Wall -g -m32 -o pruebas/test7-2 pruebas/test7-2.o pruebas/olib.o
+
+echo "TEST 7-3"
+
+./omicron pruebas/test7-3.ol pruebas/test7-3.asm
+
+echo "TEST 7-4"
+
+./omicron pruebas/test7-4.ol pruebas/test7-4.asm
+nasm -g -o pruebas/test7-4.o -f elf32 pruebas/test7-4.asm
+gcc -Wall -g -m32 -o pruebas/test7-4 pruebas/test7-4.o pruebas/olib.o
+
+echo "TEST 7-5"
+
+./omicron pruebas/test7-5.ol pruebas/test7-5.asm
+
+
 echo "TEST 8"
 
 ./omicron pruebas/test8.ol pruebas/test8.asm
@@ -81,4 +106,3 @@ echo "TEST 12"
 ./omicron pruebas/test12.ol pruebas/test12.asm
 nasm -g -o pruebas/test12.o -f elf32 pruebas/test12.asm
 gcc -Wall -g -m32 -o pruebas/test12 pruebas/test12.o pruebas/olib.o
-

@@ -13,7 +13,6 @@
 ;R:	identificadores: TOK_IDENTIFICADOR
 ;R:	declaracion: modificadores_acceso clase identificadores ';'
 ;D:	x1
-;R:	declaraciones: declaracion
 ;R:	funciones: 
 ;D:	[
 ;D:	1
@@ -27,4 +26,3 @@
 ;R:	sentencia: sentencia_simple ';'
 ;D:	}
 ;R:	sentencias: sentencia
-;R:	programa: TOK_MAIN '{' declaraciones funciones sentencias '}'

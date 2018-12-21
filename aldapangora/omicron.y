@@ -175,7 +175,7 @@
 
 %% /*Seccion de reglas*/
 
-programa: inicioTabla TOK_MAIN '{' escritura_cabeceras_datos  declaraciones escritura_segmento_texto  funciones escritura_main sentencias '}' escritura_fin { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}
+programa: inicioTabla TOK_MAIN '{' escritura_cabeceras_datos  declaraciones escritura_segmento_texto  funciones escritura_main sentencias '}' escritura_fin { }
 		| inicioTabla TOK_MAIN '{' escritura_cabeceras_datos escritura_segmento_texto funciones escritura_main sentencias '}' { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");} ;
 
 inicioTabla:
@@ -184,8 +184,8 @@ inicioTabla:
 		strcpy(nombre_ambito_actual, "main");
 	}
 
-declaraciones:  declaracion {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion\n");}
-			 |  declaracion declaraciones {fprintf(compilador_log, ";R:\tdeclaraciones: declaracion declaraciones\n");};
+declaraciones:  declaracion {}
+			 |  declaracion declaraciones {};
 
 
 declaracion: modificadores_acceso clase identificadores ';'
@@ -273,8 +273,6 @@ identificador: TOK_IDENTIFICADOR
 
 						/*TODO llamada correcta funcion*/
 
-						fprintf(stdout, " A VER QUE INSERTAMOS %s\n", nombre);
-
 						aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
 							nombre,         clase_actual,
 							tipo_actual,	  0,
@@ -292,7 +290,6 @@ identificador: TOK_IDENTIFICADOR
 					else{
 						sprintf(nombre, "%s_%s",nombre_ambito_actual, $1.lexema);
 						//sprintf(nombre, "main_%s", $1.lexema);
-						fprintf(stdout, " A VER QUE INSERTAMOS %s\n", nombre);
 						/*num_variable local empieza en 1 o en 0??? TODO*/
 						num_variable_local_actual++;
 
@@ -363,7 +360,6 @@ fn_complete_name: fn_name '(' parametros_funcion ')'
 																											num_parametro_actual,
 																											array_tipo_parametros);
 
-											fprintf(stdout, " a ver llocu como estamos insertando la funcion %s \n", nombre_funcion);
 											/*Ahora declaramos todos los parametros*/
 											for(i = 0 ; i < num_parametro_actual ; i++){
 												sprintf(nombre_funcion, "%s_%s", nombre_ambito_actual,array_nombre_parametros[i]);
@@ -455,28 +451,28 @@ declaraciones_funcion: declaraciones {fprintf(compilador_log, ";R:\tdeclaracione
 					 | /*lambda*/ {fprintf(compilador_log, ";R:\tdeclaraciones_funcion: \n");};
 
 
-sentencias: sentencia {fprintf(compilador_log, ";R:\tsentencias: sentencia\n");}
-		  | sentencia sentencias {fprintf(compilador_log, ";R:\tsentencias: sentencia sentencias\n");};
+sentencias: sentencia {}
+		  | sentencia sentencias {};
 
 
-sentencia: sentencia_simple ';' {fprintf(compilador_log, ";R:\tsentencia: sentencia_simple ';'\n");}
-		 | bloque {fprintf(compilador_log, ";R:\tsentencia: bloque\n");};
+sentencia: sentencia_simple ';' {}
+		 | bloque {};
 
 
-sentencia_simple: asignacion {fprintf(compilador_log, ";R:\tsentencia_simple: asignacion\n");}
-				| escritura {fprintf(compilador_log, ";R:\tsentencia_simple: escritura\n");}
-				| lectura {fprintf(compilador_log, ";R:\tsentencia_simple: lectura\n");}
-				| retorno_funcion {fprintf(compilador_log, ";R:\tsentencia_simple: retorno_funcion\n");}
-				| identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\tsentencia_simple: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
-				| TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\tsentencia_simple: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
-				| destruir_objeto {fprintf(compilador_log, ";R:\tsentencia_simple: destruir_objeto\n");};
+sentencia_simple: asignacion {}
+				| escritura {}
+				| lectura {}
+				| retorno_funcion {}
+				| identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')' {}
+				| TOK_IDENTIFICADOR '(' lista_expresiones ')' {}
+				| destruir_objeto {};
 
 
-destruir_objeto: TOK_DISCARD TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\tdestruir_objeto: TOK_DISCARD TOK_IDENTIFICADOR\n");};
+destruir_objeto: TOK_DISCARD TOK_IDENTIFICADOR {};
 
 
-bloque: condicional {fprintf(compilador_log, ";R:\tbloque: condicional\n");}
-	  | bucle {fprintf(compilador_log, ";R:\tbloque: bucle\n");};
+bloque: condicional {}
+	  | bucle {};
 
 
 asignacion: TOK_IDENTIFICADOR '=' exp
@@ -489,7 +485,6 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 				//imprimirTablasHash(tabla_simbolos);
 				sprintf(nombre, "%s", $1.lexema);
 
-				fprintf(stdout, " A VER QUE BUSCAMOS %s\n", nombre);
 
 				if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);
@@ -513,8 +508,7 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 	    			asignar(fout, $1.lexema, $3.direcciones);
 	    		else {
 
-						fprintf(stdout, " ESta es la posicion de la variable %d", HT_itemGetPosicionVariableLocal(e));
-	    			escribirVariableLocal(fout, HT_itemGetPosicionVariableLocal(e));
+						escribirVariableLocal(fout, HT_itemGetPosicionVariableLocal(e));
 						asignarDestinoEnPila(fout, $3.direcciones);
 	    		}
 
@@ -844,7 +838,6 @@ exp: exp '+' exp
 			for (i = 0; i < num_parametro_actual ; i++){
 				if (strcmp(array_nombre_parametros[i], $1.lexema) == 0){
 					escribirParametro(fout, i, num_parametro_actual);
-					fprintf(stdout, "HE ESCRITO EL PARAMETRO %s\n", nombre);
 					param_or_variable = 0;
 				}
 			}
@@ -855,8 +848,6 @@ exp: exp '+' exp
 					escribir_operando(fout, $1.lexema, 1);
 				else {
 					/* Variable de funcion*/
-					fprintf(stdout, "EN LA BUSQUEDA DE %s\n", nombre);
-					fprintf(stdout, "ESTA ES LA OTRA POSOCION %d\n", HT_itemGetPosicionVariableLocal(e));
 					escribirVariableLocal(fout, HT_itemGetPosicionVariableLocal(e));
 				}
 			}
@@ -900,7 +891,6 @@ exp: exp '+' exp
 					sprintf(auxNombreFuncion, "@%d", array_tipo_parametros[i]);
 					strcat(nombre_funcion, auxNombreFuncion);
 				}
-				fprintf (stdout, " a ver llocu que funcion buscamos %s\n", nombre_funcion);
 				if(buscarIdNoCualificado(tabla_simbolos, nombre_funcion, "main", &e, nombre_ambito_encontrado) == ERR){
 	    		fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra la función.\n", row, col);
 					return ERR;
