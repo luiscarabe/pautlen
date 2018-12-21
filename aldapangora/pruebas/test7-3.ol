@@ -24,10 +24,11 @@ main
     }
 
     function int f2 (boolean pf1){
-      int vl1;
-      boolean vl2;
+      int vl3;
+      boolean vl4;
 
-      vl1 = 1;
+      vl1 = 1; // ERROR
+
       v1 = 40;
       vl2 = false;
 

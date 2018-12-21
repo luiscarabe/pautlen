@@ -1,17 +1,24 @@
 segment .data
 	msg_error_indice_vector	db "ERROR: Indice de vector fuera de rango", 0
 	msg_error_div_zero	db "ERROR: Division por 0", 0
+
 segment .bss
 	__esp resd 1
+
 	_x1 resd 10
+
 segment .txt
 	global main
 	extern scan_int, print_int, scan_boolean, print_boolean
 	extern print_endofline, print_blank, print_string, malloc, free
+
 main:
 	mov dword [__esp], esp
+
 	push dword 10
+
 	pop dword eax
+
 	cmp eax, 0
 	jl near index_error
 	cmp eax, 9
@@ -19,10 +26,15 @@ main:
 	mov dword edx, _x1
 	lea eax, [edx + eax*4]
 	push dword eax
+
 	push dword 12
+
 	pop dword eax
+
 	pop dword edx
+
 	mov dword [edx] , eax
+
 	jmp near fin
 index_error:
 	push dword msg_error_indice_vector
@@ -38,3 +50,4 @@ divisor_zero:
 fin:
 	mov dword esp, [__esp]
 	ret
+
