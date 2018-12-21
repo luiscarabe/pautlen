@@ -1,19 +1,13 @@
 ;D:	main
 ;D:	{
 ;D:	array
-;R:	modificadores_acceso: 
 ;D:	int
-;R:	tipo: TOK_INT
 ;D:	[
 ;D:	10
 ;D:	]
-;R:	clase: clase_vector
 ;D:	x1
 ;D:	;
-;R:	identificadores: TOK_IDENTIFICADOR
-;R:	declaracion: modificadores_acceso clase identificadores ';'
 ;D:	x1
-;R:	funciones: 
 ;D:	[
 ;D:	1
 ;D:	]
@@ -22,7 +16,4 @@
 ;D:	/
 ;D:	0
 ;D:	;
-;R:	sentencia_simple: asignacion
-;R:	sentencia: sentencia_simple ';'
 ;D:	}
-;R:	sentencias: sentencia

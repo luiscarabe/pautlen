@@ -28,7 +28,6 @@ _main_f1@3@3:
 	lea eax, [ebp-4]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -41,7 +40,6 @@ _main_f1@3@3:
 	lea eax, [ebp-8]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -70,7 +68,6 @@ _main_f1@3@3:
 	lea eax, [ebp-4]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -79,7 +76,6 @@ _main_f1@3@3:
 	lea eax, [ebp-8]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx

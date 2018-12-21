@@ -28,7 +28,6 @@ _main_f1@3@3:
 	lea eax, [ebp-4]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -41,7 +40,6 @@ _main_f1@3@3:
 	lea eax, [ebp-8]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -70,7 +68,6 @@ _main_f1@3@3:
 	lea eax, [ebp-4]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -79,7 +76,6 @@ _main_f1@3@3:
 	lea eax, [ebp-8]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -120,82 +116,4 @@ fin_else0:
 	call print_boolean
 	add esp, 4
 	call print_endofline
-
-main:
-	mov dword [__esp], esp
-
-	push dword 1
-
-	pop dword [_v1]
-
-	push dword 1
-
-	pop dword [_v4]
-
-	push dword _v4
-
-	pop dword edx
-	mov dword eax, [edx]
-
-	push eax
-
-	push dword 1
-
-	call _main_f1@3@3
-	add esp, 8
-
-	push dword eax
-
-	pop dword [_v2]
-
-	push dword 0
-
-	push dword 1
-
-	call _main_f1@3@3
-	add esp, 8
-
-	push dword eax
-
-	pop dword [_v3]
-
-	push dword _v2
-
-	pop dword ecx
-	push dword [ecx]
-	call print_int
-	add esp, 4
-	call print_endofline
-
-	push dword _v3
-
-	pop dword ecx
-	push dword [ecx]
-	call print_int
-	add esp, 4
-	call print_endofline
-
-	push dword _v4
-
-	pop dword ecx
-	push dword [ecx]
-	call print_boolean
-	add esp, 4
-	call print_endofline
-
-	jmp near fin
-index_error:
-	push dword msg_error_indice_vector
-	call print_string
-	add esp, 4
-	call print_endofline
-	jmp near fin
-divisor_zero:
-	push dword msg_error_div_zero
-	call print_string
-	add esp, 4
-	call print_endofline
-fin:
-	mov dword esp, [__esp]
-	ret
 

@@ -8,15 +8,15 @@ all:  omicron prueba_TS
 
 
 hash_table.o: hash_table.c hash_table.h
-	$(CC) $(CCFLAGS) -c $<  -o $@ 
+	$(CC) $(CCFLAGS) -c $<  -o $@
 
 
 node.o: node.c node.h
-	$(CC) $(CCFLAGS) -c $<  -o $@ 
+	$(CC) $(CCFLAGS) -c $<  -o $@
 
 
 graph.o: graph.c graph.h
-	$(CC) $(CCFLAGS) -c $<  -o $@ 
+	$(CC) $(CCFLAGS) -c $<  -o $@
 
 
 # Procedural
@@ -33,13 +33,13 @@ lex.yy.c: omicron.l
 y.tab.o: y.tab.c y.tab.h
 	$(CC) $(CCFLAGS) -o $@ -c $<
 
-lex.yy.o: lex.yy.c 
+lex.yy.o: lex.yy.c
 	$(CC) $(CCFLAGS) -o $@ -c $<
 
 omicron: omicron.c hash_table.o node.o graph.o generacion.o y.tab.c lex.yy.c y.tab.o lex.yy.o
 	$(CC) $(CCFLAGS) -o $@  $< lex.yy.o y.tab.o generacion.o graph.o node.o hash_table.o -lm
 
-prueba_TS: prueba_TS.c hash_table.o node.o graph.o 
+prueba_TS: prueba_TS.c hash_table.o node.o graph.o
 	$(CC) $(CCFLAGS) -o $@  $^ -lm
 
 clean:

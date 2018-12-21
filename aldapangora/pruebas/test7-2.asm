@@ -28,7 +28,6 @@ _main_f1@3@3:
 	lea eax, [ebp-4]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -41,10 +40,30 @@ _main_f1@3@3:
 	lea eax, [ebp-8]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
+	push dword 80
+
+	call print_int
+	add esp, 4
+	call print_endofline
+
+	lea eax, [ebp-8]
+	push eax
+
+	pop dword ecx
+	push dword [ecx]
+	call print_boolean
+	add esp, 4
+	call print_endofline
+
+	push dword 500
+
+	call print_int
+	add esp, 4
+	call print_endofline
+
 	lea eax, [ebp+12]
 	push eax
 
@@ -70,7 +89,6 @@ _main_f1@3@3:
 	lea eax, [ebp-4]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -79,7 +97,6 @@ _main_f1@3@3:
 	lea eax, [ebp-8]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -100,6 +117,35 @@ fin_then0:
 	add esp, 4
 	call print_endofline
 
+	push dword 0
+
+	lea eax, [ebp-8]
+	push eax
+
+	pop dword eax
+	pop dword ebx
+	mov dword [eax], ebx
+	push dword 70
+
+	call print_int
+	add esp, 4
+	call print_endofline
+
+	lea eax, [ebp-8]
+	push eax
+
+	pop dword ecx
+	push dword [ecx]
+	call print_boolean
+	add esp, 4
+	call print_endofline
+
+	push dword 90
+
+	call print_int
+	add esp, 4
+	call print_endofline
+
 	lea eax, [ebp-4]
 	push eax
 
@@ -114,12 +160,11 @@ _main_f2@3:
 	mov ebp, esp
 	sub esp, 4
 
-	push dword 1
+	push dword 90
 
 	lea eax, [ebp-4]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -127,15 +172,67 @@ _main_f2@3:
 
 	pop dword [_v1]
 
+	push dword 800
+
+	call print_int
+	add esp, 4
+	call print_endofline
+
 	push dword 0
 
 	lea eax, [ebp-8]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
+	lea eax, [ebp-8]
+	push eax
+
+	pop dword ecx
+	push dword [ecx]
+	call print_boolean
+	add esp, 4
+	call print_endofline
+
+	push dword 0
+
+	lea eax, [ebp-4]
+	push eax
+
+	pop dword eax
+	pop dword ebx
+	mov dword [eax], ebx
+	lea eax, [ebp-4]
+	push eax
+
+	pop dword ecx
+	push dword [ecx]
+	call print_int
+	add esp, 4
+	call print_endofline
+
+	push dword 1000
+
+	call print_int
+	add esp, 4
+	call print_endofline
+
+	lea eax, [ebp-8]
+	push eax
+
+	pop dword ecx
+	push dword [ecx]
+	call print_boolean
+	add esp, 4
+	call print_endofline
+
+	push dword 2000
+
+	call print_int
+	add esp, 4
+	call print_endofline
+
 	lea eax, [ebp+8]
 	push eax
 
@@ -161,7 +258,6 @@ _main_f2@3:
 	lea eax, [ebp-4]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -170,7 +266,6 @@ _main_f2@3:
 	lea eax, [ebp-8]
 	push eax
 
-	; asignarDestinoEnPila(0)
 	pop dword eax
 	pop dword ebx
 	mov dword [eax], ebx
@@ -225,7 +320,9 @@ main:
 
 	push dword eax
 
-	pop dword [_v2]
+	call print_int
+	add esp, 4
+	call print_endofline
 
 	push dword 0
 
@@ -234,17 +331,11 @@ main:
 
 	push dword eax
 
-	pop dword [_v3]
-
-	push dword _v2
-
-	pop dword ecx
-	push dword [ecx]
 	call print_int
 	add esp, 4
 	call print_endofline
 
-	push dword _v3
+	push dword _v1
 
 	pop dword ecx
 	push dword [ecx]

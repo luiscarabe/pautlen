@@ -8,7 +8,6 @@
 
 	/* Del main*/
 	extern FILE* yyin;
-	extern FILE* compilador_log;
 
 	/*Fichero para guardar codigo NASM*/
 
@@ -23,6 +22,9 @@
 	/* variable para la generacion de etiquetas */
 	int etiqueta = 0;
 	int cuantos_no = 0;
+
+	/*Etiqueta para comprobar que la función tiene retorno*/
+	int hay_retorno_funcion_actual;
 
 	Graph* tabla_simbolos;
 
@@ -176,7 +178,7 @@
 %% /*Seccion de reglas*/
 
 programa: inicioTabla TOK_MAIN '{' escritura_cabeceras_datos  declaraciones escritura_segmento_texto  funciones escritura_main sentencias '}' escritura_fin { }
-		| inicioTabla TOK_MAIN '{' escritura_cabeceras_datos escritura_segmento_texto funciones escritura_main sentencias '}' { fprintf(compilador_log, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");} ;
+		| inicioTabla TOK_MAIN '{' escritura_cabeceras_datos escritura_segmento_texto funciones escritura_main sentencias '}' { } ;
 
 inicioTabla:
 	{
@@ -189,56 +191,56 @@ declaraciones:  declaracion {}
 
 
 declaracion: modificadores_acceso clase identificadores ';'
-			{fprintf(compilador_log, ";R:\tdeclaracion: modificadores_acceso clase identificadores ';'\n");}
- 		   | modificadores_acceso declaracion_clase ';'  {fprintf(compilador_log, ";R:\tdeclaracion: modificadores_acceso declaracion_clase ';'\n");};
+			{}
+ 		   | modificadores_acceso declaracion_clase ';'  {};
 
-modificadores_acceso: TOK_HIDDEN TOK_UNIQUE {fprintf(compilador_log, ";R:\tmodificadores_acceso: TOK_HIDDEN TOK_UNIQUE\n");}
-					| TOK_SECRET TOK_UNIQUE {fprintf(compilador_log, ";R:\tmodificadores_acceso: TOK_SECRET TOK_UNIQUE\n");}
-					| TOK_EXPOSED TOK_UNIQUE {fprintf(compilador_log, ";R:\tmodificadores_acceso: TOK_EXPOSED TOK_UNIQUE\n");}
-					| TOK_HIDDEN {fprintf(compilador_log, ";R:\tmodificadores_acceso: TOK_HIDDEN\n");}
-					| TOK_SECRET {fprintf(compilador_log, ";R:\tmodificadores_acceso: TOK_SECRET\n");}
-					| TOK_EXPOSED {fprintf(compilador_log, ";R:\tmodificadores_acceso: TOK_EXPOSED\n");}
-					| TOK_UNIQUE {fprintf(compilador_log, ";R:\tmodificadores_acceso: TOK_UNIQUE\n");}
-					| /*lambda*/{fprintf(compilador_log, ";R:\tmodificadores_acceso: \n");};
+modificadores_acceso: TOK_HIDDEN TOK_UNIQUE {}
+					| TOK_SECRET TOK_UNIQUE {}
+					| TOK_EXPOSED TOK_UNIQUE {}
+					| TOK_HIDDEN {}
+					| TOK_SECRET {}
+					| TOK_EXPOSED {}
+					| TOK_UNIQUE {}
+					| /*lambda*/{};
 
 clase: clase_escalar
-		{ fprintf(compilador_log, ";R:\tclase: clase_escalar\n");
+		{
 		  clase_actual=ESCALAR;	}
 	 | clase_vector
-	 	{ fprintf(compilador_log, ";R:\tclase: clase_vector\n");
+	 	{
 	 	  clase_actual = VECTOR; }
 	 | clase_objeto
-	 	{ fprintf(compilador_log, ";R:\tclase: clase_objeto\n");
+	 	{
 	   	  clase_actual = OBJETO; };
 
 
-declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}' {fprintf(compilador_log, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'\n");}
-				 | modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}' {fprintf(compilador_log, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'\n");};
+declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}' {}
+				 | modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}' {};
 
 
-modificadores_clase: /*lambda*/ {fprintf(compilador_log, ";R:\tmodificadores_clase: \n");};
+modificadores_clase: /*lambda*/ {};
 
 
 clase_escalar: tipo
-				{ fprintf(compilador_log, ";R:\tclase_escalar: tipo\n");
+				{
 				  tamanio_vector_actual = 1;};
 
 
 tipo: TOK_INT
 		{
-			fprintf(compilador_log, ";R:\ttipo: TOK_INT\n");
+
 			$$.tipo = INT;
 			tipo_actual = INT;
 	    }
 	| TOK_BOOLEAN
 		{
-			fprintf(compilador_log, ";R:\ttipo: TOK_BOOLEAN\n");
+
 			$$.tipo = BOOLEAN;
 			tipo_actual = BOOLEAN;
 		};
 
 
-clase_objeto: '{' TOK_IDENTIFICADOR '}' {fprintf(compilador_log, ";R:\tclase_objeto: '{' TOK_IDENTIFICADOR '}'\n");};
+clase_objeto: '{' TOK_IDENTIFICADOR '}' {};
 
 
 clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
@@ -252,8 +254,8 @@ clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
 				};
 
 
-identificadores: identificador {fprintf(compilador_log, ";R:\tidentificadores: TOK_IDENTIFICADOR\n");}
-			   | identificador ',' identificadores {fprintf(compilador_log, ";R:\tidentificadores: TOK_IDENTIFICADOR ',' identificadores\n");};
+identificadores: identificador {}
+			   | identificador ',' identificadores {};
 
 
 identificador: TOK_IDENTIFICADOR
@@ -262,16 +264,12 @@ identificador: TOK_IDENTIFICADOR
 					char nombre [100];
 					int aux;
 					if (strcmp(nombre_ambito_actual, "main") == 0){
-						/*TODO, conseguir el nombre del ambito*/
 
 						sprintf(nombre, "main_%s", $1.lexema);
 						if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
 							fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
 							return ERR;
 						}
-
-
-						/*TODO llamada correcta funcion*/
 
 						aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
 							nombre,         clase_actual,
@@ -289,17 +287,13 @@ identificador: TOK_IDENTIFICADOR
 					/* Estamos dentro de una función*/
 					else{
 						sprintf(nombre, "%s_%s",nombre_ambito_actual, $1.lexema);
-						//sprintf(nombre, "main_%s", $1.lexema);
-						/*num_variable local empieza en 1 o en 0??? TODO*/
+						/*num_variable local empieza en 1*/
 						num_variable_local_actual++;
 
-						/*La diap 75 de omicron dice que use esta*/
 						if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_simbolos, nombre, &e, "main") == OK){
 							fprintf(stderr, "Identificador %s duplicado. Linea %d columna %d\n", $1.lexema, row, col);
 							return ERR;
 						}
-
-						/*TODO llamada correcta funcion SEGUN LA P4, ES EN TABLA SIMBOLOS MAIN*/
 						aux = insertarTablaSimbolosMain(tabla_simbolos, VARIABLE,
 							nombre,         clase_actual,
 							tipo_actual,	  0,
@@ -309,14 +303,10 @@ identificador: TOK_IDENTIFICADOR
 							0,              0,
 							NULL);
 					}
-
-					/*Deberia pushear algo en la pila? escribir variable??? TODO*/
-
-
 				}
 
-funciones: funcion funciones {fprintf(compilador_log, ";R:\tfunciones: funcion funciones\n");}
-		 | /*lambda*/ {fprintf(compilador_log, ";R:\tfunciones: \n");};
+funciones: funcion funciones {}
+		 | /*lambda*/ {};
 
 
 funcion: fn_declaration sentencias '}'
@@ -324,12 +314,16 @@ funcion: fn_declaration sentencias '}'
 					/*Cerramos ámbito*/
 					tablaSimbolosClasesCerrarAmbitoEnMain(tabla_simbolos);
 					strcpy(nombre_ambito_actual,"main");
+					if (hay_retorno_funcion_actual == 0){
+						fprintf(stderr, "**** Error semantico en [lin %d, col %d]. La funcion no tiene sentencia de retorno.\n", row, col);
+						return ERR;
+					}
+					hay_retorno_funcion_actual = 0;
 				};
 
 
 fn_declaration: fn_complete_name '{' declaraciones_funcion
 								{
-									/*TODO, NOMBRE DE LA FUNCION A SECAS O NOMBRE EN PLAN MAIN_FUNCION_@TAL*/
 									declararFuncion(fout, $1.lexema, num_parametro_actual);
 								};
 
@@ -392,6 +386,7 @@ fn_complete_name: fn_name '(' parametros_funcion ')'
 
 fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR
 				{
+					hay_retorno_funcion_actual = 0;
 					num_parametro_actual = 0;
 					pos_parametro_actual = 0;
 					num_variable_local_actual = 0;
@@ -404,21 +399,20 @@ fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR
 tipo_retorno: TOK_NONE
 							{
 								$$.tipo = 0;
-								fprintf(compilador_log, ";R:\ttipo_retorno: TOK_NONE\n");}
+								}
 			| tipo
 							{	$$.tipo = $1.tipo;
-								fprintf(compilador_log, ";R:\ttipo_retorno: tipo\n");}
+								}
 			| clase_objeto
-							{	/* TODO propagar TIPO*/
-								fprintf(compilador_log, ";R:\ttipo_retorno: clase_objeto\n");};
+							{};
 
 
-parametros_funcion: parametro_funcion resto_parametros_funcion {fprintf(compilador_log, ";R:\tparametros_funcion: parametro_funcion resto_parametros_funcion\n");}
-				  | /*lambda*/ {fprintf(compilador_log, ";R:\tparametros_funcion: \n");};
+parametros_funcion: parametro_funcion resto_parametros_funcion {}
+				  | /*lambda*/ {};
 
 
-resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion {fprintf(compilador_log, ";R:\tresto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion\n");}
-						| /*lambda*/ {fprintf(compilador_log, ";R:\tresto_parametros_funcion: \n");};
+resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion {}
+						| /*lambda*/ {};
 
 
 parametro_funcion: tipo idpf
@@ -436,10 +430,10 @@ parametro_funcion: tipo idpf
 										strcpy(array_nombre_parametros[pos_parametro_actual],$2.lexema);
 										num_parametro_actual++;
 										pos_parametro_actual++;
-										fprintf(compilador_log, ";R:\tparametro_funcion: tipo TOK_IDENTIFICADOR\n");
+
 									}
 				 /* Creo que esta regla ya no hace falta*/
-				 | clase_objeto idpf {fprintf(compilador_log, ";R:\tparametro_funcion: clase_objeto TOK_IDENTIFICADOR\n");};
+				 | clase_objeto idpf {};
 
 idpf: TOK_IDENTIFICADOR
 			{
@@ -447,8 +441,8 @@ idpf: TOK_IDENTIFICADOR
 			};
 
 
-declaraciones_funcion: declaraciones {fprintf(compilador_log, ";R:\tdeclaraciones_funcion: declaraciones\n");}
-					 | /*lambda*/ {fprintf(compilador_log, ";R:\tdeclaraciones_funcion: \n");};
+declaraciones_funcion: declaraciones {}
+					 | /*lambda*/ {};
 
 
 sentencias: sentencia {}
@@ -462,7 +456,7 @@ sentencia: sentencia_simple ';' {}
 sentencia_simple: asignacion {}
 				| escritura {}
 				| lectura {}
-				| retorno_funcion {}
+				| retorno_funcion
 				| identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')' {}
 				| TOK_IDENTIFICADOR '(' lista_expresiones ')' {}
 				| destruir_objeto {};
@@ -477,14 +471,10 @@ bloque: condicional {}
 
 asignacion: TOK_IDENTIFICADOR '=' exp
 			{
-				//TODO nombre ambito
 				char nombre[100];
 				char nombre_ambito_encontrado [100];
 				HT_item* e;
-				//sprintf(nombre, "%s_%s",nombre_ambito_actual, $1.lexema);
-				//imprimirTablasHash(tabla_simbolos);
 				sprintf(nombre, "%s", $1.lexema);
-
 
 				if(buscarIdNoCualificado(tabla_simbolos, nombre, "main", &e, nombre_ambito_encontrado) == ERR){
 	    			fprintf(stderr, "****Error semantico en [lin %d, col %d]. No se encuentra simbolo en asignacion\n", row, col);
@@ -503,7 +493,6 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 					return ERR;
 	    		}
 
-	    		printf("%s\n", nombre_ambito_encontrado);
 	    		if (strcmp(nombre_ambito_encontrado, "main") == 0)
 	    			asignar(fout, $1.lexema, $3.direcciones);
 	    		else {
@@ -523,9 +512,9 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 				asignar_a_elemento_vector(fout, $3.direcciones);
 
 		    }
-		  | elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
-		  | TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\tasignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
-		  | identificador_clase '.' TOK_IDENTIFICADOR '=' exp {fprintf(compilador_log, ";R:\tasignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' exp\n");};
+		  | elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {}
+		  | TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' {}
+		  | identificador_clase '.' TOK_IDENTIFICADOR '=' exp {};
 
 
 elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
@@ -666,7 +655,6 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
 		}
 	   | TOK_SCANF elemento_vector
 	   {
-			//TODO nombre ambito
 			char nombre[100];
 			char nombre_ambito_encontrado [100];
 			HT_item* e;
@@ -690,17 +678,16 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
 
 escritura: TOK_PRINTF exp
 		{
-			fprintf(compilador_log, ";R:\tescritura: TOK_PRINTF exp\n");
 			escribir(fout, $2.direcciones, $2.tipo);
 		};
 
 
 retorno_funcion: TOK_RETURN exp
 								{
+									hay_retorno_funcion_actual = 1;
 									retornarFuncion(fout, $2.direcciones);
-									fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN exp\n");
 								}
-			   | TOK_RETURN TOK_NONE {fprintf(compilador_log, ";R:\tretorno_funcion: TOK_RETURN TOK_NONE\n");};
+			   | TOK_RETURN TOK_NONE {};
 
 
 exp: exp '+' exp
@@ -814,7 +801,6 @@ exp: exp '+' exp
 		}
    | TOK_IDENTIFICADOR
    		{
-			//TODO conseguir nombre con ambito bien CREO QUE SI ESDTAMOS EN METODO, ESTO VALE TAMBIEN
 			char nombre[100];
 			char nombre_ambito_encontrado[100];
 			HT_item* e = NULL;
@@ -905,13 +891,12 @@ exp: exp '+' exp
 				$$.tipo = HT_itemGetType(e);
 				/*Cogemos un valor, no una dirección*/
 				sprintf(auxNombreFuncion, "main_%s", nombre_funcion);
-				/*Generamos el código NASM TODO LA LLAMAMOS POR SU NOMBRE SIMPLE O COMPUESTO?? MIRAR LA GENERACION DE FUNCIONES*/
+				/*Generamos el código NASM */
 				llamarFuncion(fout, auxNombreFuncion, num_parametros_llamada_actual);
 
-				fprintf(compilador_log, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
 			}
-   | identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')' {fprintf(compilador_log, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
-   | identificador_clase '.' TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR\n");};
+   | identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')' {}
+   | identificador_clase '.' TOK_IDENTIFICADOR {};
 
 idf_llamada_funcion : TOK_IDENTIFICADOR
 											{
@@ -924,8 +909,8 @@ idf_llamada_funcion : TOK_IDENTIFICADOR
 												strcpy($$.lexema, $1.lexema);
 											};
 
-identificador_clase: TOK_IDENTIFICADOR {fprintf(compilador_log, ";R:\tidentificador_clase: TOK_IDENTIFICADOR\n");}
-				   | TOK_ITSELF {fprintf(compilador_log, ";R:\tidentificador_clase: TOK_ITSELF\n");};
+identificador_clase: TOK_IDENTIFICADOR {}
+				   | TOK_ITSELF {};
 
 
 lista_expresiones: exp resto_lista_expresiones
@@ -934,18 +919,16 @@ lista_expresiones: exp resto_lista_expresiones
 
 										num_parametros_llamada_actual++;
 
-										fprintf(compilador_log, ";R:\tlista_expresiones: exp resto_lista_expresiones\n");
-									}
-				 | /*lambda*/ {fprintf(compilador_log, ";R:\tlista_expresiones: \n");};
+										}
+				 | /*lambda*/ {};
 
 
 resto_lista_expresiones: ',' exp resto_lista_expresiones
 												{
 													array_tipo_parametros[num_parametros_llamada_actual] = $2.tipo;
 													num_parametros_llamada_actual++;
-													fprintf(compilador_log, ";R:\tresto_lista_expresiones: ',' exp resto_lista_expresiones\n");
 												}
-					   | /*lambda*/ {fprintf(compilador_log, ";R:\tresto_lista_expresiones: \n");};
+					   | /*lambda*/ {};
 
 
 comparacion: exp TOK_IGUAL exp
