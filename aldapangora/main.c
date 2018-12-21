@@ -127,8 +127,7 @@ int main(int argc, char ** argv)
 
 // c1.msA1();
     escribir_operando(fd_asm,"c1",1);
-    llamarMetodoSobreescribibleCualificadoInstanciaPila
-           (fd_asm, "msA1");
+    llamarMetodoSobreescribibleCualificadoInstanciaPila(fd_asm, "msA1");
 
 
 // c2 = factorial(c1);
@@ -397,14 +396,12 @@ int main(int argc, char ** argv)
 //        Vobjs[m].msA1();
         escribir_operando(fd_asm,"m",1);
         escribir_elemento_vector(fd_asm,"Vobjs", 3, 1); 
-        llamarMetodoSobreescribibleCualificadoInstanciaPila
-                (fd_asm, "msA1");
+        llamarMetodoSobreescribibleCualificadoInstanciaPila(fd_asm, "msA1");
 
 //        Vobjs[m].msA2();
         escribir_operando(fd_asm,"m",1);
         escribir_elemento_vector(fd_asm,"Vobjs", 3, 1); 
-        llamarMetodoSobreescribibleCualificadoInstanciaPila
-                (fd_asm, "msA2");
+        llamarMetodoSobreescribibleCualificadoInstanciaPila(fd_asm, "msA2");
 
 //        m = m+1;
         escribir_operando(fd_asm,"m",1);
