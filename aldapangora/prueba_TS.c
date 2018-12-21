@@ -178,8 +178,7 @@ void gestion_cerrar_tsc(){
 	FILE *f = fopen("n.asm", "w+");
 
 	tablaSimbolosClasesToDot(tabla_clases);
-	//tablaSimbolosClasesANasm(tabla_clases, f);
-	imprimirTablasHash(tabla_clases);
+	//imprimirTablasHash(tabla_clases);
 	deleteGraph(tabla_clases);
 	fclose(f);
 
@@ -188,19 +187,16 @@ void gestion_cerrar_tsc(){
 }
 
 void gestion_inicia_tsa_main(){
-	//Sin argumentos ni parametros
 
 	return;
 }
 
 void gestion_cerrar_tsa_main(){
-	//Sin argumentos ni parametros
 
 	return;
 }
 
 void gestion_abrir_ambito_ppal_main(){
-	//Sin argumentos ni parametros
 
 	return;
 }
@@ -269,7 +265,6 @@ void gestion_abrir_ambito_tsa_main(){
 }
 
 void gestion_cerrar_ambito_tsa_main(){
-	//Sin argumentos ni parametros
 
 	tablaSimbolosClasesCerrarAmbitoEnMain(tabla_clases);
 	return;
@@ -404,7 +399,7 @@ void gestion_abrir_ambito_tsc(){
 		tipo_miembro
 	*/
 	char *nombre_clase = NULL, *nombre_ambito = NULL, *aux = NULL;
-	int categoria, tipo_basico,  tipo_acceso, tipo_miembro;
+	int categoria, tipo_basico,  tipo_acceso;
 
 	leer_siguiente(&nombre_clase);
 
@@ -423,7 +418,6 @@ void gestion_abrir_ambito_tsc(){
 	free(aux);
 
 	leer_siguiente(&aux);
-	tipo_miembro = atoi(aux);
 	free(aux);
 
 	tablaSimbolosClasesAbrirAmbitoEnClase(tabla_clases, nombre_clase, nombre_ambito, categoria, tipo_acceso, tipo_basico, 0, 0, 0, NULL);
@@ -445,7 +439,6 @@ void gestion_cerrar_ambito_tsc(){
 
 	leer_siguiente(&nombre_clase);
 
-	//printf("____________________________________________\n");
 	tablaSimbolosClasesCerrarAmbitoEnClase(tabla_clases, nombre_clase);
 
 	free(nombre_clase);
@@ -496,10 +489,8 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 
 		if (buscarParaDeclararMain(tabla_clases, nombre_id, &e, name) == OK){
-			printf("TOK_DECLARAR_MAIN ERR\n");
 			fprintf(fout, ": Encontrado en %s: No se puede declarar", name);
 		}else{
-			printf("TOK_DECLARAR_MAIN OK\n");
 			fprintf(fout, ": No encontrado: se puede declarar");
 		}
 
@@ -512,10 +503,8 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_miembro);
 
 		if (buscarParaDeclararMiembroClase(tabla_clases, nombre_miembro, nombre_clase_desde, &e, name) == OK){
-			printf("TOK_DECLARAR_MIEMBRO_CLASE ERR\n");
 		fprintf(fout, ": Encontrado en %s: No se puede declarar", name);
 		}else{
-			printf("TOK_DECLARAR_MIEMBRO_CLASE OK\n");
 			fprintf(fout, ": No encontrado: se puede declarar");
 		}		free(name);
 		free(nombre_clase_desde);
@@ -527,10 +516,8 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_miembro);
 
 		if (buscarParaDeclararMiembroInstancia(tabla_clases, nombre_miembro, nombre_clase_desde, &e, name) == OK){
-			printf("TOK_DECLARAR_MIEMBRO_INSTANCIA ERR\n");
 		fprintf(fout, ": Encontrado en %s: No se puede declarar", name);
 		}else{
-			printf("TOK_DECLARAR_MIEMBRO_INSTANCIA OK\n");
 			fprintf(fout, ": No encontrado: se puede declarar");
 		}
 		free(name);
@@ -544,10 +531,8 @@ void gestion_buscar(){
 
 		if (buscarParaDeclararIdLocalEnMetodo(tabla_clases, nombre_clase,
 																			nombre_id, &e, name) == OK){
-			printf("TOK_DECLARAR_ID_LOCAL_METODO ERR\n");
 		fprintf(fout, ": Encontrado en %s: No se puede declarar", name);
 		}else{
-			printf("TOK_DECLARAR_ID_LOCAL_METODO OK\n");
 			fprintf(fout, ": No encontrado: se puede declarar");
 		}
 		free(name);
@@ -561,10 +546,8 @@ void gestion_buscar(){
 
 		if (buscarIdNoCualificado(tabla_clases, nombre_id,
 													nombre_clase, &e, name) == OK){
-			printf("TOK_JERARQUIA OK\n");
 		fprintf(fout, ": Encontrado en %s: No se puede declarar", name);
 		}else{
-			printf("TOK_JERARQUIA ERR\n");
 			fprintf(fout, ": No encontrado: se puede declarar");
 		}
 		free(name);
@@ -576,14 +559,10 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 		leer_siguiente(&nombre_clase_desde);
 
-		//printf("%s, %s", nombre_id, nombre_clase_desde);
-
 		if (buscarIdNoCualificado(tabla_clases, nombre_id,
 													nombre_clase_desde, &e, name) == OK){
-			printf("TOK_ID_NO_CUALIFICADO OK\n");
 			fprintf(fout, ": Encontrado en %s", name);
 		}else{
-			printf("TOK_ID_NO_CUALIFICADO ERR\n");
 			fprintf(fout, ": No encontrado");
 		}
 		free(name);
@@ -596,14 +575,10 @@ void gestion_buscar(){
 		leer_siguiente(&nombre_id);
 		leer_siguiente(&nombre_clase_desde);
 
-		printf("%s, %s, %s", nombre_instancia, nombre_id, nombre_clase_desde);
-
 		if (buscarIdCualificadoInstancia(tabla_clases, nombre_instancia,
 													nombre_id, nombre_clase_desde, &e, name) == OK){
-			printf("TOK_ID_CUALIFICADO_INSTANCIA OK\n");
 			fprintf(fout, ": Encontrado en %s", name);
 		}else{
-			printf("TOK_ID_CUALIFICADO_INSTANCIA ERR\n");
 			fprintf(fout, ": No encontrado");
 		}
 		free(name);
@@ -619,10 +594,8 @@ void gestion_buscar(){
 
 		if (buscarIdCualificadoClase(tabla_clases, nombre_clase_cualifica,
 													nombre_id, nombre_clase_desde, &e, name) == OK){
-			printf("TOK_ID_CUALIFICADO_CLASE OK\n");
 			fprintf(fout, ": Encontrado en %s", name);
 		}else{
-			printf("TOK_ID_CUALIFICADO_CLASE ERR\n");
 			fprintf(fout, ": No encontrado");
 		}
 		free(name);

@@ -138,25 +138,14 @@ Element * new_element(int categoria,
 
 	if(categoria < 0 || clase < 0 || direcciones < 0 || numero_parametros < 0
 		|| posicion_parametro < 0 || posicion_variable_local < 0){
-		/* If anyone of the arguments' value is less than zero return error */
-		//printf("ERROR. argumentos new element mal\n");
 		return NULL;
 	}
 
 	e = (Element*)malloc(sizeof(Element));
 	if(e == NULL){
-		/* error */
-		//printf("ERROR. Elemento no creado\n");
 		return NULL;
 	}
-	// esto se multiplica por numero parametros?
-	/*e->tipo_args = (int*)malloc(sizeof(int));
-	if(e->tipo_args == NULL){*/
-		/* error */
-	/*	free(e);
-		//printf("ERROR. Elemento no creado\n");
-		return NULL;
-	}*/
+
 	e->tipo_args = tipo_args;
 
 	e->categoria = categoria;
@@ -206,19 +195,9 @@ static int modify_element(Element * e,
 
 	if(e == NULL || categoria < 0 || tipo < 0 || clase < 0 || direcciones < 0 || numero_parametros < 0
 		|| posicion_parametro < 0 || numero_variables_locales < 0 || posicion_variable_local < 0){
-		/* If anyone of the arguments' value is less than zero return error */
-		//printf("ERROR. argumentos new element mal\n");
 		return -1;
 	}
 
-	// esto se multiplica por numero parametros?
-	/*e->tipo_args = (int*)malloc(sizeof(int));
-	if(e->tipo_args == NULL){*/
-		/* error */
-		/*free(e);
-		//printf("ERROR. Elemento no creado\n");
-		return NULL;
-	}*/
 	e->tipo_args = tipo_args;
 
 	e->categoria = categoria;
@@ -246,7 +225,6 @@ static int modify_element(Element * e,
 
 static void del_element(Element * e){
 	if(e == NULL){
-		//printf("ERROR. Elemento vacío\n");
 		return;
 	}
 
@@ -553,7 +531,6 @@ char * ht_item_get_name(HT_item * item){
 /* Delete hash table item */
 static void ht_del_item(HT_item* item) {
 	if(item == NULL){
-		//printf("ERROR. Item vacío\n");
 		return;
 	}
 	free(item->key);
@@ -570,17 +547,6 @@ static void ht_del_item(HT_item* item) {
 /*																						*/
 /**********************************************/
 
-/* EN CASO DE QUE LE QUERAMOS PONER TAMAÑO A CADA TABLA HASH
-static int ht_get_hash(const char* s, const int size){
-	long hash = 0;
-	const int len_s = strlen(s);
-	for (int i = 0; i < len_s; i++){
-			hash += (long)pow(a, len_s - (i+1)) * s[i];
-			hash = hash % size;
-	}
-	return (int)hash;
-}
-*/
 /* Returs the hash value of an item */
 static int ht_get_hash(const char* s, const int size){
 	long hash = 0;
@@ -652,7 +618,6 @@ TablaSimbolos* ht_new() {
 
 int ht_get_size(TablaSimbolos * ts){
 	if(ts == NULL){
-		//printf("ERROR, la tabla simbolos no existe\n");
 		return -1;
 	}
 
@@ -660,7 +625,6 @@ int ht_get_size(TablaSimbolos * ts){
 }
 int ht_get_count(TablaSimbolos * ts){
 	if(ts == NULL){
-		//printf("ERROR, la tabla simbolos no existe\n");
 		return -1;
 	}
 
@@ -722,7 +686,6 @@ HT_item * ht_insert_item(TablaSimbolos* ht,
 
 	if (item == NULL) {
 		ht_del_item(item);
-		//printf("ERROR, no se ha creado el item\n");
 		return NULL;
 	}
 	index = ht_get_hash(item->key, ht->size);
@@ -736,14 +699,12 @@ HT_item * ht_insert_item(TablaSimbolos* ht,
 		// Collision
 		if(strcmp(cur_item->key, item->key) == 0){
 			ht_del_item(item);
-			//printf("ERROR, el item ya existe en la tabla\n");
 			return NULL;
 		}
 		// If not check the next position in the linked list
 		while (cur_item->next != NULL) {
 			if(strcmp(cur_item->key, item->key) == 0){
 				ht_del_item(item);
-				//printf("ERROR, el item ya existe en la tabla\n");
 				return NULL;
 			}
 			cur_item = cur_item->next;
@@ -759,18 +720,15 @@ HT_item * ht_insert_item(TablaSimbolos* ht,
 
 int get_names_row(HT_item * item,char ** names, int *count){
 	if(item == NULL || names == NULL){
-		//printf("ERROR, item vacío\n");
 		return -1;
 	}
 	names[count[0]] = strdup(item->key);
 	if(names[count[0]] == NULL){
-		//printf("ERROR, no se ha copiado el nombre del elemento\n");
 		return -1;
 	}
 	count[0]++;
 	if(item->next != NULL){
 		if(get_names_row(item->next, names, count) != 0){
-			//printf("ERROR, en la recursión al coger nombres\n");
 			return -1;
 		}
 	}
@@ -786,26 +744,20 @@ char ** ht_get_name_symbols(TablaSimbolos * ts){
 	int count[1];
 	int i;
 	if(ts == NULL){
-		//printf("ERROR, al coger los nombres de los elementos de la tabla, ésta no existe\n");
 		return NULL;
 	}
 
 	count[0] = 0;
 	names = (char **)malloc(sizeof(char*) * ts->count);
 	if(names == NULL){
-		//printf("ERROR: No se ha podido guardar memoria para los nombres\n");
 		return NULL;
 	}
 	for(i = 0; i < ts->size; i ++){
 		if(ts->items[i] != NULL){
 			if(get_names_row(ts->items[i], names, count) != 0){
-				//printf("ERROR, al coger nombres de fila\n");
 				return NULL;
 			}
 		}
-	}
-	if(names == NULL){
-		//printf("algo faaaalla\n");
 	}
 
 	return names;
@@ -818,7 +770,6 @@ HT_item * ht_search_item(TablaSimbolos* ht, const char* key) {
 
 
 	if(ht == NULL || key == NULL){
-		//printf("ERROR buscando elemento. Tabla o key vacías.\n");
 		return NULL;
 	}
 
@@ -826,7 +777,6 @@ HT_item * ht_search_item(TablaSimbolos* ht, const char* key) {
 
 	item = ht->items[index];
 	if(item == NULL){
-		//printf("ERROR. la posición en la tabla está vacía\n");
 		return NULL;
 	}
 
@@ -865,13 +815,11 @@ HT_item * ht_modify_item(TablaSimbolos* ht, const char* key,
 	int res = -1;
 
 	if(ht == NULL || key == NULL){
-		//printf("ERROR buscando elemento. Tabla o key vacías.\n");
 		return NULL;
 	}
 
 	item = ht_search_item(ht, key);
 	if(item == NULL){
-		//printf("ERROR al modificar item. El item no existe\n");
 		return NULL;
 	}
 
@@ -898,7 +846,6 @@ HT_item * ht_modify_item(TablaSimbolos* ht, const char* key,
 															num_acumulado_metodos_sobreescritura,
 															tipo_args);
 	if(res != 0){
-		//printf("ERROR al modificar item. Fallo en la actualización de los valores\n");
 		return NULL;
 	}
 

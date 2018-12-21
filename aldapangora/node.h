@@ -30,30 +30,6 @@ int abrirAmbitoFunc(Node *node,
 
 int cerrarAmbitoFunc(Node *node);
 
-// int insertarTablaSimbolos(Node *node,
-// 		const char* key,            int categoria,  
-// 		int tipo,                   int clase, 
-// 		int direcciones,            int numero_parametros, 
-// 		int posicion_parametro,
-// 		int posicion_variable_local,
-// 		int tamanio,           
-// 		int tipo_acceso,            int tipo_miembro, 
-// 		int posicion_atributo_instancia, 
-// 		int posicion_metodo_sobreescribible, 
-// 		int * tipo_args);
-
-// int insertarTablaAmbitos(Node *node,
-// 		const char* key,            int categoria,  
-// 		int tipo,                   int clase, 
-// 		int direcciones,            int numero_parametros, 
-// 		int posicion_parametro, 
-// 		int posicion_variable_local,
-// 		int tamanio,      
-// 		int tipo_acceso,            int tipo_miembro, 
-// 		int posicion_atributo_instancia, 
-// 		int posicion_metodo_sobreescribible, 
-// 		int * tipo_args);
-
 int insertarTablaNodo(Node *node,
 		const char* key,            int categoria,  
 		int tipo,                   int clase, 
@@ -66,10 +42,6 @@ int insertarTablaNodo(Node *node,
 		int posicion_metodo_sobreescribible, 
 		int * tipo_args);
 
-
-// Para debuggear
-void imprimirTablaPpal(Node *n);
-void imprimirTablaFunc(Node *n);
 
 void imprimirTablasNode(FILE * fout, Node *n);
 
@@ -90,5 +62,8 @@ int getNumMetodosSobreescribibles(Node *node);
 int getNumAtributosInstancia(Node *node);
 int getNumAtributosClase(Node *node);
 
+// Para debuggear
+void imprimirTablaPpal(Node *n);
+void imprimirTablaFunc(Node *n);
 
 #endif

@@ -18,7 +18,6 @@ typedef struct _Graph {
 	int allocated; // number of potential nodes with memory already allocated
 	Node **nodes; // nodes of the graph
 	char **amatrix; // adjacency matrix
-	// int clase_actual;
 	Node *main;
 } Graph;
 
@@ -709,7 +708,6 @@ int aplicarAccesos(Graph *g, char * nombre_clase_ambito_actual, char * clase_dec
 	if (!g || !nombre_clase_ambito_actual || !clase_declaro || !pelem) return ERR;
 
 	access = HT_itemGetAccess(pelem);
-	//printf("Acceso desde %s a %s: %d\n", nombre_clase_ambito_actual, clase_declaro, access);
 
 	if (strcmp(nombre_clase_ambito_actual, "main") == 0){
 		if (access == ACCESO_CLASE)
@@ -830,8 +828,6 @@ int buscarIdNoCualificado(Graph *t, char * nombre_id, char * nombre_clase_desde,
 		return ERR;
 	}
 
-
-
 	if (buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_desde, e, nombre_ambito_encontrado) == OK)
 		return OK;
 
@@ -869,14 +865,9 @@ int buscarParaDeclararMiembroClase(Graph *t, char * nombre_id, char * nombre_cla
 	tok = strtok(copia, "_");
 	tok = strtok(NULL, "_");
 
-	//segun las transparencias esto solo se debe buscar en la clase, NO en jerarquia
-	//if (buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_desde, e, nombre_ambito_encontrado) == OK)
-	//	return OK;
-
 	index = indexOf(t, nombre_clase_desde);
 	if (index == -1) return ERR;
 
-	// No tiene sentido buscar en la función
 	result = buscarSimbolo(t->nodes[index], tok);
 	if (result){
 		len = strlen(getName(t->nodes[index]));
@@ -944,27 +935,21 @@ int buscarIdCualificadoInstancia(	Graph *g,
 
 	// Busca el nombre de la instancia
 	if (buscarIdNoCualificado(g, nombre_instancia_cualifica, nombre_clase_desde, e, nombre_ambito_encontrado) == ERR){
-		printf("No encontrada instancia_cualifica %s\n", nombre_instancia_cualifica);
 		return ERR;
 	}
 
 	// Mira la clase a la que pertenece la instancia
 	index_clase = - HT_itemGetType(*e);
 	if (index_clase < 0){
-		printf("%s no es una instancia de clase\n", nombre_instancia_cualifica);
 		return ERR;
 	}
 
 	// Mira si hay acceso a la instancia desde el ambito actual
 	if (aplicarAccesos(g, nombre_clase_desde, nombre_ambito_encontrado, *e) == ERR){
-		printf("No hay acceso desde %s a %s\n", nombre_clase_desde, nombre_instancia_cualifica);
 		return ERR;
 	}
 
-	printf("Buscando %s en jerarquia desde %s\n", nombre_id, getName(g->nodes[index_clase]));
-
 	if (buscarIdEnJerarquiaDesdeClase(g, nombre_id, getName(g->nodes[index_clase]), e, nombre_ambito_encontrado) == ERR){
-		// printf("No encontrado %s\n", nombre_id);
 		return ERR;
 	}
 
@@ -975,11 +960,7 @@ int buscarParaDeclararIdTablaSimbolosAmbitos(Graph * g, char* id, HT_item** e, c
 	int index;
 	Node *clase;
 
-	// No tiene sentido el parametro e no??
-	// Creo que habría que asignarlo en la llamada a la búsqueda
-
 	if(!g || !id || !e || !id_ambito) return ERR;
-
 
 	if (strcmp(id_ambito, "main") == 0){
 		clase = g->main;
@@ -1004,9 +985,6 @@ int buscarParaDeclararIdLocalEnMetodo(Graph *g,
 	int index, len;
 	Node *clase;
 	char *copia, *tok;
-
-	// No tiene sentido el parámetro nombre_ambito_encontrado no?
-	// Ni el e no? --> asignacion
 
 	if(!g || !nombre_clase || !nombre_id || !e || !nombre_ambito_encontrado) return ERR;
 
@@ -1130,11 +1108,6 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 
 	if (!g || !f) return ERR;
 
-	// Conjunto de offsets de cada método sobreescribible
-	// Conjunto de offsets de cada atributo de instancia
-	// Los métodos de clase y los atributos de clase simplemente deben ser definidos
-
-
 	// Tabla de métodos sobreescribiles de cada clase
 	posiciones_rellenas = (int **) malloc(g->n * sizeof(int **));
 	if (!posiciones_rellenas) return ERR;
@@ -1171,9 +1144,7 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 
 	fprintf(f, "\nsegment .bss\n");
 	for (i = 0, k = 0, num_metodos_sobre_acumulado = 0; i < g->n; i++){
-		printf("Clase %d\n", i);
 		// Dimensionamiento
-		printf("\tDimensionamiento\n");
 		num_metodos_sobre = getNumMetodosSobreescribibles(g->nodes[i]);
 
 		fprintf(f, "\t_ms%s resd %d\n", getName(g->nodes[i]), num_metodos_sobre_acumulado + num_metodos_sobre);
@@ -1200,10 +1171,8 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 		posiciones_rellenas[i][0] = -1;
 
 		// Eleccion de padres de los que heredar
-		printf("\tEleccion de padres\n");
 		for (j = 0, l = 0; j < i; j++){
 			if (g->amatrix[j][i] == 1){ // j padre directo de i
-				printf("\tPadre: %d\n", j);
 				for (k = 0; (pos = posiciones_rellenas[j][k]) != -1; k++){
 					// Copia posiciones rellenas del padre en el nodo actual
 					tablas_ms[i][pos] = tablas_ms[j][pos];
@@ -1218,8 +1187,6 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 
 		// Sobreescrituras de la clase
 		// Metodos sobreescribibles propios
-		printf("\tMetodos propios\n");
-		printf("\tNumero de metodos sobreescribibles: %d\n", num_metodos_sobre);
 		metodos_sobre = get_metodos_sobreescribibles(g->nodes[i]);
 		// num_metodos_sobre inicializado arriba
 		for (j = 0; j < num_metodos_sobre; j++){
@@ -1255,20 +1222,15 @@ int tablaSimbolosClasesANasm(Graph *g, FILE *f){
 			}
 		}
 
-		// Falta recorrer todos los elementos de la tabla hash de i
 		// Si son metodos sobreescribibles:
 		// 				Comprobar si sobreescriben alguno de los del padre (comparar nombres sin prefijo)
 		// 					1) si lo hacen, sustituir en la misma posicion con el prefijo nuevo
 		// 					2) si no, meterlos en una nueva posicion
 		// 						ir actualizando posiciones rellenas (recordar terminarlo siempre con -1)
-		printf("\tNumero de metodos sobreescribibles acumulado: %d\n", num_metodos_sobre_acumulado);
 		for (j = 0, k=0; j < num_metodos_sobre_acumulado; j++){
-			printf("%d: ", j*4);
 			if (j == posiciones_rellenas[i][k]){
 				k++;
-				printf("%s", tablas_ms[i][j]);
 			}
-			printf("\n");
 		}
 	}
 
